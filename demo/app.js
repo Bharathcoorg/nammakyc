@@ -48,7 +48,7 @@ const KN={
 let lang="en",step=0;
 const S=()=>lang==="en"?EN:KN;
 function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().app+'">'}
-function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="'+S().gov+'">'}
+function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Karnataka.png" alt="'+S().gov+'">'}
 function soudha(){return '<img class="soudha-photo" src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Government_Karnataka_8352.jpg" alt="Vidhana Soudha, Bengaluru">'}
 function family(){return '<div class="family-art"><div class="person father"></div><div class="person mother"></div><div class="person child"></div></div>'}
 function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
