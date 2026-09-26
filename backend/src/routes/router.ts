@@ -83,7 +83,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    await authorize(env,"kyc.create",request);
    const repository=repositoryFor(env);
    const configured=providers(env);
-   const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
+   const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT,metrics);
    const body=await request.json() as unknown;
    if(!body || typeof body!=="object" || Array.isArray(body)) throw new AppError("INVALID_REQUEST","Invalid JSON request body",400);
    const payload=body as Record<string,unknown>;
@@ -118,6 +118,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders});
   }catch(error){
    const e=error instanceof AppError?error:error instanceof SyntaxError?new AppError("INVALID_REQUEST","Invalid JSON request body",400):new AppError("INTERNAL_ERROR","Internal server error",500);
+   void metrics.increment("http.errors",{route:url.pathname});
    return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
   }
  }
