@@ -21,7 +21,17 @@ class FakeD1 {
         if (query.includes("FROM idempotency_keys")) return self.idempotency.get(String(values[0]));
         return undefined;
       },
-      async run() { return { meta: { changes: 1 } }; }
+      async run() {
+        if (query.includes("DELETE FROM idempotency_keys")) {
+          const cutoff = String(values[0]);
+          let changes = 0;
+          for (const [key, row] of self.idempotency) {
+            if (String(row.created_at) < cutoff) { self.idempotency.delete(key); changes++; }
+          }
+          return { meta: { changes } };
+        }
+        return { meta: { changes: 1 } };
+      }
     };
     return statement;
   }
@@ -88,6 +98,22 @@ describe("D1TransactionRepository", () => {
     expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId), consent(conflicting.requestId))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
     expect((await repository.getIdempotency("idempotency-key-12345"))?.requestId).toBe("request-existing");
+  });
+
+  it("purges only idempotency records older than the supplied cutoff", async () => {
+    const db = new FakeD1();
+    const repository = new D1TransactionRepository(db);
+    const oldTx = transaction("request-old");
+    const oldRecord = record(oldTx.requestId, "idempotency-old-12345");
+    oldRecord.createdAt = "2026-09-01T00:00:00.000Z";
+    await repository.createIfAbsent(oldTx, oldRecord, consent(oldTx.requestId, "consent-old"));
+    const newTx = transaction("request-new");
+    const newRecord = record(newTx.requestId, "idempotency-new-12345");
+    newRecord.createdAt = "2026-09-25T00:00:00.000Z";
+    await repository.createIfAbsent(newTx, newRecord, consent(newTx.requestId, "consent-new"));
+    expect(await repository.purgeIdempotencyBefore("2026-09-20T00:00:00.000Z")).toBe(1);
+    expect(await repository.getIdempotency("idempotency-old-12345")).toBeUndefined();
+    expect(await repository.getIdempotency("idempotency-new-12345")).toBeDefined();
   });
 
   it("rolls back all writes when the consent reference conflicts", async () => {
