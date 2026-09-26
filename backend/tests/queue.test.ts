@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CloudflareKycQueue, InMemoryKycJobQueue, type KycJob } from "../src/queues/kyc";
 import { decodeKycJob } from "../src/queues/consumer";
+import { KycWorker } from "../src/queues/worker";
 
 const job: KycJob = {
   jobId:"job-0000000001",
@@ -38,5 +39,21 @@ describe("Cloudflare queue adapter", () => {
     expect(() => decodeKycJob({ version:2, job })).toThrow("Invalid KYC queue envelope");
     expect(() => decodeKycJob({ version:1, job:{...job, attempt:-1} })).toThrow("Invalid KYC queue envelope");
     expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, idempotencyKey:"short"}} })).toThrow("Invalid KYC queue envelope");
+  });
+});
+
+
+describe("KYC worker retry policy", () => {
+  it("acknowledges a terminal delivery after the retry budget is exhausted", async () => {
+    let failed = 0;
+    const service = {
+      get: async () => undefined,
+      process: async () => { throw new Error("not reached"); },
+      markFailed: async () => { failed++; return {} as never; }
+    };
+    const worker = new KycWorker(service as never, 3);
+    const result = await worker.consume({ ...job, attempt: 2 });
+    expect(result).toEqual({ acknowledged: true, retryable: false });
+    expect(failed).toBe(1);
   });
 });
