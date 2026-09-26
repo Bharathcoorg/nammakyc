@@ -78,7 +78,7 @@ export default function HomeScreen() {
 
     {step === "ration" && <Card>
       <StepLabel s={s} current={1}/><Text style={styles.heading}>{s.rationCard}</Text><Text style={styles.muted}>{s.rationCardHint}</Text>
-      <TextInput value={rationCard} onChangeText={setRationCard} autoCapitalize="characters" placeholder={s.rationCard} placeholderTextColor={theme.colors.muted} style={styles.input} />
+      <TextInput accessibilityLabel={s.rationCard} accessibilityHint={s.rationCardHint} value={rationCard} onChangeText={setRationCard} autoCapitalize="characters" placeholder={s.rationCard} placeholderTextColor={theme.colors.muted} style={styles.input} />
       <Primary label={loading ? s.processing : s.findHousehold} onPress={lookup} disabled={!rationCard.trim() || loading} />
     </Card>}
 
@@ -93,7 +93,7 @@ export default function HomeScreen() {
 
     {step === "consent" && <Card>
       <StepLabel s={s} current={3}/><Text style={styles.heading}>{s.consent}</Text>
-      <Pressable onPress={() => setConsented(!consented)} style={styles.consent}>
+      <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: consented }} accessibilityLabel={s.consentText} onPress={() => setConsented(!consented)} style={styles.consent}>
         <View style={[styles.checkbox, consented && styles.checkboxSelected]}><Text style={styles.check}>{consented ? "✓" : ""}</Text></View>
         <Text style={styles.body}>{s.consentText}</Text>
       </Pressable>
@@ -125,8 +125,8 @@ function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number})
 function Card({children}:{children:React.ReactNode}){return <View style={styles.card}>{children}</View>}
 function Badge({text}:{text:string}){return <View style={styles.badge}><Text style={styles.badgeText}>✓  {text}</Text></View>}
 function InfoCard({title,text}:{title:string;text:string}){return <View style={styles.infoCard}><View style={styles.infoIcon}><Text style={styles.infoIconText}>i</Text></View><View style={{flex:1}}><Text style={styles.infoTitle}>{title}</Text><Text style={styles.infoText}>{text}</Text></View></View>}
-function Primary({label,onPress,disabled}:{label:string;onPress:()=>void;disabled?:boolean}){return <Pressable disabled={disabled} onPress={onPress} style={({pressed})=>[styles.primary,disabled&&styles.disabled,pressed&&!disabled&&styles.primaryPressed]}><Text style={styles.primaryText}>{label}</Text><Text style={styles.primaryArrow}>→</Text></Pressable>}
-function LanguageButton({label,selected,onPress}:{label:string;selected:boolean;onPress:()=>void}){return <Pressable onPress={onPress} style={({pressed})=>[styles.language,selected&&styles.languageSelected,pressed&&styles.pressed]}><Text style={styles.languageText}>{label}</Text>{selected&&<Text style={styles.tick}>✓</Text>}</Pressable>}
+function Primary({label,onPress,disabled}:{label:string;onPress:()=>void;disabled?:boolean}){return <Pressable accessibilityRole="button" accessibilityLabel={label} disabled={disabled} onPress={onPress} style={({pressed})=>[styles.primary,disabled&&styles.disabled,pressed&&!disabled&&styles.primaryPressed]}><Text style={styles.primaryText}>{label}</Text><Text style={styles.primaryArrow}>→</Text></Pressable>}
+function LanguageButton({label,selected,onPress}:{label:string;selected:boolean;onPress:()=>void}){return <Pressable accessibilityRole="radio" accessibilityState={{ selected }} accessibilityLabel={label} onPress={onPress} style={({pressed})=>[styles.language,selected&&styles.languageSelected,pressed&&styles.pressed]}><Text style={styles.languageText}>{label}</Text>{selected&&<Text style={styles.tick}>✓</Text>}</Pressable>}
 
 const styles=StyleSheet.create({
  safe:{flex:1,backgroundColor:theme.colors.background},container:{paddingHorizontal:20,paddingTop:26,paddingBottom:30,gap:16},
