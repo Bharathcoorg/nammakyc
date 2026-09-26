@@ -42,7 +42,7 @@ export default {
   },
 
   async queue(
-    batch: { messages: Array<{ body: unknown; ack(): void; retry(options?: { delaySeconds?: number }): void }> },
+    batch: { messages: Array<{ body: unknown; attempts: number; ack(): void; retry(options?: { delaySeconds?: number }): void }> },
     env: Env
   ): Promise<void> {
     const service = new TransactionService(
