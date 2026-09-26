@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { route } from "../src/routes/router";
+import { InMemoryKycJobQueue } from "../src/queues/kyc";
 
 describe("KYC API", () => {
   it("returns a household for a valid ration card reference", async () => {
@@ -20,6 +21,19 @@ describe("KYC API", () => {
     expect(body.status).toBe("success");
     const status=await route(new Request("https://api.test/v1/kyc/"+body.requestId));
     expect(status?.status).toBe(200);
+  });
+
+  it("creates a queued transaction without running providers inline", async () => {
+    const queue = new InMemoryKycJobQueue();
+    const response = await route(new Request("https://api.test/v1/kyc", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": "idem-queued-12345678" },
+      body: JSON.stringify({ householdReference:"demo-RC-123", memberReference:"member-01", consentReference:"consent-1" })
+    }), { QUEUE: queue });
+    expect(response?.status).toBe(202);
+    const body=await response?.json() as {requestId:string;status:string};
+    expect(body.status).toBe("validating");
+    expect(queue.drain()).toHaveLength(1);
   });
 
   it("rejects missing idempotency keys", async () => {
