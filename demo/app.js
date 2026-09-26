@@ -54,10 +54,10 @@ function render(){
  document.getElementById("language").textContent=s.language;
  document.getElementById("start").textContent=s.getStarted;
  document.getElementById("reset").textContent=s.reset;
- const pct=step>0?Math.round(step/9*100):0;
+ const pct=step>0?Math.round(step/10*100):0;
  document.getElementById("progress").classList.toggle("hidden",step===0);
  document.getElementById("progress-fill").style.width=pct+"%";
- document.getElementById("progress-label").textContent=step>0&&step<10?s.steps[step-1]+" · "+step+" / 9":"";
+ document.getElementById("progress-label").textContent=step>0&&step<=10?s.steps[step-1]+" · "+step+" / 10":"";
  document.getElementById("steps").innerHTML=s.steps.map((x,i)=>'<button class="demo-step '+(i===step-1?"active":"")+'" data-step="'+(i+1)+'">'+(i+1)+". "+x+"</button>").join("");
  document.querySelectorAll(".demo-step").forEach(b=>b.onclick=()=>{step=Number(b.dataset.step);render()});
  document.getElementById("screen").innerHTML=screen(s);
