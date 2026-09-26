@@ -99,6 +99,7 @@ export const translations = {
     disableVoice: "Turn off voice",
     voiceAccessibility: "The same instructions are shown as text. Voice guidance is optional.",
     continueToAadhaar: "Continue to Aadhaar verification",
+    voiceUnavailable: "Voice guidance is unavailable on this device. The written instructions are still available.",
   },
   kn: {
     appName: "ನಮ್ಮ KYC",
@@ -198,6 +199,7 @@ export const translations = {
     disableVoice: "ಧ್ವನಿಯನ್ನು ಆಫ್ ಮಾಡಿ",
     voiceAccessibility: "ಅದೇ ಸೂಚನೆಗಳನ್ನು ಪಠ್ಯವಾಗಿಯೂ ತೋರಿಸಲಾಗಿದೆ. ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ ಐಚ್ಛಿಕವಾಗಿದೆ.",
     continueToAadhaar: "ಆಧಾರ್ ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಸಿ",
+    voiceUnavailable: "ಈ ಸಾಧನದಲ್ಲಿ ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ ಲಭ್ಯವಿಲ್ಲ. ಲಿಖಿತ ಸೂಚನೆಗಳನ್ನು ಮುಂದುವರಿಸಬಹುದು.",
   },
 } as const;
 
