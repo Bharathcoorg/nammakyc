@@ -2,6 +2,7 @@ export interface PdsMember {
   memberReference: string;
   displayName: string;
   kycRequired: boolean;
+  lastVerifiedAt?: string;
 }
 
 export interface PdsHousehold {

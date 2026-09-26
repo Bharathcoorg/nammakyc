@@ -5,7 +5,8 @@ export const rationCardReferenceSchema = z.string().trim().min(1).max(64);
 export const householdMemberSchema = z.object({
   memberReference: z.string().min(1).max(128),
   displayName: z.string().min(1).max(200),
-  kycRequired: z.boolean(),\n  lastVerifiedAt: z.string().datetime().optional()
+  kycRequired: z.boolean(),
+  lastVerifiedAt: z.string().datetime().optional()
 });
 
 export const householdSchema = z.object({
