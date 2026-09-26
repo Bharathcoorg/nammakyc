@@ -26,7 +26,7 @@ export class D1TransactionRepository implements TransactionRepository{
   catch(error){const [transaction,idempotency]=await Promise.all([this.get(tx.requestId),this.getIdempotency(record.key)]);if(transaction||idempotency)return false;throw error;}
  }
  async claimForProcessing(requestId:string,claimId:string,nowIso:string,staleBeforeIso:string){
-  const result=await this.db.prepare("UPDATE kyc_transactions SET updated_at=?,processing_claim_id=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('aadhaar_pending','aadhaar_authenticating','pds_processing') AND updated_at < ?))").bind(nowIso,claimId,requestId,staleBeforeIso).run();
+  const result=await this.db.prepare("UPDATE kyc_transactions SET updated_at=?,processing_claim_id=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('aadhaar_pending','aadhaar_authenticating','aadhaar_authenticated','pds_processing') AND updated_at < ?))").bind(nowIso,claimId,requestId,staleBeforeIso).run();
   return (result.meta?.changes??0)===1;
  }
  async renewProcessingClaim(requestId:string,claimId:string,nowIso:string){
