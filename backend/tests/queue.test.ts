@@ -13,7 +13,7 @@ const job: KycJob = {
     consentReference:"consent-1",
     consentPolicyVersion:"2026-09",
     consentLanguage:"en",
-    idempotencyKey:"idempotency-key-12345",
+    idempotencyKey:"0000000000000000",
     authenticationMethod:"otp_face"
   },
   enqueuedAt:"2026-09-26T12:00:00.000Z",
@@ -40,7 +40,8 @@ describe("Cloudflare queue adapter", () => {
   it("rejects malformed queue payloads", () => {
     expect(() => decodeKycJob({ version:2, job })).toThrow("Invalid KYC queue envelope");
     expect(() => decodeKycJob({ version:1, job:{...job, attempt:-1} })).toThrow("Invalid KYC queue envelope");
-    expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, idempotencyKey:"short"}} })).toThrow("Invalid KYC queue envelope");\n    expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, authenticationMethod:"unsupported"}} })).toThrow("Invalid KYC queue envelope");
+    expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, idempotencyKey:"short"}} })).toThrow("Invalid KYC queue envelope");
+    expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, authenticationMethod:"unsupported"}} })).toThrow("Invalid KYC queue envelope");
   });
 });
 
