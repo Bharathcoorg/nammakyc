@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { SvgUri } from "react-native-svg";
+import { NammaKycLogo } from "../src/brand";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
 import { getStrings } from "../src/i18n";
@@ -105,7 +105,7 @@ export default function HomeScreen() {
 
     {step === "welcome" && <Card>
       <View style={styles.dashboardHeader}>
-        <SvgUri width={38} height={34} uri={KARNATAKA_EMBLEM_URI}/>
+        <NammaKycLogo size={38} />
         <View style={styles.dashboardGovernment}><Text style={styles.dashboardGov}>{s.government}</Text><Text style={styles.dashboardWelcome}>{language==="en"?"Welcome, Citizen":"ಸ್ವಾಗತ, ನಾಗರಿಕರೇ"}</Text></View>
         <Text style={styles.dashboardIcon}>♧</Text><Text style={styles.dashboardIcon}>◉</Text>
       </View>
@@ -197,10 +197,7 @@ export default function HomeScreen() {
     <Text style={styles.footer}>{s.demoNote}</Text>
   </ScrollView></SafeAreaView>;
 }
-
-const KARNATAKA_EMBLEM_URI = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
-
-function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><SvgUri width={96} height={84} uri={KARNATAKA_EMBLEM_URI}/><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}><Text style={styles.splashNamma}>Namma</Text><Text style={styles.splashKyc}> KYC</Text></Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
+function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}><Text style={styles.splashNamma}>Namma</Text><Text style={styles.splashKyc}> KYC</Text></Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
 function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><SvgUri width="38" height="34" uri={KARNATAKA_EMBLEM_URI}/></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
