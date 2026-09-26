@@ -59,7 +59,7 @@ export default {
       requestId: "system-retention",
       occurredAt: new Date().toISOString(),
       status: `idempotency_deleted:${deleted}`
-    } as never);
+    });
   },
 
   async queue(
