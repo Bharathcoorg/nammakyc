@@ -4,7 +4,7 @@ import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { NammaKycLogo } from "../src/brand";
 import { apiRequest, getKycStatus } from "../src/api/client";
-import type { Household, KycResponse } from "../src/api/types";
+import type { Household, KycResponse, KycStatus } from "../src/api/types";
 import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
@@ -23,7 +23,7 @@ export default function HomeScreen() {
   const [consentReference, setConsentReference] = useState("");
   const [reference, setReference] = useState("");
   const [requestId, setRequestId] = useState("");
-  const [requestStatus, setRequestStatus] = useState("");
+  const [requestStatus, setRequestStatus] = useState<KycStatus>("received");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
