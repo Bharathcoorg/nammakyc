@@ -21,6 +21,19 @@ describe("TransactionService",()=>{
   const first=await service.start(input);const second=await service.start(input);
   expect(second.requestId).toBe(first.requestId);expect(second.status).toBe("success");
  });
+ it("retries transient household provider failures before creating the transaction",async()=>{
+  let calls=0;
+  const flakyPds:PdsProvider={lookupHousehold:async ref=>{
+    calls++;
+    if(calls===1) throw new AppError("UPSTREAM_UNAVAILABLE","temporary household outage",503);
+    return {householdReference:ref,members:[{memberReference:"M-1",displayName:"Demo Citizen",kycRequired:true}]};
+  }};
+  const service=new TransactionService(new InMemoryTransactionRepository(),flakyPds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-pds-retry"})},{submit:async()=>({success:true,providerReference:"kyc-pds-retry"})});
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-pds-retry",idempotencyKey:"1212121212121212"});
+  expect(created.status).toBe("aadhaar_pending");
+  expect(calls).toBe(2);
+ });
+
  it("moves retryable provider failures to retrying",async()=>{
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>{throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503)}},{submit:async()=>({success:true,providerReference:"kyc-1"})});
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-1",idempotencyKey:"1111111111111111"});
