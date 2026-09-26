@@ -78,12 +78,12 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
  }
 
  if(request.method==="POST"&&url.pathname==="/v1/kyc"){
-  const configured=providers(env);
-  const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
   const key=request.headers.get("Idempotency-Key")??"";
   try{
    await authorize(env,"kyc.create",request);
    const repository=repositoryFor(env);
+   const configured=providers(env);
+   const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
    const body=await request.json() as unknown;
    if(!body || typeof body!=="object" || Array.isArray(body)) throw new AppError("INVALID_REQUEST","Invalid JSON request body",400);
    const payload=body as Record<string,unknown>;
