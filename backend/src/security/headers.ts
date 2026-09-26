@@ -1,7 +1,7 @@
 export function requestId(request: Request): string {
-  return request.headers.get("X-Request-Id")?.trim() || crypto.randomUUID();
+  const supplied = request.headers.get("X-Request-Id")?.trim();
+  return supplied && /^[A-Za-z0-9._-]{1,128}$/.test(supplied) ? supplied : crypto.randomUUID();
 }
-
 export function withSecurityHeaders(response: Response, id: string): Response {
   const headers = new Headers(response.headers);
   headers.set("X-Request-Id", id);
