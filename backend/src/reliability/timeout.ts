@@ -17,8 +17,8 @@ export async function withTimeout<T>(
       operation(controller.signal),
       new Promise<T>((_, reject) => {
         timer = setTimeout(() => {
-          controller.abort();
           reject(new TimeoutError(message));
+          controller.abort();
         }, timeoutMs);
       })
     ]);
