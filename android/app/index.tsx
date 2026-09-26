@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
+import * as Speech from "expo-speech";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
@@ -7,8 +8,8 @@ import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "language" | "welcome" | "ration" | "member" | "consent" | "auth" | "processing" | "status" | "success";
-const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, auth: 3, processing: 3, status: 3, success: 3 };
+type Step = "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "processing" | "status" | "success";
+const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, processing: 3, status: 3, success: 3 };
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
@@ -24,7 +25,17 @@ export default function HomeScreen() {
   const [requestStatus, setRequestStatus] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
   const s = useMemo(() => getStrings(language), [language]);
+
+  function speakInstructions() {
+    const text = s.voiceSteps.join(" ");
+    Speech.stop();
+    Speech.speak(text, {
+      language: language === "kn" ? "kn-IN" : "en-IN",
+      rate: 0.9,
+    });
+  }
 
   async function lookup() {
     setError(""); setLoading(true);
@@ -34,7 +45,7 @@ export default function HomeScreen() {
 
   function start() {
     if (!consentRead || !consentProceed || !household || !selected) return;
-    setError(""); setConsentReference(Crypto.randomUUID()); setStep("auth");
+    setError(""); setConsentReference(Crypto.randomUUID()); setStep("instructions");
   }
 
   async function authenticate() {
