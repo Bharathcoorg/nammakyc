@@ -2,12 +2,17 @@ import { describe, expect, it } from "vitest";
 import { kycStatusResponseSchema, startKycRequestSchema } from "./kyc";
 
 describe("start KYC request", () => {
-  it("defaults to Face Authentication", () => {
+  it("defaults to OTP and Face Authentication", () => {
     const result = startKycRequestSchema.parse({
       householdReference: "demo-household",
       memberReference: "demo-member",
       consentReference: "demo-consent"
     });
+    expect(result.authenticationMethod).toBe("otp_face");
+  });
+
+  it("accepts OTP and Face as the combined provider path", () => {
+    const result = startKycRequestSchema.parse({ householdReference:"demo-household", memberReference:"demo-member", consentReference:"demo-consent", authenticationMethod:"otp_face" });
     expect(result.authenticationMethod).toBe("otp_face");
   });
 
