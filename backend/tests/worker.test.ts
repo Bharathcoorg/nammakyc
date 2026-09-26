@@ -48,3 +48,31 @@ describe("KycWorker", () => {
     expect(result).toEqual({ acknowledged:true, retryable:false });
   });
 });
+
+
+describe("KycWorker retry exhaustion", () => {
+  it("acknowledges and marks the transaction failed on the final retry", async () => {
+    const calls: string[] = [];
+    const service = {
+      get: async () => ({ requestId:"request-1", householdReference:"RC-1", memberReference:"M-1", status:"retrying", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:01.000Z" }),
+      process: async () => { throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503); },
+      markFailed: async () => { calls.push("failed"); return undefined; }
+    } as unknown as TransactionService;
+    const finalAttempt = {...job, attempt:2};
+    const result = await new KycWorker(service,3).consume(finalAttempt);
+    expect(result).toEqual({ acknowledged:true, retryable:false });
+    expect(calls).toEqual(["failed"]);
+  });
+
+  it("does not retry when the configured attempt limit is already exhausted", async () => {
+    const calls: string[] = [];
+    const service = {
+      get: async () => ({ requestId:"request-1", householdReference:"RC-1", memberReference:"M-1", status:"retrying", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:01.000Z" }),
+      process: async () => { throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503); },
+      markFailed: async () => { calls.push("failed"); return undefined; }
+    } as unknown as TransactionService;
+    const result = await new KycWorker(service,2).consume({...job,attempt:1});
+    expect(result).toEqual({ acknowledged:true, retryable:false });
+    expect(calls).toEqual(["failed"]);
+  });
+});
