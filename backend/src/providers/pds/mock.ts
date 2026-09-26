@@ -5,7 +5,7 @@ export class MockPdsProvider implements PdsProvider {
     return {
       householdReference: `demo-${rationCardReference}`,
       members: [
-        { memberReference: "member-01", displayName: "Demo Member", kycRequired: true }
+        { memberReference: "member-01", displayName: "Anitha Rao", kycRequired: true },\n        { memberReference: "member-02", displayName: "Ravi Kumar", kycRequired: false, lastVerifiedAt: "2026-09-22T10:30:00.000Z" }
       ]
     };
   }
