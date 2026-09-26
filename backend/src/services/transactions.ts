@@ -37,7 +37,7 @@ function fingerprint(input: StartKycInput): string {
 
 const transient = (error: unknown) =>
   error instanceof TimeoutError ||
-  (error instanceof AppError && error.code === "UPSTREAM_UNAVAILABLE");
+  (error instanceof AppError && (error.code === "UPSTREAM_UNAVAILABLE" || error.code === "AUTHENTICATION_FAILED"));
 
 const providerPolicy = { attempts: 3, baseDelayMs: 75, maxDelayMs: 500 };
 const aadhaarBreaker = new CircuitBreaker(5, 30_000);
@@ -118,6 +118,15 @@ export class TransactionService {
     const failed = transitionTransaction(transaction, "failed");
     await this.repository.update(failed);
     return failed;
+  }
+
+  async markRetrying(requestId: string): Promise<KycTransaction> {
+    const transaction = await this.repository.get(requestId);
+    if (!transaction) throw new AppError("NOT_FOUND", "KYC transaction not found", 404);
+    if (transaction.status === "retrying" || transaction.status === "success" || transaction.status === "failed") return transaction;
+    const retrying = transitionTransaction(transaction, "retrying");
+    await this.repository.update(retrying);
+    return retrying;
   }
 
   async markRetrying(requestId: string): Promise<KycTransaction> {
