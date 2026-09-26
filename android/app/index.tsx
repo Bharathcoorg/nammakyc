@@ -101,7 +101,7 @@ export default function HomeScreen() {
     {step !== "splash" && <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
     {step !== "splash" && step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && step !== "authenticating" && step !== "authResult" && step !== "pdsProcessing" && <Progress s={s} current={current} />}
 
-    {step === "splash" && <Splash s={s} onStart={() => setStep("welcome")} />}
+    {step === "splash" && <Splash s={s} onStart={() => setStep("welcome")} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
 
     {step === "language" && <Card>
       <LanguageHero s={s} /><Badge text={s.trust} /><Text style={styles.eyebrow}>{s.appName}</Text>
@@ -189,7 +189,7 @@ export default function HomeScreen() {
     
   </ScrollView></SafeAreaView>;
 }
-function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><Pressable accessibilityRole="button" style={styles.splashLanguage}><Text style={styles.splashLanguageText}>ಕನ್ನಡ</Text></Pressable><KarnatakaEmblem width={88}/><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.digitalIdentity}</Text><View style={styles.splashIllustration}><VidhanaSoudhaIllustration width={350}/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
+function Splash({s,onStart,onLanguageChange}:{s:ReturnType<typeof getStrings>;onStart:()=>void;onLanguageChange:()=>void}){return <View style={styles.splash}><Pressable accessibilityRole="button" accessibilityLabel={s.kannada} onPress={onLanguageChange} style={styles.splashLanguage}><Text style={styles.splashLanguageText}>{s.kannada}</Text></Pressable><KarnatakaEmblem width={88}/><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.digitalIdentity}</Text><View style={styles.splashIllustration}><VidhanaSoudhaIllustration width={350}/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
 function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 4</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/4)*100+"%"}]}/></View></View>}
