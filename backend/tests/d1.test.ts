@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { D1TransactionRepository } from "../src/repositories/d1";
 import type { KycTransaction } from "../src/domain/kyc/transaction";
 import type { IdempotencyRecord } from "../src/domain/kyc/idempotency";
+import type { ConsentArtifact } from "../src/domain/kyc/consent";
 
 class FakeD1 {
   transactions = new Map<string, Record<string, unknown>>();
@@ -81,6 +82,17 @@ function transaction(requestId = "request-0000000001"): KycTransaction {
   };
 }
 
+function consent(requestId: string, reference = "consent-1"): ConsentArtifact {
+  return {
+    consentReference:reference,
+    purpose:"ration-card-e-kyc",
+    policyVersion:"2026-09",
+    language:"en",
+    capturedAt:"2026-09-26T12:00:00.000Z",
+    transactionReference:requestId
+  };
+}
+
 function record(requestId: string, key = "idempotency-key-12345"): IdempotencyRecord {
   return {
     key,
@@ -95,7 +107,7 @@ describe("D1TransactionRepository", () => {
     const db = new FakeD1();
     const repository = new D1TransactionRepository(db);
     const tx = transaction();
-    expect(await repository.createIfAbsent(tx, record(tx.requestId))).toBe(true);
+    expect(await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId))).toBe(true);
     expect(await repository.get(tx.requestId)).toBeDefined();
     expect(await repository.getIdempotency("idempotency-key-12345")).toBeDefined();
   });
@@ -104,9 +116,9 @@ describe("D1TransactionRepository", () => {
     const db = new FakeD1();
     const repository = new D1TransactionRepository(db);
     const existing = transaction("request-existing");
-    await repository.createIfAbsent(existing, record(existing.requestId));
+    await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId));
     const conflicting = transaction("request-new");
-    expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId))).toBe(false);
+    expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId), consent(conflicting.requestId))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
     expect((await repository.getIdempotency("idempotency-key-12345"))?.requestId).toBe("request-existing");
   });
