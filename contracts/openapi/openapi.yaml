@@ -28,6 +28,7 @@ paths:
         "400": {description: Invalid ration card reference}
         "401": {description: Authentication required when production authorization is configured}
         "403": {description: Authorization denied}
+        "500": {description: Internal server or provider configuration failure}
   /v1/kyc:
     post:
       operationId: startKyc
@@ -48,6 +49,8 @@ paths:
         "403": {description: Authorization denied}
         "409": {description: Idempotency conflict}
         "413": {description: Request body exceeds the configured limit}
+        "415": {description: JSON content type required}
+        "500": {description: Internal server or provider configuration failure}
         "502": {description: Provider failure}
         "503": {description: Temporary upstream or queue unavailability}
   /v1/kyc/{requestId}:
@@ -67,6 +70,7 @@ paths:
         "401": {description: Authentication required when production authorization is configured}
         "403": {description: Authorization denied}
         "404": {description: Transaction not found}
+        "500": {description: Internal server or database failure}
 components:
   schemas:
     StartKycRequest:
