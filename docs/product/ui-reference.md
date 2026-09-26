@@ -44,7 +44,7 @@ The reference board is a visual product concept. The implementation must not tur
 The UI follows the supplied Karnataka visual direction, including the Karnataka emblem treatment, Vidhana Soudha illustration, Namma KYC mark, and family artwork. The current app artwork is a product/reference treatment and must not imply government ownership, endorsement, or authorization until the project has formal authorization. Official insignia use must follow applicable restrictions.
 
 Source: Wikimedia Commons, “Seal of Karnataka”, which identifies it as the state emblem of Karnataka and documents the source/licensing information:
-https://commons.wikimedia.org/wiki/File:Seal_of_Karnataka.svg
+The emblem treatment in this reference build is illustrative; use an approved official asset only after authorization.
 
 ## Pixel validation
 
@@ -61,9 +61,13 @@ Pixel-perfect validation is performed against the supplied reference board at th
 - processing timeline
 - success/reference card
 - status timeline
-- temporary status/reference layout\n- no permanent profile or account navigation
+- temporary status/reference layout
+- no permanent profile or account navigation
 - English/Kannada text expansion
 - accessibility touch targets
 
 The generated reference is a design target, not evidence of an official Government of Karnataka service.
-\n## Temporary journey\n\nNamma KYC is a transaction-based service rather than a citizen account. The app does not maintain a permanent profile, saved ration-card dashboard, family history, biometric profile, or reusable Aadhaar/OTP store. After the transaction ends, the local journey state is cleared; operational backend references exist only as required to complete and reconcile that transaction.\n
+
+## Temporary journey
+
+Namma KYC is a transaction-based service rather than a citizen account. The app does not maintain a permanent profile, saved ration-card dashboard, family history, biometric profile, or reusable Aadhaar/OTP store. After the transaction ends, the local journey state is cleared; operational backend references exist only as required to complete and reconcile that transaction.
