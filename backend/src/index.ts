@@ -80,17 +80,17 @@ export default {
     },
     env: Env
   ): Promise<void> {
-    if (env.ENVIRONMENT === "production") {
-      throw new Error("Production provider configuration is required before queue processing");
+    if (env.ENVIRONMENT === "production" && (!env.DB || !env.PDS || !env.AADHAAR || !env.KYC)) {
+      throw new Error("Production queue dependencies are required before processing");
     }
 
     const repository = createTransactionRepository(env.DB);
     const audit = env.AUDIT ?? new ConsoleAuditSink();
     const service = new TransactionService(
       repository,
-      new MockPdsProvider(),
-      new MockAadhaarProvider(),
-      new MockKycProvider(),
+      env.PDS ?? new MockPdsProvider(),
+      env.AADHAAR ?? new MockAadhaarProvider(),
+      env.KYC ?? new MockKycProvider(),
       audit
     );
     const worker = new KycWorker(service);
@@ -108,15 +108,9 @@ export default {
           message.retry({ delaySeconds });
         }
       } catch (error) {
-        if (error instanceof Error && error.message === "Invalid KYC queue envelope") {
-          throw error;
-        }
+        if (error instanceof Error && error.message === "Invalid KYC queue envelope") throw error;
         const job = (() => {
-          try {
-            return decodeKycJob(message.body);
-          } catch {
-            return undefined;
-          }
+          try { return decodeKycJob(message.body); } catch { return undefined; }
         })();
         if (job) await service.markFailed(job.transactionId);
         throw error;
