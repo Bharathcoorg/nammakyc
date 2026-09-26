@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Namma KYC API
   version: 0.1.0
-  description: Open-source citizen-first reference implementation API.
+  description: Open-source citizen-first reference implementation API. Production authorization and government provider integrations are deployment-specific and must be supplied by the responsible authority.
 servers:
   - url: https://api.example.invalid
 paths:
@@ -15,49 +15,95 @@ paths:
     get:
       operationId: getHousehold
       parameters:
-        - {name: rationCardReference, in: path, required: true, schema: {type: string}}
+        - name: rationCardReference
+          in: path
+          required: true
+          schema: {type: string, minLength: 1, maxLength: 64}
       responses:
-        "200": {description: Household and member information}
+        "200":
+          description: Household and member information
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/Household"}
         "400": {description: Invalid ration card reference}
+        "401": {description: Authentication required when production authorization is configured}
+        "403": {description: Authorization denied}
   /v1/kyc:
     post:
       operationId: startKyc
       parameters:
-        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 16, maxLength: 128}}
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string, minLength: 16, maxLength: 128}
       requestBody:
         required: true
         content:
           application/json:
             schema: {$ref: "#/components/schemas/StartKycRequest"}
       responses:
-        "202": {description: KYC transaction accepted}
+        "202": {description: KYC transaction accepted or queued}
         "400": {description: Invalid request}
+        "401": {description: Authentication required when production authorization is configured}
+        "403": {description: Authorization denied}
         "409": {description: Idempotency conflict}
+        "413": {description: Request body exceeds the configured limit}
         "502": {description: Provider failure}
+        "503": {description: Temporary upstream or queue unavailability}
   /v1/kyc/{requestId}:
     get:
       operationId: getKycStatus
       parameters:
-        - {name: requestId, in: path, required: true, schema: {type: string}}
+        - name: requestId
+          in: path
+          required: true
+          schema: {type: string, minLength: 16, maxLength: 128}
       responses:
-        "200": {description: KYC transaction status}
+        "200":
+          description: KYC transaction status
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/KycStatusResponse"}
+        "401": {description: Authentication required when production authorization is configured}
+        "403": {description: Authorization denied}
         "404": {description: Transaction not found}
 components:
   schemas:
     StartKycRequest:
       type: object
       required: [householdReference, memberReference, consentReference]
+      additionalProperties: false
       properties:
         householdReference: {type: string, minLength: 1, maxLength: 128}
         memberReference: {type: string, minLength: 1, maxLength: 128}
         consentReference: {type: string, minLength: 1, maxLength: 128}
+        consentPolicyVersion: {type: string, minLength: 1, maxLength: 64}
+        consentLanguage: {type: string, enum: [en, kn]}
+    Household:
+      type: object
+      required: [householdReference, members]
+      properties:
+        householdReference: {type: string, minLength: 1, maxLength: 128}
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/HouseholdMember"
+    HouseholdMember:
+      type: object
+      required: [memberReference, displayName, kycRequired]
+      properties:
+        memberReference: {type: string, minLength: 1, maxLength: 128}
+        displayName: {type: string, minLength: 1, maxLength: 200}
+        kycRequired: {type: boolean}
     KycStatusResponse:
       type: object
       required: [requestId, status]
       properties:
-        requestId: {type: string}
-        status: {type: string, enum: [received, validating, authenticating, processing, success, retrying, failed]}
-        reference: {type: string}
+        requestId: {type: string, minLength: 16, maxLength: 128}
+        status:
+          type: string
+          enum: [received, validating, authenticating, processing, success, retrying, failed]
+        reference: {type: string, minLength: 1, maxLength: 128}
     Error:
       type: object
       required: [error]
@@ -66,5 +112,7 @@ components:
           type: object
           required: [code, message]
           properties:
-            code: {type: string}
+            code:
+              type: string
+              enum: [INVALID_REQUEST, NOT_FOUND, DUPLICATE_REQUEST, UPSTREAM_UNAVAILABLE, AUTHENTICATION_FAILED, INTERNAL_ERROR]
             message: {type: string}
