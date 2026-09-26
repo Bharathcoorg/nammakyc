@@ -10,7 +10,7 @@ import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
 type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "processing" | "status" | "success";
-const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, processing: 3, status: 3, success: 3 };
+const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, processing: 4, status: 4, success: 4 };
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
@@ -111,7 +111,7 @@ export default function HomeScreen() {
     {step === "welcome" && <Card>
       <View style={styles.dashboardHeader}>
         <NammaKycLogo size={38} />
-        <View style={styles.dashboardGovernment}><Text style={styles.dashboardGov}>{s.government}</Text><Text style={styles.dashboardWelcome}>{language==="en"?"Welcome, Citizen":"ಸ್ವಾಗತ, ನಾಗರಿಕರೇ"}</Text></View>
+        <View style={styles.dashboardGovernment}><Text style={styles.dashboardGov}>{s.government}</Text><Text style={styles.dashboardWelcome}>{s.welcomeTitle}</Text></View>
         <Text style={styles.dashboardIcon}>♧</Text><Text style={styles.dashboardIcon}>◉</Text>
       </View>
       <View style={styles.dashboardLandscape}><KarnatakaIllustration/></View>
@@ -121,13 +121,13 @@ export default function HomeScreen() {
         <Text style={styles.dashboardChevron}>›</Text>
       </Pressable>
       <View style={styles.dashboardTiles}>
-        <DashboardTile icon="▤" label={language==="en"?"My Ration Card":"ನನ್ನ ಪಡಿತರ ಚೀಟಿ"}/>
-        <DashboardTile icon="♟" label={language==="en"?"Family Members":"ಕುಟುಂಬದ ಸದಸ್ಯರು"} onPress={() => setStep("ration")}/>
-        <DashboardTile icon="◎" label={language==="en"?"e-KYC Status":"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ"} onPress={() => requestId && setStep("status")}/>
-        <DashboardTile icon="?" label={language==="en"?"Help & FAQ":"ಸಹಾಯ ಮತ್ತು FAQ"}/>
+        <DashboardTile icon="▤" label={s.myRationCard}/>
+        <DashboardTile icon="♟" label={s.familyMembers} onPress={() => setStep("ration")}/>
+        <DashboardTile icon="◎" label={s.eKycStatus} onPress={() => requestId && setStep("status")}/>
+        <DashboardTile icon="?" label={s.helpFaq}/>
       </View>
       <View style={styles.dashboardNav}>
-        <DashboardNav icon="⌂" label="Home" active/><DashboardNav icon="♧" label={s.notifications}/><DashboardNav icon="◉" label={language==="en"?"Profile":"ಪ್ರೊಫೈಲ್"}/>
+        <DashboardNav icon="⌂" label={s.home} active/><DashboardNav icon="♧" label={s.notifications}/><DashboardNav icon="◉" label={s.profile}/>
       </View>
       <Primary label={s.getStarted} onPress={() => setStep("ration")} />
     </Card>
@@ -204,7 +204,7 @@ export default function HomeScreen() {
 }
 function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}><Text style={styles.splashNamma}>Namma</Text><Text style={styles.splashKyc}> KYC</Text></Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
-function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><SvgUri width="38" height="34" uri={KARNATAKA_EMBLEM_URI}/></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
+function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <Text style={styles.stepLabel}>{s.step} {current} {s.of} 3</Text>}
 
