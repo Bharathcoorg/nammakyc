@@ -24,6 +24,7 @@ A standalone browser simulation is available under `demo/`. It never requests or
 
 - Demo source: `demo/`
 - Journey documentation: `docs/product/user-journey.md`
+- Aadhaar provider boundary: `docs/architecture/aadhaar-provider-boundary.md`
 - Interactive demo notes: `docs/product/interactive-demo.md`
 
 GitHub Pages is prepared on the dedicated `gh-pages` branch. The branch contains only the static showcase files and does not contain the application backend or Android source. The expected project site is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
@@ -40,6 +41,12 @@ In GitHub, open **Settings → Pages**. Under **Build and deployment**, choose *
 - infrastructure/ — Cloudflare deployment configuration
 - tests/ — integration, security, load, and failure testing
 - docs/ — technical documentation
+
+## Canonical verification flow
+
+`Language → Welcome → Ration-card/household → Member → Consent → Voice preparation → Aadhaar provider boundary → Authentication result → PDS e-KYC → Status → Completion`
+
+Face Authentication / Face RD and OTP are provider-controlled Aadhaar authentication methods. Namma KYC does not implement custom face recognition, custom liveness, or a Namma KYC OTP service. The public build uses mock providers; a production adapter requires the applicable authorized Aadhaar/PDS integrations and current technical/operational approvals.
 
 ## Integration model
 
