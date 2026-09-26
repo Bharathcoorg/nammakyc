@@ -82,7 +82,8 @@ components:
         memberReference: {type: string, minLength: 1, maxLength: 128}
         consentReference: {type: string, minLength: 1, maxLength: 128}
         consentPolicyVersion: {type: string, minLength: 1, maxLength: 64}
-        consentLanguage: {type: string, enum: [en, kn]}\n        authenticationMethod: {type: string, enum: [face, otp], default: face}
+        consentLanguage: {type: string, enum: [en, kn]}
+        authenticationMethod: {type: string, enum: [face, otp, otp_face], default: otp_face}
     Household:
       type: object
       required: [householdReference, members]
@@ -107,6 +108,7 @@ components:
         status:
           type: string
           enum: [received, validating, aadhaar_pending, aadhaar_authenticating, aadhaar_authenticated, pds_processing, success, retrying, failed]
+        authenticationMethod: {type: string, enum: [face, otp, otp_face]}
         reference: {type: string, minLength: 1, maxLength: 128}
     Error:
       type: object
