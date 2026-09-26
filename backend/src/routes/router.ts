@@ -81,20 +81,24 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
   const key=request.headers.get("Idempotency-Key")??"";
   try{
    await authorize(env,"kyc.create",request);
-   const body=await request.json() as Record<string,unknown>;
+   const body=await request.json() as unknown;
+   if(!body || typeof body!=="object" || Array.isArray(body)) throw new AppError("INVALID_REQUEST","Invalid JSON request body",400);
+   const payload=body as Record<string,unknown>;
    const fields=["householdReference","memberReference","consentReference"] as const;
    for(const field of fields){
-    const value=body[field];
+    const value=payload[field];
     if(typeof value!=="string"||value.trim().length<1||value.trim().length>128)throw new AppError("INVALID_REQUEST","Invalid KYC request",400);
    }
    if(key.trim().length<16||key.trim().length>128)throw new AppError("INVALID_REQUEST","Invalid idempotency key",400);
-   const policyVersion=typeof body.consentPolicyVersion==="string"?body.consentPolicyVersion.trim():undefined;
-   const language=body.consentLanguage==="en"||body.consentLanguage==="kn"?body.consentLanguage:undefined;
-   if(policyVersion&&policyVersion.length>64)throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
+   const policyVersion=typeof payload.consentPolicyVersion==="string"?payload.consentPolicyVersion.trim():undefined;
+   if(payload.consentPolicyVersion!==undefined&&(!policyVersion||policyVersion.length>64))throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
+   const language=payload.consentLanguage==="en"||payload.consentLanguage==="kn"?payload.consentLanguage:undefined;
+   if(payload.consentLanguage!==undefined&&!language)throw new AppError("INVALID_REQUEST","Invalid consent language",400);
+   
    const input={
-    householdReference:(body.householdReference as string).trim(),
-    memberReference:(body.memberReference as string).trim(),
-    consentReference:(body.consentReference as string).trim(),
+    householdReference:(payload.householdReference as string).trim(),
+    memberReference:(payload.memberReference as string).trim(),
+    consentReference:(payload.consentReference as string).trim(),
     consentPolicyVersion:policyVersion,
     consentLanguage:language,
     idempotencyKey:key
@@ -110,7 +114,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    }
    return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders});
   }catch(error){
-   const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
+   const e=error instanceof AppError?error:error instanceof SyntaxError?new AppError("INVALID_REQUEST","Invalid JSON request body",400):new AppError("INTERNAL_ERROR","Internal server error",500);
    return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
   }
  }
