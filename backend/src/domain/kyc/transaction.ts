@@ -9,6 +9,7 @@ export interface KycTransaction {
   createdAt: string;
   updatedAt: string;
   providerReference?: string;
+  processingClaimId?: string;
 }
 
 export function createTransaction(

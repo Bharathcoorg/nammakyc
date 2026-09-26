@@ -10,7 +10,7 @@ export class D1TransactionRepository implements TransactionRepository{
 
  async get(requestId:string){
   const r=await this.db.prepare("SELECT * FROM kyc_transactions WHERE request_id = ?").bind(requestId).first();
-  return r?{requestId:r.request_id,householdReference:r.household_reference,memberReference:r.member_reference,status:r.status,createdAt:r.created_at,updatedAt:r.updated_at,providerReference:r.provider_reference??undefined}:undefined;
+  return r?{requestId:r.request_id,householdReference:r.household_reference,memberReference:r.member_reference,status:r.status,createdAt:r.created_at,updatedAt:r.updated_at,providerReference:r.provider_reference??undefined,processingClaimId:r.processing_claim_id??undefined}:undefined;
  }
 
  async getIdempotency(key:string){
@@ -37,10 +37,17 @@ export class D1TransactionRepository implements TransactionRepository{
   }
  }
 
- async claimForProcessing(requestId:string,nowIso:string,staleBeforeIso:string){
+ async claimForProcessing(requestId:string,claimId:string,nowIso:string,staleBeforeIso:string){
   const result=await this.db.prepare(
-   "UPDATE kyc_transactions SET status='authenticating', updated_at=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('authenticating','processing') AND updated_at < ?))"
-  ).bind(nowIso,requestId,staleBeforeIso).run();
+   "UPDATE kyc_transactions SET status='authenticating', updated_at=?, processing_claim_id=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('authenticating','processing') AND updated_at < ?))"
+  ).bind(nowIso,claimId,requestId,staleBeforeIso).run();
+  return (result.meta?.changes??0) === 1;
+ }
+
+ async renewProcessingClaim(requestId:string,claimId:string,nowIso:string){
+  const result=await this.db.prepare(
+   "UPDATE kyc_transactions SET updated_at=? WHERE request_id=? AND processing_claim_id=? AND status IN ('authenticating','processing')"
+  ).bind(nowIso,requestId,claimId).run();
   return (result.meta?.changes??0) === 1;
  }
 
@@ -49,8 +56,12 @@ export class D1TransactionRepository implements TransactionRepository{
   return result.meta?.changes??0;
  }
 
- async update(tx:KycTransaction){
-  await this.db.prepare("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=? WHERE request_id=?")
-   .bind(tx.status,tx.updatedAt,tx.providerReference??null,tx.householdReference,tx.memberReference,tx.requestId).run();
+ async update(tx:KycTransaction,processingClaimId?:string){
+  const result = processingClaimId !== undefined
+   ? await this.db.prepare("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=?,processing_claim_id=? WHERE request_id=? AND processing_claim_id=?")
+      .bind(tx.status,tx.updatedAt,tx.providerReference??null,tx.householdReference,tx.memberReference,tx.processingClaimId??null,tx.requestId,processingClaimId).run()
+   : await this.db.prepare("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=?,processing_claim_id=? WHERE request_id=? AND processing_claim_id IS NULL")
+      .bind(tx.status,tx.updatedAt,tx.providerReference??null,tx.householdReference,tx.memberReference,tx.processingClaimId??null,tx.requestId).run();
+  return (result.meta?.changes??0) === 1;
  }
 }

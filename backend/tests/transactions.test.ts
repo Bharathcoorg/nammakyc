@@ -36,7 +36,22 @@ describe("TransactionService",()=>{
   await new Promise(resolve=>setTimeout(resolve,0));
   const second=service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-concurrent"});
   await new Promise(resolve=>setTimeout(resolve,0));
-  expect(await service.get(created.requestId)).toMatchObject({status:"authenticating"});expect(authCalls).toBe(1);
+  expect(await service.get(created.requestId)).toMatchObject({status:"authenticating",processingClaimId:expect.any(String)});expect(authCalls).toBe(1);
   releaseAuth();await expect(first).resolves.toMatchObject({status:"success"});await expect(second).resolves.toMatchObject({status:"authenticating"});expect(authCalls).toBe(1);
+ });
+});
+
+
+describe("processing claim fencing",()=>{
+ it("does not let a stale worker overwrite a newer claim",async()=>{
+  const repository=new InMemoryTransactionRepository();
+  const service=new TransactionService(repository,pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-fence"})},{submit:async()=>({success:true,providerReference:"kyc-fence"})});
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-fence",idempotencyKey:"fencing-key-12345"});
+  const first=await repository.claimForProcessing(created.requestId,"claim-old","2026-09-26T12:00:00.000Z","2026-09-26T11:59:00.000Z");
+  const second=await repository.claimForProcessing(created.requestId,"claim-new","2026-09-26T12:01:00.000Z","2026-09-26T12:00:30.000Z");
+  expect(first).toBe(true); expect(second).toBe(true);
+  const stale=await repository.update({...created,status:"failed",updatedAt:"2026-09-26T12:01:01.000Z",processingClaimId:undefined},"claim-old");
+  expect(stale).toBe(false);
+  expect((await repository.get(created.requestId))?.processingClaimId).toBe("claim-new");
  });
 });

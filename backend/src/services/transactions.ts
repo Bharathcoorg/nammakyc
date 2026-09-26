@@ -62,8 +62,8 @@ export class TransactionService{
   const initial=await this.repository.get(input.transactionId);
   if(!initial)throw new AppError("NOT_FOUND","KYC transaction not found",404);
   if(initial.status==="success"||initial.status==="failed")return initial;
-  const now=new Date(); const nowIso=now.toISOString(); const staleBeforeIso=new Date(now.getTime()-processingLeaseMs).toISOString();
-  const claimed=await this.repository.claimForProcessing(input.transactionId,nowIso,staleBeforeIso);
+  const now=new Date(); const nowIso=now.toISOString(); const staleBeforeIso=new Date(now.getTime()-processingLeaseMs).toISOString(); const claimId=crypto.randomUUID();
+  const claimed=await this.repository.claimForProcessing(input.transactionId,claimId,nowIso,staleBeforeIso);
   if(!claimed){const current=await this.repository.get(input.transactionId);if(!current)throw new AppError("NOT_FOUND","KYC transaction not found",404);return current;}
   let transaction=(await this.repository.get(input.transactionId))!;
   try{
@@ -72,15 +72,21 @@ export class TransactionService{
    const auth=await guarded(aadhaarBreaker,signal=>this.aadhaar.startAuthentication({transactionId:transaction.requestId,memberReference:input.memberReference,consentReference:input.consentReference},signal));
    if(!auth.accepted||!auth.providerReference)throw new AppError("AUTHENTICATION_FAILED","Authentication was not accepted",502);
    this.emit({event:"authentication.completed",requestId:transaction.requestId,occurredAt:new Date().toISOString(),status:transaction.status,provider:"aadhaar",durationMs:Date.now()-authStartedAt});
-   transaction=transitionTransaction(transaction,"processing");transaction.providerReference=auth.providerReference;await this.repository.update(transaction);
+   transaction=transitionTransaction(transaction,"processing");transaction.providerReference=auth.providerReference;transaction.processingClaimId=claimId;
+   if(!(await this.repository.update(transaction,claimId))) return (await this.repository.get(input.transactionId))!;
+
+   if(!(await this.repository.renewProcessingClaim(input.transactionId,claimId,new Date().toISOString()))) return (await this.repository.get(input.transactionId))!;
    const kycStartedAt=Date.now();
    const result=await guarded(kycBreaker,signal=>this.kyc.submit({transactionId:transaction.requestId,memberReference:input.memberReference,authenticationReference:auth.providerReference!},signal));
    if(!result.success)throw new AppError("UPSTREAM_UNAVAILABLE","KYC provider did not complete the request",502);
    this.emit({event:"kyc.submission.completed",requestId:transaction.requestId,occurredAt:new Date().toISOString(),status:transaction.status,provider:"kyc",durationMs:Date.now()-kycStartedAt});
-   transaction=transitionTransaction(transaction,"success");transaction.providerReference=result.providerReference??auth.providerReference;await this.repository.update(transaction);
+   transaction=transitionTransaction(transaction,"success");transaction.providerReference=result.providerReference??auth.providerReference;transaction.processingClaimId=undefined;
+   if(!(await this.repository.update(transaction,claimId))) return (await this.repository.get(input.transactionId))!;
+
    this.emit({event:"transaction.succeeded",requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status});return transaction;
   }catch(error){
-   const retryable=isRetryableKycError(error);transaction=transitionTransaction(transaction,retryable?"retrying":"failed");await this.repository.update(transaction);
+   const retryable=isRetryableKycError(error);transaction=transitionTransaction(transaction,retryable?"retrying":"failed");transaction.processingClaimId=undefined;
+   if(!(await this.repository.update(transaction,claimId))) return (await this.repository.get(input.transactionId))!;
    this.emit({event:retryable?"transaction.retrying":(error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"authentication.failed":"transaction.failed"),requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status,provider:error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"aadhaar":undefined,errorCode:safeErrorCode(error)});
    throw error;
   }

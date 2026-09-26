@@ -23,9 +23,9 @@ class FakeD1 {
       },
       async run() {
         if (query.includes("UPDATE kyc_transactions SET status='authenticating'")) {
-          const key = String(values[1]);
+          const key = String(values[2]);
           const row = self.transactions.get(key);
-          const staleBefore = String(values[2]);
+          const staleBefore = String(values[3]);
           const claimable = row && (
             row.status === "validating" ||
             row.status === "retrying" ||
@@ -34,6 +34,23 @@ class FakeD1 {
           if (!claimable) return { meta: { changes: 0 } };
           row.status = "authenticating";
           row.updated_at = values[0];
+          row.processing_claim_id = values[1];
+          return { meta: { changes: 1 } };
+        }
+        if (query.includes("UPDATE kyc_transactions SET updated_at=? WHERE request_id=? AND processing_claim_id=?")) {
+          const row = self.transactions.get(String(values[1]));
+          if (!row || row.processing_claim_id !== values[2]) return { meta: { changes: 0 } };
+          row.updated_at = values[0];
+          return { meta: { changes: 1 } };
+        }
+        if (query.includes("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=?,processing_claim_id=?")) {
+          const key = String(values[6]);
+          const row = self.transactions.get(key);
+          const claim = String(values[7] ?? "");
+          const currentClaim = row?.processing_claim_id == null ? "" : String(row.processing_claim_id);
+          const suppliedClaim = query.includes("AND processing_claim_id IS NULL") ? "" : claim;
+          if (!row || currentClaim !== suppliedClaim) return { meta: { changes: 0 } };
+          row.status = values[0]; row.updated_at = values[1]; row.provider_reference = values[2]; row.household_reference = values[3]; row.member_reference = values[4]; row.processing_claim_id = values[5] ?? null;
           return { meta: { changes: 1 } };
         }
         if (query.includes("DELETE FROM idempotency_keys")) {
@@ -61,7 +78,7 @@ class FakeD1 {
         if (query.includes("INSERT INTO kyc_transactions")) {
           const key = String(values[0]);
           if (this.transactions.has(key)) throw new Error("UNIQUE constraint failed");
-          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[4], updated_at:values[5], provider_reference:values[6] });
+          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[4], updated_at:values[5], provider_reference:values[6], processing_claim_id:values[7] });
         } else if (query.includes("INSERT INTO idempotency_keys")) {
           const key = String(values[0]);
           if (this.idempotency.has(key)) throw new Error("UNIQUE constraint failed");

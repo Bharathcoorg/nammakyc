@@ -6,8 +6,9 @@ export interface TransactionRepository {
   get(requestId: string): Promise<KycTransaction | undefined>;
   getIdempotency(key: string): Promise<IdempotencyRecord | undefined>;
   createIfAbsent(transaction: KycTransaction, record: IdempotencyRecord, consent: ConsentArtifact): Promise<boolean>;
-  claimForProcessing(requestId: string, nowIso: string, staleBeforeIso: string): Promise<boolean>;
-  update(transaction: KycTransaction): Promise<void>;
+  claimForProcessing(requestId: string, claimId: string, nowIso: string, staleBeforeIso: string): Promise<boolean>;
+  renewProcessingClaim(requestId: string, claimId: string, nowIso: string): Promise<boolean>;
+  update(transaction: KycTransaction, processingClaimId?: string): Promise<boolean>;
   purgeIdempotencyBefore(cutoffIso: string): Promise<number>;
 }
 
@@ -27,7 +28,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     return true;
   }
 
-  async claimForProcessing(requestId: string, nowIso: string, staleBeforeIso: string) {
+  async claimForProcessing(requestId: string, claimId: string, nowIso: string, staleBeforeIso: string) {
     const current = this.transactions.get(requestId);
     if (!current) return false;
     const claimable =
@@ -35,11 +36,25 @@ export class InMemoryTransactionRepository implements TransactionRepository {
       current.status === "retrying" ||
       ((current.status === "authenticating" || current.status === "processing") && current.updatedAt < staleBeforeIso);
     if (!claimable) return false;
-    this.transactions.set(requestId, { ...current, status: "authenticating", updatedAt: nowIso });
+    this.transactions.set(requestId, { ...current, status: "authenticating", updatedAt: nowIso, processingClaimId: claimId });
     return true;
   }
 
-  async update(transaction: KycTransaction) { this.transactions.set(transaction.requestId, transaction); }
+  async renewProcessingClaim(requestId: string, claimId: string, nowIso: string) {
+    const current = this.transactions.get(requestId);
+    if (!current || current.processingClaimId !== claimId) return false;
+    this.transactions.set(requestId, { ...current, updatedAt: nowIso });
+    return true;
+  }
+
+  async update(transaction: KycTransaction, processingClaimId?: string) {
+    const current = this.transactions.get(transaction.requestId);
+    if (!current) return false;
+    if (processingClaimId !== undefined && current.processingClaimId !== processingClaimId) return false;
+    if (processingClaimId === undefined && current.processingClaimId !== undefined) return false;
+    this.transactions.set(transaction.requestId, transaction);
+    return true;
+  }
 
   async purgeIdempotencyBefore(cutoffIso: string) {
     let removed = 0;
