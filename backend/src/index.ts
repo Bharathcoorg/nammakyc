@@ -36,11 +36,10 @@ export default {
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
       const audit = env.AUDIT ?? new ConsoleAuditSink();
       const metrics = env.METRICS ?? new ConsoleMetricsSink();
-      return responseWithHeaders(
-        await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: metrics }) ??
-          Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
-        id
-      );
+      const response = await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: metrics }) ??
+        Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 });
+      void metrics.increment("http.responses", { route: new URL(request.url).pathname, status: response.status });
+      return responseWithHeaders(response, id);
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
       const status = message === "JSON content type required" ? 415 : message === "Request body too large" ? 413 : 500;
