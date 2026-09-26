@@ -7,21 +7,24 @@ The Android application and standalone browser demo use the supplied Namma KYC r
 The first citizen-facing screen is the Karnataka-branded splash:
 
 - Karnataka state emblem
-- Government of Karnataka
+- Karnataka-inspired reference styling (not an official government service)
 - Namma KYC wordmark
 - Digital-identity / citizen-first positioning
 - Karnataka/Vidhana Soudha visual treatment
 - primary Get Started action
 
-The following journey follows the reference board's major screens:
+The following journey follows the reference board while preserving the real integration boundaries:
 
 1. Home / citizen dashboard
 2. Select Member
-3. Aadhaar Authentication boundary
-4. Processing e-KYC
-5. e-KYC Completed Successfully
-6. e-KYC Status
-7. My Profile / support
+3. Consent & information
+4. Voice / preparation
+5. Aadhaar provider boundary
+6. Authentication result
+7. PDS e-KYC processing
+8. e-KYC completion
+9. e-KYC Status
+10. My Profile / support
 
 English and Kannada are separate complete-language experiences. The visual composition remains consistent between them.
 
@@ -37,7 +40,7 @@ The reference board is a visual product concept. The implementation must not tur
 
 ## Karnataka emblem
 
-The UI uses the Karnataka state emblem as a government-identity visual reference. The emblem source and licensing/insignia restrictions must be reviewed before any authorized production branding is shipped.
+The UI may use Karnataka-inspired visual references for the concept design, but the public project must not imply government ownership, endorsement, or authorization. The emblem source and licensing/insignia restrictions must be reviewed before any authorized production branding is shipped.
 
 Source: Wikimedia Commons, “Seal of Karnataka”, which identifies it as the state emblem of Karnataka and documents the source/licensing information:
 https://commons.wikimedia.org/wiki/File:Seal_of_Karnataka.svg
