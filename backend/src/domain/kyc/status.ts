@@ -1,8 +1,10 @@
 export const KYC_STATUSES = [
   "received",
   "validating",
-  "authenticating",
-  "processing",
+  "aadhaar_pending",
+  "aadhaar_authenticating",
+  "aadhaar_authenticated",
+  "pds_processing",
   "success",
   "retrying",
   "failed"
