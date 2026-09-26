@@ -24,7 +24,7 @@ describe("TransactionService",()=>{
  it("moves retryable provider failures to retrying",async()=>{
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>{throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503)}},{submit:async()=>({success:true,providerReference:"kyc-1"})});
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-1",idempotencyKey:"retryable-key-12345"});
-  await expect(service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-1"})).rejects.toMatchObject({code:"UPSTREAM_UNAVAILABLE"});
+  await expect(service.process({transactionId:created.requestId})).rejects.toMatchObject({code:"UPSTREAM_UNAVAILABLE"});
   expect((await service.get(created.requestId))?.status).toBe("retrying");
  });
  it("rejects reusing an idempotency key for different input",async()=>{
@@ -44,9 +44,9 @@ describe("TransactionService",()=>{
   const kyc:KycProvider={submit:async()=>({success:true,providerReference:"kyc-concurrent"})};
   const repository=new InMemoryTransactionRepository();const service=new TransactionService(repository,pds,aadhaar,kyc);
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-concurrent",idempotencyKey:"concurrent-key-12345"});
-  const first=service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-concurrent"});
+  const first=service.process({transactionId:created.requestId});
   await new Promise(resolve=>setTimeout(resolve,0));
-  const second=service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-concurrent"});
+  const second=service.process({transactionId:created.requestId});
   await new Promise(resolve=>setTimeout(resolve,0));
   expect(await service.get(created.requestId)).toMatchObject({status:"aadhaar_authenticating",processingClaimId:expect.any(String)});expect(authCalls).toBe(1);
   releaseAuth();await expect(first).resolves.toMatchObject({status:"success"});await expect(second).resolves.toMatchObject({status:"aadhaar_authenticating"});expect(authCalls).toBe(1);
