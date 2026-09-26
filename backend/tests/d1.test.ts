@@ -22,7 +22,7 @@ class FakeD1 {
         return undefined;
       },
       async run() {
-        if (query.includes("UPDATE kyc_transactions SET status='authenticating'")) {
+        if (query.includes("UPDATE kyc_transactions SET updated_at=?,processing_claim_id=?")) {
           const key = String(values[2]);
           const row = self.transactions.get(key);
           const staleBefore = String(values[3]);
@@ -32,7 +32,7 @@ class FakeD1 {
             ((row.status === "authenticating" || row.status === "processing") && String(row.updated_at) < staleBefore)
           );
           if (!claimable) return { meta: { changes: 0 } };
-          row.status = "authenticating";
+          row.updated_at = values[0];
           row.updated_at = values[0];
           row.processing_claim_id = values[1];
           return { meta: { changes: 1 } };
@@ -43,14 +43,14 @@ class FakeD1 {
           row.updated_at = values[0];
           return { meta: { changes: 1 } };
         }
-        if (query.includes("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=?,processing_claim_id=?")) {
-          const key = String(values[6]);
+        if (query.includes("UPDATE kyc_transactions SET status=?,updated_at=?,authentication_method=?")) {
+          const key = String(values[8]);
           const row = self.transactions.get(key);
-          const claim = String(values[7] ?? "");
+          const claim = String(values[9] ?? "");
           const currentClaim = row?.processing_claim_id == null ? "" : String(row.processing_claim_id);
           const suppliedClaim = query.includes("AND processing_claim_id IS NULL") ? "" : claim;
           if (!row || currentClaim !== suppliedClaim) return { meta: { changes: 0 } };
-          row.status = values[0]; row.updated_at = values[1]; row.provider_reference = values[2]; row.household_reference = values[3]; row.member_reference = values[4]; row.processing_claim_id = values[5] ?? null;
+          row.status = values[0]; row.updated_at = values[1]; row.authentication_method = values[2]; row.aadhaar_session_reference = values[3]; row.aadhaar_authentication_reference = values[4]; row.pds_transaction_reference = values[5]; row.household_reference = values[6]; row.member_reference = values[7]; row.processing_claim_id = values[8] ?? null;
           return { meta: { changes: 1 } };
         }
         if (query.includes("DELETE FROM idempotency_keys")) {
@@ -78,7 +78,7 @@ class FakeD1 {
         if (query.includes("INSERT INTO kyc_transactions")) {
           const key = String(values[0]);
           if (this.transactions.has(key)) throw new Error("UNIQUE constraint failed");
-          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[4], updated_at:values[5], provider_reference:values[6], processing_claim_id:values[7] });
+          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[5], updated_at:values[6], authentication_method:values[4], created_at:values[5], updated_at:values[6], aadhaar_session_reference:values[7], aadhaar_authentication_reference:values[8], pds_transaction_reference:values[9], processing_claim_id:values[10] });
         } else if (query.includes("INSERT INTO idempotency_keys")) {
           const key = String(values[0]);
           if (this.idempotency.has(key)) throw new Error("UNIQUE constraint failed");
@@ -100,7 +100,7 @@ class FakeD1 {
 }
 
 function transaction(requestId = "request-0000000001"): KycTransaction {
-  return { requestId, householdReference:"RC-1", memberReference:"M-1", status:"validating", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:00.000Z" };
+  return { requestId, householdReference:"RC-1", memberReference:"M-1", status:"aadhaar_pending", authenticationMethod:"face", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:00.000Z" };
 }
 function consent(requestId: string, reference = "consent-1"): ConsentArtifact {
   return { consentReference:reference, purpose:"ration-card-e-kyc", policyVersion:"2026-09", language:"en", capturedAt:"2026-09-26T12:00:00.000Z", transactionReference:requestId };
@@ -154,7 +154,7 @@ describe("D1TransactionRepository", () => {
     expect(await repository.claimForProcessing(tx.requestId, "claim-2", "2026-09-26T12:00:02.000Z", "2026-09-26T11:59:32.000Z")).toBe(false);
     expect(await repository.renewProcessingClaim(tx.requestId, "wrong-claim", "2026-09-26T12:00:03.000Z")).toBe(false);
     expect(await repository.renewProcessingClaim(tx.requestId, "claim-1", "2026-09-26T12:00:03.000Z")).toBe(true);
-    expect((await repository.get(tx.requestId))?.status).toBe("authenticating");
+    expect((await repository.get(tx.requestId))?.status).toBe("aadhaar_pending");
     expect((await repository.get(tx.requestId))?.processingClaimId).toBe("claim-1");
   });
 
