@@ -15,7 +15,9 @@ const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, a
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
   const [step, setStep] = useState<Step>("splash");
-  const [rationCard, setRationCard] = useState("");\n  const [aadhaarNumber, setAadhaarNumber] = useState("");\n  const [otp, setOtp] = useState("");
+  const [rationCard, setRationCard] = useState("");
+  const [aadhaarNumber, setAadhaarNumber] = useState("");
+  const [otp, setOtp] = useState("");
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
   const [consentRead, setConsentRead] = useState(false);
