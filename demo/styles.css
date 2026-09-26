@@ -121,3 +121,57 @@ body{font-family:Inter,"Noto Sans","Noto Sans Kannada",system-ui,-apple-system,B
 /* Language-safe layout: keep long Kannada labels readable without collisions. */
 .stage-copy h1,.screen-head b,.screen-card h2,.screen-card p{overflow-wrap:anywhere;word-break:normal}.family-art img{object-fit:contain!important;padding:0 18px}.member-row .member-copy{min-width:0}.details>div{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.details code,.details b{min-width:0;overflow-wrap:anywhere}.guide-button{flex:0 0 auto;max-width:118px}.splash-tag,.splash-gov,.splash h1{overflow-wrap:anywhere}.journey h2{overflow-wrap:anywhere}
 @media(max-width:500px){.stage-copy h1{line-height:1.04}.family-art img{padding:0 10px}.details>div{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}}
+
+/* Screen-by-screen QA: stable wrapping, row structure, and small-device behavior. */
+.screen-card{min-width:0;overflow:visible}
+.screen-card>*{min-width:0}
+.feature-row>div{min-width:0;flex:1}
+.feature-row b,.feature-row small{white-space:normal;overflow-wrap:anywhere}
+.member-row{display:grid;grid-template-columns:40px minmax(0,1fr) 24px;align-items:center;gap:10px}
+.member-row .member-copy{min-width:0;overflow:hidden}
+.member-row .member-copy b,.member-row .member-copy small{white-space:normal;overflow-wrap:anywhere}
+.member-row>i{width:24px;text-align:center;justify-self:end}
+.consent-list{display:grid;gap:8px}
+.consent-list p{margin:0;padding:10px 11px;border:1px solid #e2e9e4;border-radius:13px;background:#fbfdfc;font-size:11px;line-height:16px;overflow-wrap:anywhere}
+.guidance-head{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #edf1ee}
+.guidance-head>div{min-width:0;flex:1}
+.guidance-head small{display:block;margin-top:3px;font-size:10px;line-height:15px;color:var(--muted)}
+.guide-button{flex:0 0 auto;max-width:112px;min-height:40px;padding:8px 10px;border:1px solid #b9d8c2;border-radius:12px;background:#e7f3ec;color:var(--green);font:inherit;font-size:10px;font-weight:800;white-space:normal}
+.instruction-list{display:grid;gap:0}
+.instruction-list p{display:grid;grid-template-columns:24px minmax(0,1fr);align-items:start;gap:8px;margin:0;padding:8px 0;font-size:10.5px;line-height:15px;border-bottom:1px solid #edf1ee}
+.instruction-list p>b{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:#e7f3ec;color:var(--green);font-size:10px}
+.details{display:block;margin-top:4px;padding:0;border:1px solid #dce8e0;border-radius:14px;background:#f5f9f6;overflow:hidden}
+.detail-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);align-items:start;gap:12px;padding:12px 13px;border-bottom:1px solid #dce8e0}
+.detail-row:last-child{border-bottom:0}
+.detail-row small{min-width:0;font-size:9px;line-height:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;overflow-wrap:anywhere}
+.detail-row code,.detail-row b{min-width:0;font-size:10.5px;line-height:15px;color:var(--green);font-weight:800;text-align:right;overflow-wrap:anywhere;word-break:break-word}
+.status-member{grid-template-columns:40px minmax(0,1fr) 24px}
+.phone-screen{overflow-x:hidden;overflow-y:auto}
+.soudha-photo{height:214px;object-position:center 48%}
+.splash{justify-content:flex-start}
+.splash>.primary{margin-top:8px}
+@media(max-width:500px){
+  .phone-screen{overflow-x:hidden;overflow-y:auto}
+  .splash{min-height:640px;padding:8px 14px 14px}
+  .splash-top{height:64px}
+  .splash-top .karnataka-emblem{width:70px;height:62px}
+  .splash-gov{font-size:12.5px}
+  .splash h1{font-size:34px;line-height:38px}
+  .splash-tag{font-size:11.5px;line-height:17px;margin-bottom:10px}
+  .soudha-photo{height:184px;border-radius:19px}
+  .splash-values{padding:12px 0 10px}
+  .splash-values b{font-size:9.5px;line-height:13px}
+  .detail-row{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:8px;padding:11px 10px}
+  .detail-row code,.detail-row b{font-size:10px}
+  .screen-card{padding:16px;gap:10px}
+}
+@media(max-width:360px){
+  .phone-screen{padding-left:11px;padding-right:11px}
+  .screen-card{padding:14px;border-radius:19px}
+  .screen-head b{font-size:18px}
+  .screen-card>p{font-size:12px;line-height:18px}
+  .member-row{grid-template-columns:36px minmax(0,1fr) 20px;gap:8px}
+  .member-row .avatar{width:36px;height:36px}
+  .guidance-head{gap:7px}
+  .guide-button{max-width:92px;font-size:9px}
+}
