@@ -9,8 +9,8 @@ import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "processing" | "status" | "success";
-const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, processing: 4, status: 4, success: 4 };
+type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "authenticating" | "authResult" | "pdsProcessing" | "processing" | "status" | "success";
+const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, authenticating: 3, authResult: 3, pdsProcessing: 4, processing: 4, status: 4, success: 4 };
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
@@ -61,12 +61,12 @@ export default function HomeScreen() {
         headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language, authenticationMethod: "face" }),
       });
-      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "processing") setStep("processing");
+      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "aadhaar_authenticating" || response.status === "aadhaar_pending") setStep("authenticating");\n      if (response.status === "aadhaar_authenticated") setStep("authResult");\n      if (response.status === "pds_processing" || response.status === "processing") setStep("pdsProcessing");
       let status = response;
       for (let attempt = 0; attempt < 20; attempt++) {
-        if (status.status === "success" || status.status === "failed") break;
+        if (status.status === "success" || status.status === "failed") break;\n        if (status.status === "aadhaar_authenticating" || status.status === "aadhaar_pending") setStep("authenticating");\n        else if (status.status === "aadhaar_authenticated") setStep("authResult");\n        else if (status.status === "pds_processing") setStep("pdsProcessing");
         await new Promise(resolve => setTimeout(resolve, 750));
-        status = await getKycStatus<KycResponse>(response.requestId); setRequestStatus(status.status); if (status.status === "processing") setStep("processing");
+        status = await getKycStatus<KycResponse>(response.requestId); setRequestStatus(status.status); if (status.status === "aadhaar_authenticating" || status.status === "aadhaar_pending") setStep("authenticating"); else if (status.status === "aadhaar_authenticated") setStep("authResult"); else if (status.status === "pds_processing") setStep("pdsProcessing");
       }
       if (status.status === "success") { setReference(status.reference ?? status.requestId); setStep("success"); }
       else setStep("status");
@@ -179,7 +179,7 @@ export default function HomeScreen() {
       <Primary label={s.continueToAadhaar} onPress={() => { void stopGuidance(); setStep("auth"); }} />
     </Card>}
 
-    {step === "processing" && <Card>
+    {(step === "authenticating" || step === "authResult" || step === "pdsProcessing" || step === "processing") && <Card>
       <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{s.processing}</Text><Text style={styles.muted}>{s.processingText}</Text>
       <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={s.secureTitle} text={s.processingNote}/>
     </Card>}
@@ -198,11 +198,11 @@ export default function HomeScreen() {
     </Card>}
 
     {error ? <View accessibilityRole="alert" style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
-    {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
+    {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "authenticating"&&step !== "authResult"&&step !== "pdsProcessing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
     <Text style={styles.footer}>{s.demoNote}</Text>
   </ScrollView></SafeAreaView>;
 }
-function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}><Text style={styles.splashNamma}>Namma</Text><Text style={styles.splashKyc}> KYC</Text></Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
+function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
 function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
