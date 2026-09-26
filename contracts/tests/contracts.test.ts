@@ -9,12 +9,14 @@ describe("API contracts", () => {
     }).success).toBe(true);
   });
 
-  it("requires a sufficiently strong idempotency key", () => {
+  it("accepts consent metadata without putting the idempotency key in the body", () => {
     expect(startKycRequestSchema.safeParse({
+      householdReference: "household-01",
       memberReference: "member-01",
       consentReference: "consent-01",
-      idempotencyKey: "short"
-    }).success).toBe(false);
+      consentPolicyVersion: "2026-09",
+      consentLanguage: "kn"
+    }).success).toBe(true);
   });
 
   it("accepts a KYC status response", () => {
