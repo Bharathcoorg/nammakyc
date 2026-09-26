@@ -60,3 +60,32 @@ describe("KYC API", () => {
     expect(response?.status).toBe(500);
   });
 });
+
+
+  it("returns 400 for malformed JSON", async () => {
+    const response = await route(new Request("https://api.test/v1/kyc", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-malformed-12345"},
+      body:"{not-json"
+    }));
+    expect(response?.status).toBe(400);
+    expect((await response?.json()).error.code).toBe("INVALID_REQUEST");
+  });
+
+  it("rejects empty consent policy versions when supplied", async () => {
+    const response = await route(new Request("https://api.test/v1/kyc", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-policy-123456"},
+      body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-policy",consentPolicyVersion:""})
+    }));
+    expect(response?.status).toBe(400);
+  });
+
+  it("rejects non-object JSON request bodies", async () => {
+    const response = await route(new Request("https://api.test/v1/kyc", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-array-123456"},
+      body:JSON.stringify([])
+    }));
+    expect(response?.status).toBe(400);
+  });
