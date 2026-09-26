@@ -98,6 +98,8 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    if(payload.consentPolicyVersion!==undefined&&(!policyVersion||policyVersion.length>64))throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
    const language=payload.consentLanguage==="en"||payload.consentLanguage==="kn"?payload.consentLanguage:undefined;
    if(payload.consentLanguage!==undefined&&!language)throw new AppError("INVALID_REQUEST","Invalid consent language",400);
+   const authenticationMethod=payload.authenticationMethod==="otp"?"otp":payload.authenticationMethod==="face"||payload.authenticationMethod===undefined?"face":undefined;
+   if(!authenticationMethod)throw new AppError("INVALID_REQUEST","Invalid authentication method",400);
    
    const input={
     householdReference:(payload.householdReference as string).trim(),
@@ -105,6 +107,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
     consentReference:(payload.consentReference as string).trim(),
     consentPolicyVersion:policyVersion,
     consentLanguage:language,
+    authenticationMethod,
     idempotencyKey:key
    };
    const tx=env.QUEUE ? await transactionService.create(input) : await transactionService.start(input);
