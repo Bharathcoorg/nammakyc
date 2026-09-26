@@ -2,7 +2,7 @@ import type { KycStatus } from "./status";
 
 const transitions: Record<KycStatus, readonly KycStatus[]> = {
   received: ["validating", "failed"],
-  validating: ["authenticating", "failed"],
+  validating: ["authenticating", "retrying", "failed"],
   authenticating: ["processing", "retrying", "failed"],
   processing: ["success", "retrying", "failed"],
   success: [],
