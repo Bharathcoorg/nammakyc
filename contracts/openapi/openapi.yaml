@@ -82,7 +82,7 @@ components:
         memberReference: {type: string, minLength: 1, maxLength: 128}
         consentReference: {type: string, minLength: 1, maxLength: 128}
         consentPolicyVersion: {type: string, minLength: 1, maxLength: 64}
-        consentLanguage: {type: string, enum: [en, kn]}
+        consentLanguage: {type: string, enum: [en, kn]}\n        authenticationMethod: {type: string, enum: [face, otp], default: face}
     Household:
       type: object
       required: [householdReference, members]
@@ -101,12 +101,12 @@ components:
         kycRequired: {type: boolean}
     KycStatusResponse:
       type: object
-      required: [requestId, status]
+      required: [requestId, status, authenticationMethod]
       properties:
         requestId: {type: string, minLength: 16, maxLength: 128}
         status:
           type: string
-          enum: [received, validating, authenticating, processing, success, retrying, failed]
+          enum: [received, validating, aadhaar_pending, aadhaar_authenticating, aadhaar_authenticated, pds_processing, success, retrying, failed]
         reference: {type: string, minLength: 1, maxLength: 128}
     Error:
       type: object
