@@ -128,6 +128,27 @@ export default function HomeScreen() {
       <InfoCard title={s.secureTitle} text={s.aadhaarBoundary}/><Primary label={loading?s.processing:s.openAadhaar} onPress={authenticate} disabled={loading}/>
     </Card>}
 
+    {step === "instructions" && <Card>
+      <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.voiceTitle}</Text><Text style={styles.muted}>{s.voiceIntro}</Text>
+      <View style={styles.instructionCard}>
+        {s.voiceSteps.map((item, index) => <View key={item} style={styles.instructionRow}>
+          <View style={styles.instructionNumber}><Text style={styles.instructionNumberText}>{index + 1}</Text></View>
+          <Text style={styles.instructionText}>{item}</Text>
+        </View>)}
+      </View>
+      <View style={styles.voiceControls}>
+        <Pressable accessibilityRole="button" accessibilityLabel={voiceEnabled ? s.replayInstructions : s.enableVoice} style={styles.outlineButton} onPress={() => {
+          if (!voiceEnabled) setVoiceEnabled(true);
+          setTimeout(speakInstructions, 0);
+        }}><Text style={styles.outlineText}>🔊 {voiceEnabled ? s.replayInstructions : s.enableVoice}</Text></Pressable>
+        {voiceEnabled && <Pressable accessibilityRole="button" accessibilityLabel={s.disableVoice} onPress={() => { setVoiceEnabled(false); Speech.stop(); }}>
+          <Text style={styles.textButton}>{s.disableVoice}</Text>
+        </Pressable>}
+      </View>
+      <Text style={styles.accessibilityNote}>{s.voiceAccessibility}</Text>
+      <Primary label={s.continueToAadhaar} onPress={() => { Speech.stop(); setStep("auth"); }} />
+    </Card>}
+
     {step === "processing" && <Card>
       <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{s.processing}</Text><Text style={styles.muted}>{s.processingText}</Text>
       <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={s.secureTitle} text={s.processingNote}/>
