@@ -19,7 +19,7 @@ const EN={
   authDone:"Aadhaar verification complete",pds:"Ration-card e-KYC",processing:"Finalizing your e-KYC",
   success:"e-KYC Completed Successfully!",successText:"Your identity verification has been completed for this service.",
   reference:"Reference ID",referenceValue:"NKYC-DEMO-2026-0001",status:"Completed",service:"Ration Card e-KYC",
-  statusTitle:"e-KYC Status",submitted:"Request submitted",otpDone:"OTP verified",faceDone:"Biometric verification completed",pdsDone:"Ration-card e-KYC completed",
+  guidanceTitle:"Verification guide",guidanceIntro:"Follow these simple steps before the secure provider handoff.",playGuidance:"Play guidance",stopGuidance:"Stop guidance",statusTitle:"e-KYC Status",submitted:"Request submitted",otpDone:"OTP verified",faceDone:"Biometric verification completed",pdsDone:"Ration-card e-KYC completed",
   steps:["Welcome","Ration Card","Members","Consent","OTP","Face","Verify","Complete","Status"],demo:"DEMO",simulation:"Simulation only"
 };
 const KN={
@@ -42,7 +42,7 @@ const KN={
   authDone:"ಆಧಾರ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pds:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",processing:"ನಿಮ್ಮ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳ್ಳುತ್ತಿದೆ",
   success:"ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",successText:"ಈ ಸೇವೆಗಾಗಿ ನಿಮ್ಮ ಗುರುತು ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ.",
   reference:"ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",referenceValue:"NKYC-DEMO-2026-0001",status:"ಪೂರ್ಣಗೊಂಡಿದೆ",service:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
-  statusTitle:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",otpDone:"OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",faceDone:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pdsDone:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
+  guidanceTitle:"ಪರಿಶೀಲನೆ ಮಾರ್ಗದರ್ಶಿ",guidanceIntro:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಯುವ ಮೊದಲು ಈ ಸರಳ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.",playGuidance:"ಮಾರ್ಗದರ್ಶನ ಕೇಳಿ",stopGuidance:"ಮಾರ್ಗದರ್ಶನ ನಿಲ್ಲಿಸಿ",statusTitle:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",otpDone:"OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",faceDone:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pdsDone:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
   steps:["ಸ್ವಾಗತ","ಪಡಿತರ ಚೀಟಿ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","OTP","ಮುಖ","ಪರಿಶೀಲನೆ","ಪೂರ್ಣ","ಸ್ಥಿತಿ"],demo:"ಡೆಮೊ",simulation:"ಸಿಮ್ಯುಲೇಶನ್ ಮಾತ್ರ"
 };
 let lang="en",step=0;
@@ -50,7 +50,7 @@ const S=()=>lang==="en"?EN:KN;
 function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().app+'">'}
 function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Karnataka.png" alt="'+S().gov+'">'}
 function soudha(){return '<img class="soudha-photo" src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Government_Karnataka_8352.jpg" alt="Vidhana Soudha, Bengaluru">'}
-function family(){return '<div class="family-art"><div class="person father"></div><div class="person mother"></div><div class="person child"></div></div>'}
+function family(){return '<div class="family-art"><img src="./assets/family-illustration.svg" alt="'+S().welcomeText+'"></div>'}
 function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
 function feature(icon,title,text){return '<div class="feature-row"><span class="feature-icon '+icon+'"></span><div><b>'+title+'</b><small>'+text+'</small></div></div>'}
 function render(){
@@ -70,12 +70,12 @@ function screen(s){
  if(step===0)return '<div class="splash"><div class="splash-top"><div class="splash-spacer"></div>'+emblem()+'<button class="splash-language" id="splash-language">'+(lang==="en"?"EN":"ಕನ್ನಡ")+'</button></div><div class="splash-gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+(lang==="en"?"Secure Identity. Better Services. A Stronger Karnataka.":"ಸುರಕ್ಷಿತ ಗುರುತು. ಉತ್ತಮ ಸೇವೆಗಳು. ಸದೃಢ ಕರ್ನಾಟಕ.")+'</p>'+soudha()+'<div class="splash-values"><span>♧<b>'+(lang==="en"?"People First":"ಜನರಿಗೆ ಮೊದಲ ಆದ್ಯತೆ")+'</b></span><span>✋<b>'+(lang==="en"?"Simple Access":"ಸರಳ ಪ್ರವೇಶ")+'</b></span><span>♡<b>'+(lang==="en"?"Digital Karnataka":"ಡಿಜಿಟಲ್ ಕರ್ನಾಟಕ")+'</b></span></div>'+button(s.getStarted,1)+'<small class="independent">'+(lang==="en"?"Independent open-source citizen initiative":"ಸ್ವತಂತ್ರ ಮುಕ್ತ-ಮೂಲ ನಾಗರಿಕ ಉಪಕ್ರಮ")+'</small></div>';
  if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
  if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
- if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
+ if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span class="member-copy"><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span class="member-copy"><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
  if(step===4)return '<div class="screen-card"><div class="screen-head"><b>'+s.consent+'</b></div><p>'+s.consentText+'</p><div class="consent-list"><p>✓ '+s.consent1+'</p><p>✓ '+s.consent2+'</p><p>✓ '+s.consent3+'</p></div>'+button(s.agree,5)+'</div>';
  if(step===5)return '<div class="screen-card"><div class="screen-head"><b>'+s.otp+'</b></div><p>'+s.aadhaarText+'</p><div class="aadhaar-field">•••• •••• ••••</div><div class="otp-box"><b>✓</b><span>'+s.demoOtp+'</span></div>'+button(s.verifyOtp,6)+'</div>';
- if(step===6)return '<div class="screen-card"><div class="screen-head"><b>'+s.faceReady+'</b></div><p>'+s.faceText+'</p><div class="face-guide"><div class="face-outline"></div></div><div class="instruction-list"><p>✓ '+s.face1+'</p><p>✓ '+s.face2+'</p><p>✓ '+s.face3+'</p><p>✓ '+s.face4+'</p></div>'+button(s.ready,7)+'</div>';
+ if(step===6)return '<div class="screen-card"><div class="screen-head"><b>'+s.faceReady+'</b></div><p>'+s.faceText+'</p><div class="face-guide"><div class="face-outline"></div></div><div class="guidance-head"><div><b>'+s.guidanceTitle+'</b><small>'+s.guidanceIntro+'</small></div><button class="guide-button" id="guide-button">'+s.playGuidance+'</button></div><div class="instruction-list"><p><b>1</b>'+s.face1+'</p><p><b>2</b>'+s.face2+'</p><p><b>3</b>'+s.face3+'</p><p><b>4</b>'+s.face4+'</p></div>'+button(s.ready,7)+'</div>';
  if(step===7)return '<div class="screen-card center"><div class="capture-frame"><div class="face-outline"></div><span>'+s.captureText+'</span></div><div class="verify-title">'+s.verifying+'</div><p>'+s.wait+'</p><div class="timeline">'+[s.otpDone,s.faceDone,s.pdsDone].map((x,i)=>'<div class="timeline-row"><span class="dot '+(i<2?"done":"active")+'">'+(i<2?"✓":"•")+'</span><p>'+x+'</p></div>').join("")+'</div>'+button(s.continue,8)+'</div>';
- if(step===8)return '<div class="screen-card center success"><div class="success-check">✓</div><h2>'+s.success+'</h2><p>'+s.successText+'</p><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code><small>'+s.service+'</small><b>'+s.status+'</b></div>'+button(s.continue,9)+'</div>';
+ if(step===8)return '<div class="screen-card center success"><div class="success-check">✓</div><h2>'+s.success+'</h2><p>'+s.successText+'</p><div class="details"><div><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div><div><small>'+s.service+'</small><b>'+s.status+'</b></div></div>'+button(s.continue,9)+'</div>';
  return '<div class="screen-card"><div class="screen-head"><b>'+s.statusTitle+'</b></div><div class="status-member"><span class="avatar">A</span><b>Anitha Rao</b><small>'+s.faceDone+'</small></div><div class="timeline big">'+[s.submitted,s.otpDone,s.faceDone,s.pdsDone].map(x=>'<div class="timeline-row"><span class="dot done">✓</span><p><b>'+x+'</b></p></div>').join("")+'</div><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div>'+button(s.reset,0,"secondary")+'</div>';
 }
 function wire(){
@@ -83,5 +83,6 @@ function wire(){
  document.getElementById("language").onclick=()=>{lang=lang==="en"?"kn":"en";render()}; const splashLanguage=document.getElementById("splash-language"); if(splashLanguage)splashLanguage.onclick=()=>{lang=lang==="en"?"kn":"en";render()};
  document.getElementById("start").onclick=()=>{step=1;render()};
  document.getElementById("reset").onclick=()=>{step=0;render()};
+ const guide=document.getElementById("guide-button"); if(guide)guide.onclick=()=>{if(!("speechSynthesis" in window)){guide.textContent=S().playGuidance;return} if(speechSynthesis.speaking){speechSynthesis.cancel();guide.textContent=S().playGuidance;return} const text=[S().face1,S().face2,S().face3,S().face4].join(". "); const u=new SpeechSynthesisUtterance(text);u.lang=lang==="kn"?"kn-IN":"en-IN";u.rate=.88;u.onend=()=>guide.textContent=S().playGuidance;guide.textContent=S().stopGuidance;speechSynthesis.speak(u)};
 }
 render();
