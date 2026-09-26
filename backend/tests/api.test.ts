@@ -70,6 +70,17 @@ describe("KYC API", () => {
     expect(body.status).toBe("success");
   });
 
+  it("does not expose an Aadhaar provider reference as the public KYC reference", async () => {
+    const queue=new InMemoryKycJobQueue();
+    const response=await route(new Request("https://api.test/v1/kyc",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-public-ref-123456"},
+      body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-public-ref"})
+    }),{QUEUE:queue});
+    const body=await response?.json() as {requestId:string;reference?:string};
+    expect(response?.status).toBe(202);
+    expect(body.reference).toBeUndefined();
+  });
   it("rejects missing idempotency keys", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-1"})}));
     expect(response?.status).toBe(400);
