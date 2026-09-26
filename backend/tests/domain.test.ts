@@ -6,18 +6,23 @@ describe("KYC domain", () => {
   it("allows valid transaction transitions", () => {
     const transaction = {
       requestId: "request-1234567890123456",
+      householdReference: "RC-1",
+      authenticationMethod: "face",
       memberReference: "member-01",
       status: "received" as const,
       createdAt: "2026-09-26T00:00:00.000Z",
       updatedAt: "2026-09-26T00:00:00.000Z"
     };
 
-    expect(transitionTransaction(transaction, "validating").status).toBe("validating");\n    expect(transitionTransaction(transitionTransaction(transaction, "validating"), "aadhaar_pending").status).toBe("aadhaar_pending");
+    expect(transitionTransaction(transaction, "validating").status).toBe("validating");
+    expect(transitionTransaction(transitionTransaction(transaction, "validating"), "aadhaar_pending").status).toBe("aadhaar_pending");
   });
 
   it("rejects invalid terminal transitions", () => {
     const transaction = {
       requestId: "request-1234567890123456",
+      householdReference: "RC-1",
+      authenticationMethod: "face",
       memberReference: "member-01",
       status: "success" as const,
       createdAt: "2026-09-26T00:00:00.000Z",
