@@ -7,7 +7,7 @@ import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "language" | "welcome" | "ration" | "member" | "consent" | "auth" | "processing" | "success";
+type Step = "language" | "welcome" | "ration" | "member" | "consent" | "auth" | "processing" | "status" | "success";
 const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3 };
 
 export default function HomeScreen() {
@@ -19,6 +19,8 @@ export default function HomeScreen() {
   const [consented, setConsented] = useState(false);
   const [consentReference, setConsentReference] = useState("");
   const [reference, setReference] = useState("");
+  const [requestId, setRequestId] = useState("");
+  const [requestStatus, setRequestStatus] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const s = useMemo(() => getStrings(language), [language]);
@@ -45,16 +47,41 @@ export default function HomeScreen() {
         headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language }),
       });
+      setRequestId(response.requestId);
+      setRequestStatus(response.status);
       let status = response;
       for (let attempt = 0; attempt < 20; attempt++) {
         if (status.status === "success") break;
         if (status.status === "failed") throw new Error(s.error);
         await new Promise(resolve => setTimeout(resolve, 750));
         status = await getKycStatus<KycResponse>(response.requestId);
+        setRequestStatus(status.status);
       }
-      if (status.status !== "success") throw new Error(s.processingError);
+      if (status.status !== "success") { setStep("status"); return; }
       setReference(status.reference ?? status.requestId); setStep("success");
-    } catch { setStep("auth"); setError(s.error); } finally { setLoading(false); }
+    } catch { setStep(requestId ? "status" : "auth"); setError(s.error); } finally { setLoading(false); }
+  }
+
+
+  async function refreshStatus() {
+    if (!requestId || loading) return;
+    setError(""); setLoading(true);
+    try {
+      const result = await getKycStatus<KycResponse>(requestId);
+      setRequestStatus(result.status);
+      if (result.status === "success") {
+        setReference(result.reference ?? result.requestId);
+        setStep("success");
+      } else if (result.status === "failed") {
+        setError(s.error);
+      }
+    } catch { setError(s.error); } finally { setLoading(false); }
+  }
+
+  function resetJourney() {
+    setStep("ration"); setRationCard(""); setHousehold(null); setSelected("");
+    setConsented(false); setConsentReference(""); setRequestId("");
+    setRequestStatus(""); setReference(""); setError("");
   }
 
   const current = stepNumber[step] ?? 1;
@@ -113,15 +140,28 @@ export default function HomeScreen() {
       <View style={styles.progressTrack}><View style={styles.progressIndeterminate}/></View>
     </Card>}
 
+    {step === "status" && <Card>
+      <Text style={styles.heading}>{s.statusTitle}</Text>
+      <Text style={styles.muted}>{s.statusHint}</Text>
+      <View style={styles.referenceCard}>
+        <Text style={styles.referenceLabel}>{s.reference}</Text>
+        <Text selectable style={styles.reference}>{requestId}</Text>
+        <Text style={styles.muted}>{requestStatus || s.requestReceived}</Text>
+      </View>
+      <Primary label={loading ? s.processing : s.checkStatus} onPress={refreshStatus} disabled={loading}/>
+      <Primary label={s.newRequest} onPress={resetJourney} disabled={loading}/>
+    </Card>}
+
     {step === "success" && <Card>
       <View style={styles.successIcon}><Text style={styles.successIconText}>✓</Text></View>
       <Text style={styles.heading}>{s.success}</Text><Text style={styles.body}>{s.successText}</Text>
       <View style={styles.referenceCard}><Text style={styles.referenceLabel}>{s.reference}</Text><Text style={styles.reference}>{reference}</Text></View>
       <Text style={styles.muted}>{s.demoNote}</Text>
+      <Primary label={s.newRequest} onPress={resetJourney}/>
     </Card>}
 
     {error ? <View style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
-    {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Pressable onPress={() => setStep(step === "ration" ? "welcome" : step === "member" ? "ration" : step === "consent" ? "member" : "consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
+    {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && step !== "status" && <Pressable onPress={() => setStep(step === "ration" ? "welcome" : step === "member" ? "ration" : step === "consent" ? "member" : "consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
     <Text style={styles.footer}>{s.demoNote}</Text>
   </ScrollView></SafeAreaView>;
 }
