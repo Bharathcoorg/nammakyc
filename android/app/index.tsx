@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { FamilyIllustration, KarnatakaEmblem, NammaKycLogo, ServiceIcon, VidhanaSoudhaIllustration } from "../src/brand";
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { FamilyIllustration, NammaKycLogo, ServiceIcon } from "../src/brand";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse, KycStatus } from "../src/api/types";
 import { getStrings } from "../src/i18n";
