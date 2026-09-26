@@ -67,7 +67,7 @@ function render(){
  document.getElementById("screen").innerHTML=screen(s); wire();
 }
 function screen(s){
- if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">\'+s.motto+\'</p>'+button(s.getStarted,1)+'</div>';
+ if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">'+s.motto+'</p>'+button(s.getStarted,1)+'</div>';
  if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
  if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
  if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
