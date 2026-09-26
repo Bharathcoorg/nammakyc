@@ -1,5 +1,6 @@
 import type { IdempotencyRecord } from "../domain/kyc/idempotency";
 import type { KycTransaction } from "../domain/kyc/transaction";
+import type { ConsentArtifact } from "../domain/kyc/consent";
 import type { TransactionRepository } from "./transaction";
 
 export interface D1DatabaseLike{prepare(query:string):{bind(...values:unknown[]):any};batch(statements:any[]):Promise<any[]>}
@@ -17,7 +18,7 @@ export class D1TransactionRepository implements TransactionRepository{
   return r?{key:r.idempotency_key,requestFingerprint:r.request_fingerprint,requestId:r.request_id,createdAt:r.created_at}:undefined;
  }
 
- async createIfAbsent(tx:KycTransaction,record:IdempotencyRecord){
+ async createIfAbsent(tx:KycTransaction,record:IdempotencyRecord,consent:ConsentArtifact){
   const statements=[
    this.db.prepare("INSERT INTO kyc_transactions (request_id,household_reference,member_reference,status,created_at,updated_at,provider_reference) VALUES (?,?,?,?,?,?,?)")
     .bind(tx.requestId,tx.householdReference,tx.memberReference,tx.status,tx.createdAt,tx.updatedAt,tx.providerReference??null),
