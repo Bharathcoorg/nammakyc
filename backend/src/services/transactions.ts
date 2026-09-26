@@ -59,6 +59,8 @@ export class TransactionService{
   if(!claimed){const current=await this.repository.get(input.transactionId);if(!current)throw new AppError("NOT_FOUND","KYC transaction not found",404);return current;}
   let transaction=(await this.repository.get(input.transactionId))!;
   try{
+   const consent=await this.repository.getConsent(input.transactionId);
+   if(!consent)throw new AppError("INTERNAL_ERROR","KYC consent artifact is missing",500);
    if(!transaction.aadhaarAuthenticationReference){
     transaction=transitionTransaction(transaction,"aadhaar_authenticating"); transaction.processingClaimId=claimId;
     if(!(await this.repository.update(transaction,claimId)))return (await this.repository.get(input.transactionId))!;
