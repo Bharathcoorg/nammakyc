@@ -32,7 +32,12 @@ export default function HomeScreen() {
 
   async function speakInstructions() {
     const ok = await speakGuidance(language === "kn" ? "kn" : "en");
-    if (!ok) setError(s.voiceUnavailable);
+    if (!ok) {
+      setVoiceEnabled(false);
+      setError(s.voiceUnavailable);
+    } else {
+      setError("");
+    }
   }
 
   async function lookup() {
