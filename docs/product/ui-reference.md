@@ -15,16 +15,17 @@ The first citizen-facing screen is the Karnataka-branded splash:
 
 The following journey follows the reference board while preserving the real integration boundaries:
 
-1. Home / citizen dashboard
-2. Select Member
-3. Consent & information
-4. Voice / preparation
-5. Aadhaar provider boundary
-6. Authentication result
-7. PDS e-KYC processing
-8. e-KYC completion
-9. e-KYC Status
-10. My Profile / support
+1. Branded splash / language
+2. Welcome / service entry
+3. Ration-card number
+4. Household members and current KYC state
+5. Consent & information
+6. Aadhaar number + OTP authentication
+7. Face preparation / FaceRD handoff
+8. Authentication result
+9. PDS e-KYC processing
+10. e-KYC completion
+11. Temporary status / reference
 
 English and Kannada are separate complete-language experiences. The visual composition remains consistent between them.
 
@@ -40,7 +41,7 @@ The reference board is a visual product concept. The implementation must not tur
 
 ## Karnataka emblem
 
-The UI may use Karnataka-inspired visual references for the concept design, but the public project must not imply government ownership, endorsement, or authorization. The emblem source and licensing/insignia restrictions must be reviewed before any authorized production branding is shipped.
+The UI follows the supplied Karnataka visual direction, including the Karnataka emblem treatment, Vidhana Soudha illustration, Namma KYC mark, and family artwork. The current app artwork is a product/reference treatment and must not imply government ownership, endorsement, or authorization until the project has formal authorization. Official insignia use must follow applicable restrictions.
 
 Source: Wikimedia Commons, “Seal of Karnataka”, which identifies it as the state emblem of Karnataka and documents the source/licensing information:
 https://commons.wikimedia.org/wiki/File:Seal_of_Karnataka.svg
@@ -60,8 +61,9 @@ Pixel-perfect validation is performed against the supplied reference board at th
 - processing timeline
 - success/reference card
 - status timeline
-- bottom navigation/profile layout
+- temporary status/reference layout\n- no permanent profile or account navigation
 - English/Kannada text expansion
 - accessibility touch targets
 
 The generated reference is a design target, not evidence of an official Government of Karnataka service.
+\n## Temporary journey\n\nNamma KYC is a transaction-based service rather than a citizen account. The app does not maintain a permanent profile, saved ration-card dashboard, family history, biometric profile, or reusable Aadhaar/OTP store. After the transaction ends, the local journey state is cleared; operational backend references exist only as required to complete and reconcile that transaction.\n
