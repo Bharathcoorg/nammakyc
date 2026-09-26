@@ -4,13 +4,13 @@ The interactive Namma KYC demo is intentionally hosted as a static showcase.
 
 ## Recommended configuration
 
-Use the **main** branch as the only source of truth and publish from:
+Use **`main`** as the development/source branch and publish the static showcase from the dedicated **`gh-pages`** branch:
 
 - Source: **Deploy from a branch**
-- Branch: **main**
-- Folder: **/(root)**
+- Branch: **`gh-pages`**
+- Folder: **`/(root)`**
 
-The repository root contains a small `index.html` entry point that redirects to the isolated `demo/` application. This keeps the demo source separate while allowing GitHub Pages to use the supported root publishing source.
+The `gh-pages` branch contains only the static showcase files. The application source remains on `main`, while `demo/` is the canonical demo source directory.
 
 ## Expected URL
 
