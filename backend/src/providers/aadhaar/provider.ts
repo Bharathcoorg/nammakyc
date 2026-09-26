@@ -10,5 +10,5 @@ export interface AuthenticationResult {
 }
 
 export interface AadhaarProvider {
-  startAuthentication(request: AuthenticationRequest): Promise<AuthenticationResult>;
+  startAuthentication(request: AuthenticationRequest, signal?: AbortSignal): Promise<AuthenticationResult>;
 }
