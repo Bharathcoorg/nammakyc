@@ -72,6 +72,7 @@ export default {
     },
     env: Env
   ): Promise<void> {
+    if (env.ENVIRONMENT === "production") throw new Error("Production provider configuration is required before queue processing");
     const repository = createTransactionRepository(env.DB);
     const audit = env.AUDIT ?? new ConsoleAuditSink();
     const service = new TransactionService(repository, new MockPdsProvider(), new MockAadhaarProvider(), new MockKycProvider(), audit);
