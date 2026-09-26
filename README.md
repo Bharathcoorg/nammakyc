@@ -9,10 +9,6 @@
 The project is designed for public review, contribution, testing, reuse and adoption. The browser demo is simulation-only and never asks for real ration-card, Aadhaar, biometric, OTP, identity or other citizen information.
 
 
-**Namma KYC** is an independent open-source reference implementation for a citizen-first Karnataka ration-card e-KYC experience.
-
-> This project is not an official Government of Karnataka, NIC, or UIDAI application unless formally authorized or adopted.
-
 ## What is included
 
 - Android application built with React Native and Expo.
