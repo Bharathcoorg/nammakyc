@@ -59,7 +59,7 @@ function render(){
  document.getElementById("language").textContent=s.language;
  document.getElementById("start").textContent=s.getStarted;
  document.getElementById("reset").textContent=s.reset;
- document.getElementById("progress").classList.toggle("hidden",step===0);
+ document.querySelector(".app-top").classList.toggle("hidden",step===0); document.getElementById("progress").classList.toggle("hidden",step===0);
  document.getElementById("progress-fill").style.width=(step?Math.round(step/9*100):0)+"%";
  document.getElementById("progress-label").textContent=step?s.steps[step-1]+" · "+step+" / 9":"";
  document.getElementById("steps").innerHTML=s.steps.map((x,i)=>'<button class="demo-step '+(i===step-1?"active":"")+'" data-step="'+(i+1)+'">'+(i+1)+". "+x+"</button>").join("");
