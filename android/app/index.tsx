@@ -178,7 +178,7 @@ export default function HomeScreen() {
           <Text style={styles.textButton}>{s.disableVoice}</Text>
         </Pressable>}
       </View>
-      <Text style={styles.accessibilityNote}>{s.voiceAccessibility}</Text>
+      
       <Primary label={s.continueToAadhaar} onPress={() => { void stopGuidance(); setStep("auth"); }} />
     </Card>}
 
@@ -212,7 +212,7 @@ function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;l
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 4</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/4)*100+"%"}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <Text style={styles.stepLabel}>{s.step} {current} {s.of} 4</Text>}
 
-function LanguageHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.languageHero}><View style={styles.emblem}><Text style={styles.emblemText}>✦</Text></View><Text style={styles.government}>{s.karnataka}</Text><Text style={styles.heroBrand}>{s.appName}</Text><Text style={styles.heroTagline}>{s.peopleFirst} · {s.simpleAccess}</Text><KarnatakaIllustration/></View>}
+function LanguageHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.languageHero}><View style={styles.emblem}><NammaKycLogo size={64}/></View><Text style={styles.government}>{s.karnataka}</Text><Text style={styles.heroBrand}>{s.appName}</Text><Text style={styles.heroTagline}>{s.peopleFirst} · {s.simpleAccess}</Text><KarnatakaIllustration/></View>}
 function WelcomeHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.welcomeHero}><View style={styles.welcomeOrb}><Text style={styles.welcomeOrbText}>N</Text></View><View style={styles.welcomeDots}><View style={styles.welcomeDotActive}/><View style={styles.welcomeDot}/><View style={styles.welcomeDot}/></View><Text style={styles.welcomeKicker}>{s.karnataka}</Text></View>}
 function KarnatakaIllustration(){return <View style={styles.illustration}><View style={styles.sun}/><View style={styles.building}><View style={styles.dome}/><View style={styles.buildingRoof}/><View style={styles.buildingBody}><View style={styles.columnRow}>{Array.from({length:7}).map((_,i)=><View key={i} style={styles.column}/>)}</View><View style={styles.door}/></View></View><View style={styles.landscape}><View style={styles.landLeft}/><View style={styles.landRight}/></View></View>}
 
