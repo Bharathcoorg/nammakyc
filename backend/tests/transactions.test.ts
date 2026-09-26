@@ -5,6 +5,12 @@ import type { PdsProvider } from "../src/providers/pds/provider";
 import type { AadhaarProvider } from "../src/providers/aadhaar/provider";
 import type { KycProvider } from "../src/providers/kyc/provider";
 import { AppError } from "../src/domain/errors";
+import type { MetricName, MetricsSink } from "../src/observability/metrics";
+
+class RecordingMetrics implements MetricsSink {
+  events: MetricName[]=[];
+  increment(name: MetricName): void { this.events.push(name); }
+}
 
 const pds: PdsProvider={lookupHousehold:async ref=>({householdReference:ref,members:[{memberReference:"M-1",displayName:"Demo Citizen",kycRequired:true}]})};
 
