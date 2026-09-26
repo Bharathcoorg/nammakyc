@@ -16,7 +16,8 @@ export default function HomeScreen() {
   const [rationCard, setRationCard] = useState("");
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
-  const [consented, setConsented] = useState(false);
+  const [consentRead, setConsentRead] = useState(false);
+  const [consentProceed, setConsentProceed] = useState(false);
   const [consentReference, setConsentReference] = useState("");
   const [reference, setReference] = useState("");
   const [requestId, setRequestId] = useState("");
@@ -32,7 +33,7 @@ export default function HomeScreen() {
   }
 
   function start() {
-    if (!consented || !household || !selected) return;
+    if (!consentRead || !consentProceed || !household || !selected) return;
     setError(""); setConsentReference(Crypto.randomUUID()); setStep("auth");
   }
 
@@ -70,7 +71,7 @@ export default function HomeScreen() {
   }
 
   function resetJourney() {
-    setStep("ration"); setRationCard(""); setHousehold(null); setSelected(""); setConsented(false);
+    setStep("ration"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
     setConsentReference(""); setRequestId(""); setRequestStatus(""); setReference(""); setError("");
   }
 
@@ -117,8 +118,8 @@ export default function HomeScreen() {
     {step === "consent" && <Card>
       <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.consent}</Text><Text style={styles.muted}>{s.consentIntro}</Text>
       <ConsentItem icon="⌁" text={s.consentAadhaar}/><ConsentItem icon="◉" text={s.consentBiometric}/><ConsentItem icon="⊘" text={s.consentNoStorage}/><ConsentItem icon="▣" text={s.consentMinimum}/><ConsentItem icon="□" text={s.consentTerms}/>
-      <CheckRow label={s.consentRead} checked={consented} onPress={() => setConsented(!consented)}/><CheckRow label={s.consentProceed} checked={consented} onPress={() => setConsented(!consented)}/>
-      <Primary label={s.startVerification} onPress={start} disabled={!selected||!consented||loading}/>
+      <CheckRow label={s.consentRead} checked={consentRead} onPress={() => setConsentRead(!consentRead)}/><CheckRow label={s.consentProceed} checked={consentProceed} onPress={() => setConsentProceed(!consentProceed)}/>
+      <Primary label={s.startVerification} onPress={start} disabled={!selected||!consentRead||!consentProceed||loading}/>
     </Card>}
 
     {step === "auth" && <Card>
