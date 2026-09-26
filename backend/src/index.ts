@@ -35,6 +35,7 @@ export default {
       await validateRequest(request);
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
       const audit = env.AUDIT ?? new ConsoleAuditSink();
+      const metrics = env.METRICS ?? new ConsoleMetricsSink();
       return responseWithHeaders(
         await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: metrics }) ??
           Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
@@ -43,6 +44,8 @@ export default {
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
       const status = message === "JSON content type required" ? 415 : message === "Request body too large" ? 413 : 500;
+      const metrics = env.METRICS ?? new ConsoleMetricsSink();
+      void metrics.increment("http.errors",{route:new URL(request.url).pathname});
       return responseWithHeaders(
         Response.json(
           { error: { code: status === 415 || status === 413 ? "INVALID_REQUEST" : "INTERNAL_ERROR", message: status === 415 || status === 413 ? message : "Internal server error" } },
