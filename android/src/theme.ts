@@ -19,4 +19,14 @@ export const theme = {
   },
   spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 40 },
   radius: { input: 14, card: 22, button: 15, pill: 999 },
+  typography: {
+    display: { size: 34, lineHeight: 40, weight: "800" as const },
+    headline: { size: 28, lineHeight: 34, weight: "800" as const },
+    title: { size: 20, lineHeight: 28, weight: "700" as const },
+    body: { size: 16, lineHeight: 24, weight: "400" as const },
+    bodySmall: { size: 14, lineHeight: 20, weight: "400" as const },
+    label: { size: 14, lineHeight: 20, weight: "700" as const },
+  },
+  minTouchTarget: 48,
+  fontFamily: "sans-serif",
 } as const;
