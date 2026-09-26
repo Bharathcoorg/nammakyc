@@ -30,3 +30,18 @@ D1 migrations are versioned and applied sequentially. Validate the migration aga
 ## Evidence to preserve
 
 For an incident, preserve request ID, event timestamps, status transitions, provider reference where permitted, queue attempt metadata, deployment version and relevant redacted audit events. Do not copy Aadhaar numbers, PID data, OTPs, face images or other sensitive authentication payloads into incident notes.
+
+## Queue poison-message handling
+
+The Cloudflare Queue consumer is configured with bounded retries and a dedicated dead-letter queue (`namma-kyc-processing-dlq`). A malformed versioned envelope is rejected rather than executed. After the configured delivery limit is exhausted, Cloudflare moves the message to the dead-letter queue according to the deployment configuration.
+
+Operational handling should:
+
+- alert on dead-letter queue depth greater than zero;
+- preserve the original message for incident analysis under the organization's approved retention controls;
+- never replay a message directly into production without validating its envelope and transaction state;
+- investigate whether the failure is a producer/schema regression, corruption, or an attempted malformed submission;
+- avoid logging raw citizen identifiers or authentication material while diagnosing the message;
+- use the transaction reference and audit correlation data to reconcile any already-completed work before replay.
+
+The public reference implementation does not define an automatic DLQ replay policy. Production replay authorization, retention, and access controls must be approved by the operating authority.
