@@ -6,7 +6,8 @@ export type KycEventName =
   | "kyc.submission.completed"
   | "transaction.retrying"
   | "transaction.failed"
-  | "transaction.succeeded";
+  | "transaction.succeeded"
+  | "transaction.cleanup";
 
 export interface KycAuditEvent {
   event: KycEventName;
