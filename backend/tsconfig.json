@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
+    "target": "ES2022",
+    "skipLibCheck": true,
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
