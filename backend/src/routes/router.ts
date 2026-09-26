@@ -35,7 +35,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
     try {
       await env.QUEUE.enqueue({jobId:crypto.randomUUID(),transactionId:tx.requestId,input,enqueuedAt:new Date().toISOString(),attempt:0});
     } catch(error) {
-      await transactionService.markFailed(tx.requestId);
+      await transactionService.markRetrying(tx.requestId);
       throw new AppError("UPSTREAM_UNAVAILABLE","KYC processing queue is temporarily unavailable",503);
     }
    }
