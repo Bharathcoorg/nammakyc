@@ -13,11 +13,19 @@ export interface StartKycInput {
   householdReference: string;
   memberReference: string;
   consentReference: string;
+  consentPolicyVersion?: string;
+  consentLanguage?: "en" | "kn";
   idempotencyKey: string;
 }
 
 function fingerprint(input: StartKycInput): string {
-  return JSON.stringify([input.householdReference.trim(), input.memberReference.trim(), input.consentReference.trim()]);
+  return JSON.stringify([
+    input.householdReference.trim(),
+    input.memberReference.trim(),
+    input.consentReference.trim(),
+    input.consentPolicyVersion?.trim() ?? "",
+    input.consentLanguage ?? ""
+  ]);
 }
 
 const transient = (error: unknown) =>
