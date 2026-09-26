@@ -7,6 +7,7 @@ export interface TransactionRepository {
   getIdempotency(key: string): Promise<IdempotencyRecord | undefined>;
   createIfAbsent(transaction: KycTransaction, record: IdempotencyRecord, consent: ConsentArtifact): Promise<boolean>;
   update(transaction: KycTransaction): Promise<void>;
+  purgeIdempotencyBefore(cutoffIso: string): Promise<number>;
 }
 
 export class InMemoryTransactionRepository implements TransactionRepository {
@@ -26,4 +27,12 @@ export class InMemoryTransactionRepository implements TransactionRepository {
   }
 
   async update(transaction: KycTransaction) { this.transactions.set(transaction.requestId, transaction); }
+
+  async purgeIdempotencyBefore(cutoffIso: string) {
+    let removed = 0;
+    for (const [key, record] of this.idempotency) {
+      if (record.createdAt < cutoffIso) { this.idempotency.delete(key); removed++; }
+    }
+    return removed;
+  }
 }
