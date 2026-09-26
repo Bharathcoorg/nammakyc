@@ -150,8 +150,21 @@ describe("D1TransactionRepository", () => {
   it("atomically rejects a second processing claim while the first claim is fresh", async () => {
     const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
     await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId));
-    expect(await repository.claimForProcessing(tx.requestId, "2026-09-26T12:00:01.000Z", "2026-09-26T11:59:31.000Z")).toBe(true);
-    expect(await repository.claimForProcessing(tx.requestId, "2026-09-26T12:00:02.000Z", "2026-09-26T11:59:32.000Z")).toBe(false);
+    expect(await repository.claimForProcessing(tx.requestId, "claim-1", "2026-09-26T12:00:01.000Z", "2026-09-26T11:59:31.000Z")).toBe(true);
+    expect(await repository.claimForProcessing(tx.requestId, "claim-2", "2026-09-26T12:00:02.000Z", "2026-09-26T11:59:32.000Z")).toBe(false);
+    expect(await repository.renewProcessingClaim(tx.requestId, "wrong-claim", "2026-09-26T12:00:03.000Z")).toBe(false);
+    expect(await repository.renewProcessingClaim(tx.requestId, "claim-1", "2026-09-26T12:00:03.000Z")).toBe(true);
     expect((await repository.get(tx.requestId))?.status).toBe("authenticating");
+    expect((await repository.get(tx.requestId))?.processingClaimId).toBe("claim-1");
+  });
+
+  it("rejects stale claim updates after a newer worker takes ownership", async () => {
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
+    await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId));
+    expect(await repository.claimForProcessing(tx.requestId, "claim-old", "2026-09-26T12:00:01.000Z", "2026-09-26T11:59:31.000Z")).toBe(true);
+    expect(await repository.claimForProcessing(tx.requestId, "claim-new", "2026-09-26T12:01:01.000Z", "2026-09-26T12:00:31.000Z")).toBe(true);
+    const staleUpdate = await repository.update({...tx,status:"failed",updatedAt:"2026-09-26T12:01:02.000Z"},"claim-old");
+    expect(staleUpdate).toBe(false);
+    expect((await repository.get(tx.requestId))?.processingClaimId).toBe("claim-new");
   });
 });
