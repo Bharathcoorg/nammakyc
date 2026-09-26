@@ -88,7 +88,7 @@ export default function HomeScreen() {
 
   const current = stepNumber[step] ?? 1;
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-    <Header s={s} />
+    <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />
     {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Progress s={s} current={current} />}
 
     {step === "language" && <Card>
@@ -113,7 +113,7 @@ export default function HomeScreen() {
 
     {step === "member" && household && <Card>
       <StepLabel s={s} current={2}/><Text style={styles.heading}>{s.household}</Text><Text style={styles.muted}>{s.selectMember}</Text>
-      {household.members.map(m => <Pressable key={m.memberReference} onPress={() => {setSelected(m.memberReference);setStep("consent");}} style={({pressed}) => [styles.member, pressed && styles.pressed]}>
+      {household.members.map(m => <Pressable key={m.memberReference} accessibilityRole="button" accessibilityLabel={`${s.household}: ${m.displayName}`} onPress={() => {setSelected(m.memberReference);setStep("consent");}} style={({pressed}) => [styles.member, pressed && styles.pressed]}>
         <View style={styles.avatar}><Text style={styles.avatarText}>{m.displayName.slice(0,1)}</Text></View>
         <View style={styles.memberCopy}><Text style={styles.memberName}>{m.displayName}</Text><Text style={styles.muted}>{m.kycRequired ? s.kycRequired : s.kycComplete}</Text></View>
         <Text style={styles.arrow}>›</Text>
@@ -168,7 +168,7 @@ export default function HomeScreen() {
   </ScrollView></SafeAreaView>;
 }
 
-function Header({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.header}><View style={styles.logo}><Text style={styles.logoText}>N</Text></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
+function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><Text style={styles.logoText}>N</Text></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language === "en" ? "ಕನ್ನಡ" : "English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language === "en" ? "ಕನ್ನಡ" : "English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <Text style={styles.stepLabel}>{s.step} {current} {s.of} 3</Text>}
 function Card({children}:{children:React.ReactNode}){return <View style={styles.card}>{children}</View>}
@@ -181,7 +181,7 @@ const styles=StyleSheet.create({
  safe:{flex:1,backgroundColor:theme.colors.background},container:{paddingHorizontal:20,paddingTop:26,paddingBottom:30,gap:16},
  header:{flexDirection:"row",alignItems:"center",gap:12},logo:{width:48,height:48,borderRadius:16,backgroundColor:theme.colors.primary,alignItems:"center",justifyContent:"center"},logoText:{color:theme.colors.white,fontSize:25,fontWeight:"800"},
  headerCopy:{flex:1},title:{fontSize:24,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:13,color:theme.colors.muted,marginTop:2},
- securePill:{width:34,height:34,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,alignItems:"center",justifyContent:"center"},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
+ securePill:{width:34,height:34,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:34,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
  progressWrap:{gap:7},progressTop:{flexDirection:"row",justifyContent:"space-between"},progressText:{fontSize:12,fontWeight:"700",color:theme.colors.muted},progressTrack:{height:6,borderRadius:6,backgroundColor:theme.colors.border,overflow:"hidden"},progressFill:{height:"100%",backgroundColor:theme.colors.primary,borderRadius:6},
  card:{backgroundColor:theme.colors.surface,borderRadius:theme.radius.card,padding:theme.spacing.lg,borderWidth:1,borderColor:theme.colors.border,gap:16},badge:{alignSelf:"flex-start",paddingHorizontal:12,paddingVertical:7,borderRadius:theme.radius.pill,backgroundColor:theme.colors.surfaceMuted},badgeText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},
  eyebrow:{fontSize:13,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:1},heading:{fontSize:24,fontWeight:"800",lineHeight:31,color:theme.colors.text},muted:{fontSize:14,color:theme.colors.muted,lineHeight:21},body:{fontSize:16,color:theme.colors.text,lineHeight:24},
@@ -192,7 +192,7 @@ const styles=StyleSheet.create({
  input:{minHeight:56,paddingHorizontal:16,borderRadius:theme.radius.input,borderWidth:1,borderColor:theme.colors.border,fontSize:17,color:theme.colors.text,backgroundColor:theme.colors.white},stepLabel:{fontSize:12,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:.8},
  member:{minHeight:76,padding:14,borderRadius:16,borderWidth:1,borderColor:theme.colors.border,flexDirection:"row",alignItems:"center",gap:12},avatar:{width:44,height:44,borderRadius:14,backgroundColor:theme.colors.surfaceMuted,alignItems:"center",justifyContent:"center"},avatarText:{fontSize:18,fontWeight:"800",color:theme.colors.primary},memberCopy:{flex:1},memberName:{fontSize:17,fontWeight:"700",color:theme.colors.text,marginBottom:3},arrow:{fontSize:30,color:theme.colors.primary},
  consent:{flexDirection:"row",gap:12,alignItems:"flex-start"},checkbox:{width:28,height:28,borderRadius:8,borderWidth:2,borderColor:theme.colors.border,alignItems:"center",justifyContent:"center"},checkboxSelected:{backgroundColor:theme.colors.primary,borderColor:theme.colors.primary},check:{fontSize:18,color:theme.colors.white,fontWeight:"800"},
- processingIcon:{width:62,height:62,borderRadius:20,backgroundColor:theme.colors.surfaceMuted,alignItems:"center",justifyContent:"center"},processingDots:{fontSize:24,color:theme.colors.primary,fontWeight:"800",letterSpacing:3},progressIndeterminate:{height:"100%",width:"42%",backgroundColor:theme.colors.primary},
+ authBoundary:{padding:14,borderRadius:16,borderWidth:1,borderColor:theme.colors.border,backgroundColor:theme.colors.surfaceMuted},authBoundaryTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text,marginBottom:4},processingIcon:{width:62,height:62,borderRadius:20,backgroundColor:theme.colors.surfaceMuted,alignItems:"center",justifyContent:"center"},processingDots:{fontSize:24,color:theme.colors.primary,fontWeight:"800",letterSpacing:3},progressIndeterminate:{height:"100%",width:"42%",backgroundColor:theme.colors.primary},
  successIcon:{width:70,height:70,borderRadius:35,backgroundColor:"#E5F3E9",alignItems:"center",justifyContent:"center"},successIconText:{fontSize:38,fontWeight:"800",color:theme.colors.success},referenceCard:{padding:16,borderRadius:16,backgroundColor:theme.colors.surfaceMuted,borderWidth:1,borderColor:"#DCE8E0"},referenceLabel:{fontSize:12,fontWeight:"800",color:theme.colors.muted,textTransform:"uppercase",letterSpacing:.8,marginBottom:5},reference:{fontSize:17,fontWeight:"800",color:theme.colors.text},
  errorCard:{padding:14,borderRadius:14,backgroundColor:"#FFF0EF",borderWidth:1,borderColor:"#F1C8C4"},error:{color:theme.colors.error,fontSize:14,lineHeight:20,fontWeight:"600"},back:{textAlign:"center",fontSize:15,fontWeight:"700",color:theme.colors.primary,paddingVertical:2},footer:{textAlign:"center",fontSize:12,color:theme.colors.muted,paddingTop:4},pressed:{opacity:.72},
 });
