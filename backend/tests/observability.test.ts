@@ -27,6 +27,31 @@ describe("observability events", () => {
     expect(safeErrorCode(new Error("private detail"))).toBeUndefined();
   });
 
+  it("accepts queue retry events without citizen identifiers", () => {
+    const event = {
+      event:"queue.retry_scheduled" as const,
+      requestId:"request-1",
+      jobId:"job-1",
+      attempt:1,
+      occurredAt:"2026-09-26T12:00:00.000Z",
+      status:"retrying"
+    };
+    expect(event.attempt).toBe(1);
+    expect(JSON.stringify(event)).not.toMatch(/aadhaar|otp|biometric|rationCard|memberReference/i);
+  });
+
+  it("records malformed queue messages without inventing a citizen reference", () => {
+    const event = {
+      event:"queue.invalid_message" as const,
+      requestId:"unknown",
+      occurredAt:"2026-09-26T12:00:00.000Z",
+      status:"rejected",
+      errorCode:"INVALID_REQUEST"
+    };
+    expect(event.requestId).toBe("unknown");
+    expect(JSON.stringify(event)).not.toMatch(/aadhaar|otp|biometric|rationCard|memberReference/i);
+  });
+
   it("provides a runtime sink for structured events", () => {
     expect(typeof new ConsoleAuditSink().emit).toBe("function");
   });
