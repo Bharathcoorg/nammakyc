@@ -1,7 +1,7 @@
 const MARK="./assets/namma-kyc-mark.svg";
 const EN={
   app:"Namma KYC", gov:"Government of Karnataka", tagline:"Karnataka ration-card e-KYC", language:"ಕನ್ನಡ",
-  getStarted:"Get Started", continue:"Continue", reset:"Start again", back:"Back",
+  getStarted:"Get Started", motto:"Our People · Our Karnataka · A Brighter Tomorrow", continue:"Continue", reset:"Start again", back:"Back",
   welcome:"Let's complete your e-KYC for Karnataka services.", welcomeText:"For you and your family.",
   feature1:"Ration Card e-KYC",feature1Text:"For you and your family",feature2:"Secure & Authorized",feature2Text:"Uses authorized government systems",feature3:"Your Data, Your Privacy",feature3Text:"Only what is required",feature4:"Fast & Easy",feature4Text:"Complete the journey in a few minutes.",
   ration:"Ration card number",rationHint:"Use the fictional demo card below.",demoRation:"KA-DEMO-2026-001",
@@ -24,7 +24,7 @@ const EN={
 };
 const KN={
   app:"ನಮ್ಮ KYC",gov:"ಕರ್ನಾಟಕ ಸರ್ಕಾರ",tagline:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",language:"English",
-  getStarted:"ಪ್ರಾರಂಭಿಸಿ",continue:"ಮುಂದುವರಿಸಿ",reset:"ಮತ್ತೆ ಪ್ರಾರಂಭಿಸಿ",back:"ಹಿಂದೆ",
+  getStarted:"ಪ್ರಾರಂಭಿಸಿ",motto:"ನಮ್ಮ ಜನರು · ನಮ್ಮ ಕರ್ನಾಟಕ · ಉಜ್ವಲ ಭವಿಷ್ಯ",continue:"ಮುಂದುವರಿಸಿ",reset:"ಮತ್ತೆ ಪ್ರಾರಂಭಿಸಿ",back:"ಹಿಂದೆ",
   welcome:"ಕರ್ನಾಟಕ ಸೇವೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಇ-ಕೆವೈಸಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸೋಣ.",welcomeText:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ.",
   feature1:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",feature1Text:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ",feature2:"ಸುರಕ್ಷಿತ ಮತ್ತು ಅನುಮೋದಿತ",feature2Text:"ಅನುಮೋದಿತ ಸರ್ಕಾರಿ ವ್ಯವಸ್ಥೆಗಳನ್ನು ಬಳಸುತ್ತದೆ",feature3:"ನಿಮ್ಮ ಡೇಟಾ, ನಿಮ್ಮ ಗೌಪ್ಯತೆ",feature3Text:"ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ",feature4:"ವೇಗ ಮತ್ತು ಸರಳ",feature4Text:"ಕೆಲವೇ ನಿಮಿಷಗಳಲ್ಲಿ ಪೂರ್ಣಗೊಳಿಸಿ.",
   ration:"ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",rationHint:"ಕೆಳಗಿನ ಕಾಲ್ಪನಿಕ ಡೆಮೊ ಕಾರ್ಡ್ ಬಳಸಿ.",demoRation:"KA-DEMO-2026-001",
@@ -67,7 +67,7 @@ function render(){
  document.getElementById("screen").innerHTML=screen(s); wire();
 }
 function screen(s){
- if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">Our People · Our Karnataka · A Brighter Tomorrow</p>'+button(s.getStarted,1)+'</div>';
+ if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">\'+s.motto+\'</p>'+button(s.getStarted,1)+'</div>';
  if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
  if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
  if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
