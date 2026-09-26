@@ -10,10 +10,12 @@ class FakeD1 {
   prepare(query: string) {
     const self = this;
     let values: unknown[] = [];
-    return {
+    const statement = {
+      query,
+      get values() { return values; },
       bind(...next: unknown[]) {
         values = next;
-        return this;
+        return statement;
       },
       async first() {
         if (query.includes("FROM kyc_transactions")) return self.transactions.get(String(values[0]));
@@ -24,6 +26,7 @@ class FakeD1 {
         return { meta: { changes: 1 } };
       }
     };
+    return statement;
   }
 
   async batch(statements: Array<{ query?: string; _values?: unknown[] }>) {
