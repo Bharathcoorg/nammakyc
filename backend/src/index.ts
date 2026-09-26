@@ -1,71 +1,50 @@
 import { route, type RouteEnv } from "./routes/router";
 import { applySecurityHeaders, requestId } from "./security/headers";
 import { validateRequest } from "./security/request";
-import { CloudflareKycQueue } from "./queues/cloudflare";
-import { KycWorker } from "./queues/worker";
+import { CloudflareKycQueue, processKycJob, type KycJob } from "./queues/kyc";
 import { MockPdsProvider } from "./providers/pds/mock";
 import { MockAadhaarProvider } from "./providers/aadhaar/mock";
 import { MockKycProvider } from "./providers/kyc/mock";
 import { TransactionService } from "./services/transactions";
 import { createTransactionRepository } from "./repositories/factory";
-import type { QueueEnvelope } from "./queues/consumer";
 
+export interface QueueBinding { send(body: KycJob): Promise<void> }
 export interface Env extends RouteEnv {
-  ENVIRONMENT: string;
-  KYC_QUEUE?: { send(body: unknown): Promise<void> };
+  ENVIRONMENT:string;
+  KYC_QUEUE?: QueueBinding;
+}
+
+const jsonHeaders={"Cache-Control":"no-store"};
+
+function responseWithHeaders(response: Response, id: string): Response {
+  return applySecurityHeaders(response, id);
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const id = requestId(request);
+  async fetch(request:Request,env:Env):Promise<Response>{
+    const id=requestId(request);
     try {
       validateRequest(request);
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
-      const response = await route(request, { ...env, QUEUE: queue });
-      return applySecurityHeaders(
-        response ?? Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
-        id
-      );
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "";
-      const status = message === "JSON content type required" || message === "Request body too large" ? 415 : 500;
-      return applySecurityHeaders(
-        Response.json({
-          error: {
-            code: status === 415 ? "INVALID_REQUEST" : "INTERNAL_ERROR",
-            message: status === 415 ? message : "Internal server error"
-          }
-        }, { status }),
-        id
-      );
+      return responseWithHeaders(await route(request,{...env,QUEUE:queue}) ?? Response.json({error:{code:"NOT_FOUND",message:"Route not found"}},{status:404}),id);
+    } catch(error) {
+      const message=error instanceof Error?error.message:"";
+      const status=message==="JSON content type required"||message==="Request body too large"?415:500;
+      return responseWithHeaders(Response.json({error:{code:status===415?"INVALID_REQUEST":"INTERNAL_ERROR",message:status===415?message:"Internal server error"}},{status}),id);
     }
   },
 
-  async queue(
-    batch: { messages: Array<{ body: unknown; attempts: number; ack(): void; retry(options?: { delaySeconds?: number }): void }> },
-    env: Env
-  ): Promise<void> {
-    const service = new TransactionService(
-      createTransactionRepository(env.DB),
-      new MockPdsProvider(),
-      new MockAadhaarProvider(),
-      new MockKycProvider()
-    );
-    const worker = new KycWorker(service);
+  async queue(batch: { messages: Array<{ body: KycJob; retry(options?: {delaySeconds?:number}):void }> }, env: Env): Promise<void> {
+    const repository=createTransactionRepository(env.DB);
+    const service=new TransactionService(repository,new MockPdsProvider(),new MockAadhaarProvider(),new MockKycProvider());
 
-    for (const message of batch.messages) {
+    for(const message of batch.messages) {
       try {
-        const envelope = message.body as QueueEnvelope;
-        if (envelope?.version !== 1 || !envelope.job) {
-          message.ack();
-          continue;
-        }
-        envelope.job.attempt = Math.max(envelope.job.attempt, message.attempts ?? 0);
-        const result = await worker.consume(envelope.job);
-        if (result.retryable) message.retry({ delaySeconds: 30 });
-        else message.ack();
-      } catch {
-        message.retry({ delaySeconds: 30 });
+        await processKycJob(message.body,service);
+      } catch(error) {
+        const retryable = error instanceof Error && (error.name === "TimeoutError" || error.message.includes("temporarily unavailable"));
+        if(retryable) message.retry({delaySeconds: Math.min(60, 2 ** Math.min(message.body.attempt, 5))});
+        else await service.markFailed(message.body.transactionId);
       }
     }
   }
