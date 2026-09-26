@@ -81,7 +81,7 @@ export class TransactionService{
    if(!result.success)throw new AppError("UPSTREAM_UNAVAILABLE","KYC provider did not complete the request",502);
    transaction=transitionTransaction(transaction,"success"); transaction.pdsTransactionReference=result.providerReference; transaction.processingClaimId=undefined;
    if(!(await this.repository.update(transaction,claimId)))return (await this.repository.get(input.transactionId))!;
-   this.emit({event:"kyc.submission.completed",requestId:transaction.requestId,occurredAt:new Date().toISOString(),status:transaction.status,provider:"kyc",durationMs:Date.now()-kycStartedAt});
+   this.emit({event:"kyc.submission.completed",requestId:transaction.requestId,occurredAt:new Date().toISOString(),status:transaction.status,provider:"pds",durationMs:Date.now()-kycStartedAt});
    this.emit({event:"transaction.succeeded",requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status});this.metric("kyc.succeeded");return transaction;
   }catch(error){
    const retryable=isRetryableKycError(error);if(error instanceof TimeoutError)this.metric("provider.timeout");else if(error instanceof AppError&&error.code==="UPSTREAM_UNAVAILABLE")this.metric("provider.failure");
