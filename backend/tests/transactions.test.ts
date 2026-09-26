@@ -80,3 +80,43 @@ describe("processing claim fencing",()=>{
   expect((await repository.get(created.requestId))?.processingClaimId).toBe("claim-new");
  });
 });
+
+
+describe("provider lifecycle boundaries",()=>{
+ it("does not call PDS e-KYC when Aadhaar authentication fails",async()=>{
+  let pdsCalls=0;
+  const aadhaar:AadhaarProvider={startAuthentication:async()=>({accepted:false,providerReference:undefined})};
+  const kyc:KycProvider={submit:async()=>{pdsCalls++;return {success:true,providerReference:"pds-should-not-run"}}};
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,aadhaar,kyc);
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-auth-fail",idempotencyKey:"auth-fail-key-12345"});
+  await expect(service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-auth-fail"})).rejects.toMatchObject({code:"AUTHENTICATION_FAILED"});
+  expect(pdsCalls).toBe(0);
+  expect((await service.get(created.requestId))?.status).toBe("failed");
+ });
+
+ it("keeps Aadhaar and PDS references separate",async()=>{
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,
+    {startAuthentication:async()=>({accepted:true,providerReference:"aadhaar-auth-ref"})},
+    {submit:async()=>({success:true,providerReference:"pds-kyc-ref"})});
+  const result=await service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-separated",idempotencyKey:"separated-key-12345"});
+  expect(result.status).toBe("success");
+  expect(result.aadhaarAuthenticationReference).toBe("aadhaar-auth-ref");
+  expect(result.aadhaarSessionReference).toBe("aadhaar-auth-ref");
+  expect(result.pdsTransactionReference).toBe("pds-kyc-ref");
+ });
+
+ it("does not repeat accepted Aadhaar authentication during a PDS retry",async()=>{
+  let authCalls=0; let pdsCalls=0;
+  const aadhaar:AadhaarProvider={startAuthentication:async()=>{authCalls++;return {accepted:true,providerReference:"aadhaar-once"}}};
+  const kyc:KycProvider={submit:async()=>{pdsCalls++;if(pdsCalls===1)throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503);return {success:true,providerReference:"pds-after-retry"}}};
+  const repository=new InMemoryTransactionRepository();
+  const service=new TransactionService(repository,pds,aadhaar,kyc);
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-retry-boundary",idempotencyKey:"retry-boundary-12345"});
+  await expect(service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-retry-boundary"})).rejects.toMatchObject({code:"UPSTREAM_UNAVAILABLE"});
+  expect((await service.get(created.requestId))?.status).toBe("retrying");
+  const result=await service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-retry-boundary"});
+  expect(result.status).toBe("success");
+  expect(authCalls).toBe(1);
+  expect(pdsCalls).toBe(2);
+ });
+});
