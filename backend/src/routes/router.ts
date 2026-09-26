@@ -98,7 +98,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    if(payload.consentPolicyVersion!==undefined&&(!policyVersion||policyVersion.length>64))throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
    const language=payload.consentLanguage==="en"||payload.consentLanguage==="kn"?payload.consentLanguage:undefined;
    if(payload.consentLanguage!==undefined&&!language)throw new AppError("INVALID_REQUEST","Invalid consent language",400);
-   const authenticationMethod=payload.authenticationMethod==="otp"?"otp":payload.authenticationMethod==="face"||payload.authenticationMethod===undefined?"face":undefined;
+   const authenticationMethod=payload.authenticationMethod==="otp"?"otp":payload.authenticationMethod==="face"?"face":payload.authenticationMethod==="otp_face"||payload.authenticationMethod===undefined?"otp_face":undefined;
    if(!authenticationMethod)throw new AppError("INVALID_REQUEST","Invalid authentication method",400);
    
    const input={
