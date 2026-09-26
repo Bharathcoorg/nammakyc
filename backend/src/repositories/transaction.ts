@@ -5,6 +5,7 @@ import type { ConsentArtifact } from "../domain/kyc/consent";
 export interface TransactionRepository {
   get(requestId: string): Promise<KycTransaction | undefined>;
   getIdempotency(key: string): Promise<IdempotencyRecord | undefined>;
+  getConsent(transactionReference: string): Promise<ConsentArtifact | undefined>;
   createIfAbsent(transaction: KycTransaction, record: IdempotencyRecord, consent: ConsentArtifact): Promise<boolean>;
   claimForProcessing(requestId: string, claimId: string, nowIso: string, staleBeforeIso: string): Promise<boolean>;
   renewProcessingClaim(requestId: string, claimId: string, nowIso: string): Promise<boolean>;
@@ -19,6 +20,7 @@ export class InMemoryTransactionRepository implements TransactionRepository {
 
   async get(requestId: string) { return this.transactions.get(requestId); }
   async getIdempotency(key: string) { return this.idempotency.get(key); }
+  async getConsent(transactionReference: string) { for (const artifact of this.consent.values()) if (artifact.transactionReference === transactionReference) return artifact; return undefined; }
 
   async createIfAbsent(transaction: KycTransaction, record: IdempotencyRecord, consent: ConsentArtifact) {
     if (this.transactions.has(transaction.requestId) || this.idempotency.has(record.key) || this.consent.has(consent.consentReference)) return false;
