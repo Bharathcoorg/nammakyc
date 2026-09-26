@@ -11,7 +11,7 @@ import { createTransactionRepository } from "./repositories/factory";
 import { ConsoleAuditSink, type AuditSink } from "./observability/events";
 import { TransactionService } from "./services/transactions";
 import { queueRetryDelaySeconds } from "./queues/retry";
-import { NoopMetricsSink } from "./observability/metrics";
+import { ConsoleMetricsSink } from "./observability/metrics";
 
 export interface QueueBinding {
   send(body: unknown): Promise<void>;
@@ -36,7 +36,7 @@ export default {
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
       const audit = env.AUDIT ?? new ConsoleAuditSink();
       return responseWithHeaders(
-        await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: env.METRICS }) ??
+        await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: metrics }) ??
           Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
         id
       );
