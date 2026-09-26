@@ -53,6 +53,14 @@ describe("TransactionService",()=>{
  });
 });
 
+ it("binds provider calls to persisted transaction data",async()=>{
+  let seenMember=""; let seenConsent="";
+  const aadhaar:AadhaarProvider={startAuthentication:async request=>{seenMember=request.memberReference;seenConsent=request.consentReference;return {accepted:true,providerReference:"auth-persisted"}}};
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,aadhaar,{submit:async()=>({success:true,providerReference:"pds-persisted"})});
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-persisted",idempotencyKey:"persisted-boundary-12345"});
+  const result=await service.process({transactionId:created.requestId});
+  expect(result.status).toBe("success"); expect(seenMember).toBe("M-1"); expect(seenConsent).toBe("consent-persisted");
+ });
  it("records terminal failure metrics",async()=>{
   const metrics=new RecordingMetrics();
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-fail"})},{submit:async()=>({success:true,providerReference:"kyc-fail"})},undefined,metrics);
@@ -95,19 +103,19 @@ describe("provider lifecycle boundaries",()=>{
   const kyc:KycProvider={submit:async()=>{pdsCalls++;return {success:true,providerReference:"pds-should-not-run"}}};
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,aadhaar,kyc);
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-auth-fail",idempotencyKey:"auth-fail-key-12345"});
-  await expect(service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-auth-fail"})).rejects.toMatchObject({code:"AUTHENTICATION_FAILED"});
+  await expect(service.process({transactionId:created.requestId})).rejects.toMatchObject({code:"AUTHENTICATION_FAILED"});
   expect(pdsCalls).toBe(0);
   expect((await service.get(created.requestId))?.status).toBe("failed");
  });
 
  it("keeps Aadhaar and PDS references separate",async()=>{
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,
-    {startAuthentication:async()=>({accepted:true,providerReference:"aadhaar-auth-ref"})},
+    {startAuthentication:async()=>({accepted:true,providerReference:"aadhaar-auth-ref",sessionReference:"aadhaar-session-ref"})},
     {submit:async()=>({success:true,providerReference:"pds-kyc-ref"})});
   const result=await service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-separated",idempotencyKey:"separated-key-12345"});
   expect(result.status).toBe("success");
   expect(result.aadhaarAuthenticationReference).toBe("aadhaar-auth-ref");
-  expect(result.aadhaarSessionReference).toBe("aadhaar-auth-ref");
+  expect(result.aadhaarSessionReference).toBe("aadhaar-session-ref");
   expect(result.pdsTransactionReference).toBe("pds-kyc-ref");
  });
 
@@ -118,9 +126,9 @@ describe("provider lifecycle boundaries",()=>{
   const repository=new InMemoryTransactionRepository();
   const service=new TransactionService(repository,pds,aadhaar,kyc);
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-retry-boundary",idempotencyKey:"retry-boundary-12345"});
-  await expect(service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-retry-boundary"})).rejects.toMatchObject({code:"UPSTREAM_UNAVAILABLE"});
+  await expect(service.process({transactionId:created.requestId})).rejects.toMatchObject({code:"UPSTREAM_UNAVAILABLE"});
   expect((await service.get(created.requestId))?.status).toBe("retrying");
-  const result=await service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-retry-boundary"});
+  const result=await service.process({transactionId:created.requestId});
   expect(result.status).toBe("success");
   expect(authCalls).toBe(1);
   expect(pdsCalls).toBe(2);
