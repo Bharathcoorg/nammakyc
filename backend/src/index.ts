@@ -100,7 +100,7 @@ export default {
       audit,
       metrics
     );
-    const worker = new KycWorker(service);
+    const worker = new KycWorker(service, 3, metrics);
 
     for (const message of batch.messages) {
       try {
