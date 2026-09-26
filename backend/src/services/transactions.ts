@@ -7,7 +7,7 @@ import type { KycProvider } from "../providers/kyc/provider";
 import type { TransactionRepository } from "../repositories/transaction";
 import { CircuitBreaker } from "../reliability/circuit-breaker";
 import { withRetry } from "../reliability/retry";
-import { withTimeout } from "../reliability/timeout";
+import { TimeoutError, withTimeout } from "../reliability/timeout";
 import type { ConsentArtifact } from "../domain/kyc/consent";
 
 export interface StartKycInput {
@@ -36,11 +36,11 @@ const providerPolicy = { attempts: 3, baseDelayMs: 75, maxDelayMs: 500 };
 const aadhaarBreaker = new CircuitBreaker(5, 30_000);
 const kycBreaker = new CircuitBreaker(5, 30_000);
 
-async function guarded<T>(breaker: CircuitBreaker, operation: () => Promise<T>): Promise<T> {
+async function guarded<T>(breaker: CircuitBreaker, operation: (signal: AbortSignal) => Promise<T>): Promise<T> {
   if (!breaker.canExecute()) throw new AppError("UPSTREAM_UNAVAILABLE", "Verification service is temporarily unavailable", 503);
   try {
     const result = await withRetry(
-      () => withTimeout(operation(), 8_000),
+      () => withTimeout(operation, 8_000),
       providerPolicy,
       transient
     );
@@ -100,12 +100,12 @@ export class TransactionService {
       transaction = transitionTransaction(transaction, "authenticating");
       await this.repository.update(transaction);
 
-      const auth = await guarded(aadhaarBreaker, () =>
+      const auth = await guarded(aadhaarBreaker, (signal) =>
         this.aadhaar.startAuthentication({
           transactionId: transaction.requestId,
           memberReference: member.memberReference,
           consentReference: input.consentReference,
-        })
+        }, signal)
       );
       if (!auth.accepted || !auth.providerReference) throw new AppError("AUTHENTICATION_FAILED", "Authentication was not accepted", 502);
 
@@ -113,12 +113,12 @@ export class TransactionService {
       transaction.providerReference = auth.providerReference;
       await this.repository.update(transaction);
 
-      const result = await guarded(kycBreaker, () =>
+      const result = await guarded(kycBreaker, (signal) =>
         this.kyc.submit({
           transactionId: transaction.requestId,
           memberReference: member.memberReference,
           authenticationReference: auth.providerReference!,
-        })
+        }, signal)
       );
       if (!result.success) throw new AppError("UPSTREAM_UNAVAILABLE", "KYC provider did not complete the request", 502);
 
