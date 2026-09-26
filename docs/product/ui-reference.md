@@ -41,10 +41,10 @@ The reference board is a visual product concept. The implementation must not tur
 
 ## Karnataka emblem
 
-The UI follows the supplied Karnataka visual direction, including the Karnataka emblem treatment, Vidhana Soudha illustration, Namma KYC mark, and family artwork. The current app artwork is a product/reference treatment and must not imply government ownership, endorsement, or authorization until the project has formal authorization. Official insignia use must follow applicable restrictions.
+The UI follows the supplied Karnataka visual direction, including the Karnataka emblem treatment, Vidhana Soudha photo, Namma KYC mark, and family artwork. The current app artwork is a product/reference treatment and must not imply government ownership, endorsement, or authorization until the project has formal authorization. Official insignia use must follow applicable restrictions.
 
 Source: Wikimedia Commons, “Seal of Karnataka”, which identifies it as the state emblem of Karnataka and documents the source/licensing information:
-The emblem treatment in this reference build is illustrative; use an approved official asset only after authorization.
+The current splash uses the referenced state emblem asset and a Vidhana Soudha photo as visual references; use approved official assets and follow applicable insignia restrictions before any government-facing deployment.
 
 ## Pixel validation
 
