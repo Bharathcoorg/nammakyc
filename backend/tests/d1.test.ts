@@ -105,7 +105,7 @@ function transaction(requestId = "request-0000000001"): KycTransaction {
 function consent(requestId: string, reference = "consent-1"): ConsentArtifact {
   return { consentReference:reference, purpose:"ration-card-e-kyc", policyVersion:"2026-09", language:"en", capturedAt:"2026-09-26T12:00:00.000Z", transactionReference:requestId };
 }
-function record(requestId: string, key = "idempotency-key-12345"): IdempotencyRecord {
+function record(requestId: string, key = "0000000000000000"): IdempotencyRecord {
   return { key, requestFingerprint:"fingerprint", requestId, createdAt:"2026-09-26T12:00:00.000Z" };
 }
 
@@ -114,7 +114,7 @@ describe("D1TransactionRepository", () => {
     const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
     expect(await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId))).toBe(true);
     expect(await repository.get(tx.requestId)).toBeDefined();
-    expect(await repository.getIdempotency("idempotency-key-12345")).toBeDefined();
+    expect(await repository.getIdempotency("0000000000000000")).toBeDefined();
     expect(db.consent.get("consent-1")?.transaction_reference).toBe(tx.requestId);
   });
 
@@ -124,27 +124,27 @@ describe("D1TransactionRepository", () => {
     const conflicting = transaction("request-new");
     expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId), consent(conflicting.requestId))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
-    expect((await repository.getIdempotency("idempotency-key-12345"))?.requestId).toBe("request-existing");
+    expect((await repository.getIdempotency("0000000000000000"))?.requestId).toBe("request-existing");
   });
 
   it("purges only idempotency records older than the supplied cutoff", async () => {
     const db = new FakeD1(); const repository = new D1TransactionRepository(db);
-    const oldTx = transaction("request-old"); const oldRecord = record(oldTx.requestId, "idempotency-old-12345"); oldRecord.createdAt = "2026-09-01T00:00:00.000Z";
+    const oldTx = transaction("request-old"); const oldRecord = record(oldTx.requestId, "1111111111111111"); oldRecord.createdAt = "2026-09-01T00:00:00.000Z";
     await repository.createIfAbsent(oldTx, oldRecord, consent(oldTx.requestId, "consent-old"));
-    const newTx = transaction("request-new"); const newRecord = record(newTx.requestId, "idempotency-new-12345"); newRecord.createdAt = "2026-09-25T00:00:00.000Z";
+    const newTx = transaction("request-new"); const newRecord = record(newTx.requestId, "2222222222222222"); newRecord.createdAt = "2026-09-25T00:00:00.000Z";
     await repository.createIfAbsent(newTx, newRecord, consent(newTx.requestId, "consent-new"));
     expect(await repository.purgeIdempotencyBefore("2026-09-20T00:00:00.000Z")).toBe(1);
-    expect(await repository.getIdempotency("idempotency-old-12345")).toBeUndefined();
-    expect(await repository.getIdempotency("idempotency-new-12345")).toBeDefined();
+    expect(await repository.getIdempotency("1111111111111111")).toBeUndefined();
+    expect(await repository.getIdempotency("2222222222222222")).toBeDefined();
   });
 
   it("rolls back all writes when the consent reference conflicts", async () => {
     const db = new FakeD1(); const repository = new D1TransactionRepository(db); const existing = transaction("request-existing");
     await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId, "consent-shared"));
     const conflicting = transaction("request-new");
-    expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId, "idempotency-new-12345"), consent(conflicting.requestId, "consent-shared"))).toBe(false);
+    expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId, "2222222222222222"), consent(conflicting.requestId, "consent-shared"))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
-    expect(await repository.getIdempotency("idempotency-new-12345")).toBeUndefined();
+    expect(await repository.getIdempotency("2222222222222222")).toBeUndefined();
   });
 
   it("atomically rejects a second processing claim while the first claim is fresh", async () => {
