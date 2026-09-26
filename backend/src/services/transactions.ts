@@ -8,6 +8,7 @@ import type { TransactionRepository } from "../repositories/transaction";
 import { CircuitBreaker } from "../reliability/circuit-breaker";
 import { withRetry } from "../reliability/retry";
 import { withTimeout } from "../reliability/timeout";
+import type { ConsentArtifact } from "../domain/kyc/consent";
 
 export interface StartKycInput {
   householdReference: string;
@@ -77,8 +78,16 @@ export class TransactionService {
 
     let transaction = createTransaction(crypto.randomUUID(), input.householdReference.trim(), member.memberReference);
     transaction = transitionTransaction(transaction, "validating");
+    const consent: ConsentArtifact = {
+      consentReference: input.consentReference.trim(),
+      purpose: "ration-card-e-kyc",
+      policyVersion: input.consentPolicyVersion?.trim() || "unspecified",
+      language: input.consentLanguage ?? "en",
+      capturedAt: transaction.createdAt,
+      transactionReference: transaction.requestId,
+    };
     const record: IdempotencyRecord = { key, requestFingerprint: fp, requestId: transaction.requestId, createdAt: transaction.createdAt };
-    if (!(await this.repository.createIfAbsent(transaction, record))) {
+    if (!(await this.repository.createIfAbsent(transaction, record, consent))) {
       const replayRecord = await this.repository.getIdempotency(key);
       if (replayRecord && sameRequest(replayRecord, fp)) {
         const replay = await this.repository.get(replayRecord.requestId);
