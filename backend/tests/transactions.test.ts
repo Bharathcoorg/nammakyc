@@ -51,7 +51,6 @@ describe("TransactionService",()=>{
   expect(await service.get(created.requestId)).toMatchObject({status:"aadhaar_authenticating",processingClaimId:expect.any(String)});expect(authCalls).toBe(1);
   releaseAuth();await expect(first).resolves.toMatchObject({status:"success"});await expect(second).resolves.toMatchObject({status:"aadhaar_authenticating"});expect(authCalls).toBe(1);
  });
-});
 
  it("binds provider calls to persisted transaction data",async()=>{
   let seenMember=""; let seenConsent="";
