@@ -34,7 +34,7 @@ describe("KYC domain", () => {
 
   it("detects idempotency request mismatches", () => {
     const record = {
-      key: "idem-1234567890123456",
+      key: "3333333333333333",
       requestFingerprint: "fingerprint-a",
       requestId: "request-1234567890123456",
       createdAt: "2026-09-26T00:00:00.000Z"
