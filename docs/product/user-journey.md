@@ -6,16 +6,16 @@ Namma KYC is an independent open-source reference implementation. The screens be
 
 ## Journey
 
-1. **Language selection** — English and Kannada are complete, separate language experiences.
-2. **Welcome and trust** — explains the purpose, privacy model, and independent reference status.
-3. **Ration-card / household context** — the reference app resolves a household through an authorized PDS integration.
-4. **Member selection** — the citizen selects the household member whose e-KYC is being completed.
-5. **Consent and information** — required acknowledgements are explicit and independently selectable.
-6. **Voice preparation** — optional fixed instructions help the citizen prepare before identity verification.
-7. **Aadhaar method / provider boundary** — Face Authentication / Face RD and OTP are provider-controlled methods. Namma KYC does not perform custom face recognition or operate an OTP service.
-8. **External verification / result** — production hands off to the authorized Aadhaar integration and receives an authentication result.
-9. **PDS e-KYC processing** — only after an accepted authentication result does the PDS e-KYC stage begin.
-10. **Status / success** — asynchronous processing is represented with explicit states and a reference identifier.
+1. Branded splash and language switch.
+2. Welcome screen with Namma KYC, Karnataka visual identity, Vidhana Soudha and family artwork.
+3. Ration-card number lookup.
+4. Household members and current e-KYC state; members already verified recently are shown as completed and are not re-submitted.
+5. Consent.
+6. Aadhaar number and OTP verification.
+7. Face preparation and authorized FaceRD handoff.
+8. Aadhaar authentication result.
+9. PDS e-KYC processing.
+10. Completion and temporary status/reference.
 
 ## UI reference board
 
