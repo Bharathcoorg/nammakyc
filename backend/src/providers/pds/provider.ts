@@ -11,5 +11,5 @@ export interface PdsHousehold {
 }
 
 export interface PdsProvider {
-  lookupHousehold(rationCardReference: string): Promise<PdsHousehold>;
+  lookupHousehold(rationCardReference: string, signal?: AbortSignal): Promise<PdsHousehold>;
 }
