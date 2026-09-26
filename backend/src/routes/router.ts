@@ -16,7 +16,7 @@ export async function route(request: Request): Promise<Response | undefined> {
   const url = new URL(request.url);
   try {
     if (request.method === "GET" && url.pathname === "/health") return healthResponse();
-    const householdMatch = url.pathname.match(/^\\/v1\\/households\\/([^/]+)$/);
+    const householdMatch = url.pathname.match(/^\/v1\/households\/([^/]+)$/);
     if (request.method === "GET" && householdMatch) return Response.json(await getHousehold(pds, decodeURIComponent(householdMatch[1])));
     if (url.pathname === "/v1/kyc" && request.method === "POST") {
       const idempotencyKey = request.headers.get("Idempotency-Key");
@@ -27,7 +27,7 @@ export async function route(request: Request): Promise<Response | undefined> {
       const result = await startKyc(repository, pds, aadhaar, kyc, { householdReference: body.householdReference, memberReference: body.memberReference, consentReference: body.consentReference, idempotencyKey });
       return Response.json({ requestId: result.transaction.requestId, status: result.transaction.status, ...(result.transaction.providerReference ? { reference: result.transaction.providerReference } : {}) }, { status: 202, headers: result.replayed ? { "X-Idempotent-Replay": "true" } : undefined });
     }
-    const statusMatch = url.pathname.match(/^\\/v1\\/kyc\\/([^/]+)$/);
+    const statusMatch = url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
     if (request.method === "GET" && statusMatch) {
       const transaction = await repository.getByRequestId(decodeURIComponent(statusMatch[1]));
       if (!transaction) throw new AppError("NOT_FOUND", "KYC transaction not found", 404);
