@@ -3,6 +3,7 @@ import { canTransition } from "./transition";
 
 export interface KycTransaction {
   requestId: string;
+  householdReference: string;
   memberReference: string;
   status: KycStatus;
   createdAt: string;
@@ -10,18 +11,18 @@ export interface KycTransaction {
   providerReference?: string;
 }
 
-export function transitionTransaction(
-  transaction: KycTransaction,
-  nextStatus: KycStatus,
+export function createTransaction(
+  requestId: string,
+  householdReference: string,
+  memberReference: string,
   now = new Date().toISOString()
 ): KycTransaction {
+  return { requestId, householdReference, memberReference, status: "received", createdAt: now, updatedAt: now };
+}
+
+export function transitionTransaction(transaction: KycTransaction,nextStatus: KycStatus,now = new Date().toISOString()): KycTransaction {
   if (!canTransition(transaction.status, nextStatus)) {
     throw new Error(`Invalid KYC transition: ${transaction.status} -> ${nextStatus}`);
   }
-
-  return {
-    ...transaction,
-    status: nextStatus,
-    updatedAt: now
-  };
+  return { ...transaction, status: nextStatus, updatedAt: now };
 }
