@@ -16,6 +16,10 @@ export class D1TransactionRepository implements TransactionRepository{
   const r=await this.db.prepare("SELECT * FROM idempotency_keys WHERE idempotency_key = ?").bind(key).first();
   return r?{key:r.idempotency_key,requestFingerprint:r.request_fingerprint,requestId:r.request_id,createdAt:r.created_at}:undefined;
  }
+ async getConsent(transactionReference:string){
+  const r=await this.db.prepare("SELECT * FROM consent_artifacts WHERE transaction_reference = ? LIMIT 1").bind(transactionReference).first();
+  return r?{consentReference:r.consent_reference,purpose:r.purpose,policyVersion:r.policy_version,language:r.language,capturedAt:r.captured_at,transactionReference:r.transaction_reference}:undefined;
+ }
  async createIfAbsent(tx:KycTransaction,record:IdempotencyRecord,consent:ConsentArtifact){
   const statements=[
    this.db.prepare("INSERT INTO kyc_transactions (request_id,household_reference,member_reference,status,authentication_method,created_at,updated_at,aadhaar_session_reference,aadhaar_authentication_reference,pds_transaction_reference) VALUES (?,?,?,?,?,?,?,?,?,?)").bind(tx.requestId,tx.householdReference,tx.memberReference,tx.status,tx.authenticationMethod,tx.createdAt,tx.updatedAt,tx.aadhaarSessionReference??null,tx.aadhaarAuthenticationReference??null,tx.pdsTransactionReference??null),
