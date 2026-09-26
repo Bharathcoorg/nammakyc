@@ -10,7 +10,7 @@ export class KycWorker implements KycJobConsumer {
   ) {}
 
   async consume(job: KycJob): Promise<KycJobResult> {
-    const current = await this.service["repository"].get(job.transactionId);
+    const current = await this.service.get(job.transactionId);
     if (isDuplicateDelivery(current, job)) {
       return { acknowledged: true, retryable: false };
     }
