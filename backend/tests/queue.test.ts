@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CloudflareKycQueue, InMemoryKycJobQueue, type KycJob } from "../src/queues/kyc";
 import { decodeKycJob } from "../src/queues/consumer";
 import { KycWorker } from "../src/queues/worker";
+import type { MetricName, MetricsSink } from "../src/observability/metrics";
 
 const job: KycJob = {
   jobId:"job-0000000001",
@@ -43,17 +44,21 @@ describe("Cloudflare queue adapter", () => {
 });
 
 
+class RecordingMetrics implements MetricsSink { events: MetricName[] = []; increment(name: MetricName): void { this.events.push(name); } }
+
 describe("KYC worker retry policy", () => {
   it("acknowledges a terminal delivery after the retry budget is exhausted", async () => {
     let failed = 0;
+    const metrics = new RecordingMetrics();
     const service = {
       get: async () => undefined,
       process: async () => { throw new Error("not reached"); },
       markFailed: async () => { failed++; return {} as never; }
     };
-    const worker = new KycWorker(service as never, 3);
+    const worker = new KycWorker(service as never, 3, metrics);
     const result = await worker.consume({ ...job, attempt: 2 });
     expect(result).toEqual({ acknowledged: true, retryable: false });
     expect(failed).toBe(1);
+    expect(metrics.events).toEqual(["queue.failed"]);
   });
 });
