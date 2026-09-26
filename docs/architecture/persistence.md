@@ -1,15 +1,9 @@
 # Durable persistence boundary
 
-The first production persistence target is Cloudflare D1, behind the existing `TransactionRepository` interface.
+D1 is the production persistence target behind the `TransactionRepository` abstraction.
 
-The schema deliberately separates transaction state from idempotency metadata. The idempotency key is unique and points to exactly one transaction. A production implementation must perform transaction creation and idempotency-key reservation atomically so concurrent retries cannot create two transactions.
+The adapter keeps citizen data minimal: transaction state, opaque provider reference, timestamps, and idempotency metadata. Aadhaar numbers, biometric templates, FaceRD payloads, OTP values, credentials, and raw authentication payloads are not persisted.
 
-## Security constraints
+Idempotency reservation must be treated as a uniqueness boundary. The repository therefore uses database uniqueness constraints and performs transaction/idempotency inserts as one D1 batch.
 
-- Do not store Aadhaar numbers, biometric templates, FaceRD payloads, OTP values, or raw authentication payloads in these tables.
-- Store only the minimum provider reference needed to correlate an authorized downstream transaction.
-- Keep timestamps in UTC ISO-8601 form.
-- Treat provider references as opaque identifiers.
-- Apply retention/deletion rules appropriate to the final government integration and applicable law before production deployment.
-
-The current Worker still uses the in-memory repository. This migration is a persistence design artifact until the D1 adapter and binding are implemented and tested.
+The Worker currently selects D1 when the `DB` binding is present and falls back to an in-memory repository for local/reference execution.
