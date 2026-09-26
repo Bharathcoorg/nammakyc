@@ -32,3 +32,8 @@ export const translations = {
 } as const;
 
 export type Strings = typeof translations.en;
+
+export const accessibility = {
+  en: { selected: "Selected", back: "Back", member: "Household member", error: "Error" },
+  kn: { selected: "ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ", back: "ಹಿಂದೆ", member: "ಕುಟುಂಬ ಸದಸ್ಯ", error: "ದೋಷ" }
+} as const;
