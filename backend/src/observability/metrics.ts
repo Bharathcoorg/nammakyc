@@ -7,6 +7,9 @@ export type MetricName =
   | "kyc.failed"
   | "queue.retried"
   | "queue.invalid"
+  | "queue.succeeded"
+  | "queue.failed"
+  | "queue.duplicate"
   | "provider.timeout"
   | "provider.failure";
 
