@@ -9,13 +9,13 @@ import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "authenticating" | "authResult" | "pdsProcessing" | "processing" | "status" | "success";
-const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, authenticating: 3, authResult: 3, pdsProcessing: 4, processing: 4, status: 4, success: 4 };
+type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "auth" | "aadhaarOtp" | "instructions" | "faceCapture" | "authenticating" | "authResult" | "pdsProcessing" | "processing" | "status" | "success";
+const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, auth: 3, aadhaarOtp: 3, instructions: 3, faceCapture: 3, authenticating: 3, authResult: 3, pdsProcessing: 4, processing: 4, status: 4, success: 4 };
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
   const [step, setStep] = useState<Step>("splash");
-  const [rationCard, setRationCard] = useState("");
+  const [rationCard, setRationCard] = useState("");\n  const [aadhaarNumber, setAadhaarNumber] = useState("");\n  const [otp, setOtp] = useState("");
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
   const [consentRead, setConsentRead] = useState(false);
@@ -48,7 +48,7 @@ export default function HomeScreen() {
 
   function start() {
     if (!consentRead || !consentProceed || !household || !selected) return;
-    setError(""); setConsentReference(Crypto.randomUUID()); setStep("instructions");
+    setError(""); setConsentReference(Crypto.randomUUID()); setStep("auth");
   }
 
   async function authenticate() {
@@ -91,7 +91,7 @@ export default function HomeScreen() {
 
   function resetJourney() {
     setStep("splash"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
-    setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setError("");
+    setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setAadhaarNumber(""); setOtp(""); setError("");
   }
 
   const current = stepNumber[step] ?? 1;
@@ -141,28 +141,26 @@ export default function HomeScreen() {
     {step === "auth" && <Card>
       <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.aadhaarTitle}</Text><Text style={styles.muted}>{s.aadhaarText}</Text>
       <View style={styles.providerCard}><View style={styles.providerIcon}><Text style={styles.providerIconText}>✓</Text></View><View style={styles.providerCopy}><Text style={styles.providerTitle}>{s.aadhaarProvider}</Text><Text style={styles.muted}>{s.mockMode}</Text></View><View style={styles.providerCheck}><Text style={styles.providerCheckText}>✓</Text></View></View>
-      <InfoCard title={s.aadhaarProvider} text={s.aadhaarBoundary}/><Primary label={loading?s.processing:s.openAadhaar} onPress={authenticate} disabled={loading}/>
+      <InfoCard title={s.aadhaarProvider} text={s.aadhaarBoundary}/><TextInput accessibilityLabel={s.aadhaarNumber} keyboardType="number-pad" maxLength={12} value={aadhaarNumber} onChangeText={setAadhaarNumber} placeholder={s.aadhaarNumberHint} placeholderTextColor={theme.colors.muted} style={styles.input}/><Primary label={s.continue} onPress={() => setStep("aadhaarOtp")} disabled={aadhaarNumber.replace(/\\D/g,"").length !== 12 || loading}/>
+    </Card>}
+
+    {step === "aadhaarOtp" && <Card>
+      <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.otpTitle}</Text><Text style={styles.muted}>{s.otpHint}</Text>
+      <View style={styles.otpInfo}><Text style={styles.otpCheck}>✓</Text><Text style={styles.otpInfoText}>{s.otpTitle}</Text></View>
+      <TextInput accessibilityLabel={s.otpPlaceholder} keyboardType="number-pad" maxLength={6} value={otp} onChangeText={setOtp} placeholder={s.otpPlaceholder} placeholderTextColor={theme.colors.muted} style={styles.input}/>
+      <Primary label={s.verifyOtp} onPress={() => setStep("instructions")} disabled={otp.replace(/\D/g,"").length < 4}/>
     </Card>}
 
     {step === "instructions" && <Card>
-      <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.voiceTitle}</Text><Text style={styles.muted}>{s.voiceIntro}</Text>
-      <View style={styles.instructionCard}>
-        {s.voiceSteps.map((item, index) => <View key={item} style={styles.instructionRow}>
-          <View style={styles.instructionNumber}><Text style={styles.instructionNumberText}>{index + 1}</Text></View>
-          <Text style={styles.instructionText}>{item}</Text>
-        </View>)}
-      </View>
-      <View style={styles.voiceControls}>
-        <Pressable accessibilityRole="button" accessibilityLabel={voiceEnabled ? s.replayInstructions : s.enableVoice} style={styles.outlineButton} onPress={() => {
-          if (!voiceEnabled) setVoiceEnabled(true);
-          setTimeout(speakInstructions, 0);
-        }}><Text style={styles.outlineText}>🔊 {voiceEnabled ? s.replayInstructions : s.enableVoice}</Text></Pressable>
-        {voiceEnabled && <Pressable accessibilityRole="button" accessibilityLabel={s.disableVoice} onPress={() => { setVoiceEnabled(false); void stopGuidance(); }}>
-          <Text style={styles.textButton}>{s.disableVoice}</Text>
-        </Pressable>}
-      </View>
-      
-      <Primary label={s.continueToAadhaar} onPress={() => { void stopGuidance(); setStep("auth"); }} />
+      <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.faceReady}</Text><Text style={styles.muted}>{s.faceReadyText}</Text>
+      <View style={styles.facePreparationCard}><View style={styles.faceGuide}><View style={styles.faceFrame}/></View><View style={styles.faceChecklist}><Text>✓ {s.voiceSteps[0]}</Text><Text>✓ {s.voiceSteps[1]}</Text><Text>✓ {s.voiceSteps[2]}</Text><Text>✓ {s.voiceSteps[3]}</Text></View></View>
+      <Primary label={s.ready} onPress={() => setStep("faceCapture")} />
+    </Card>}
+
+    {step === "faceCapture" && <Card>
+      <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.headingCenter}>{s.faceTitle}</Text>
+      <View style={styles.faceCaptureCard}><View style={styles.faceFrameLarge}/><View style={styles.capturePill}><Text style={styles.capturePillText}>{s.faceCapture}</Text></View></View>
+      <Primary label={s.openAadhaar} onPress={authenticate} disabled={loading}/>
     </Card>}
 
     {(step === "authenticating" || step === "authResult" || step === "pdsProcessing" || step === "processing") && <Card>
@@ -185,7 +183,7 @@ export default function HomeScreen() {
     </Card>}
 
     {error ? <View accessibilityRole="alert" style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
-    {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "authenticating"&&step !== "authResult"&&step !== "pdsProcessing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
+    {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "authenticating"&&step !== "authResult"&&step !== "pdsProcessing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":step==="auth"?"consent":step==="aadhaarOtp"?"auth":step==="instructions"?"aadhaarOtp":"instructions")}><Text style={styles.back}>{s.back}</Text></Pressable>}
     
   </ScrollView></SafeAreaView>;
 }
