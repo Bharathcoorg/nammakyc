@@ -59,7 +59,7 @@ export default function HomeScreen() {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
         method: "POST",
         headers: { "Idempotency-Key": Crypto.randomUUID() },
-        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language }),
+        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language, authenticationMethod: "face" }),
       });
       submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "processing") setStep("processing");
       let status = response;
