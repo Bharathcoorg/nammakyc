@@ -10,5 +10,5 @@ export interface KycResult {
 }
 
 export interface KycProvider {
-  submit(request: KycSubmission): Promise<KycResult>;
+  submit(request: KycSubmission, signal?: AbortSignal): Promise<KycResult>;
 }
