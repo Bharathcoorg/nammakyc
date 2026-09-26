@@ -11,7 +11,7 @@ import { createTransactionRepository } from "./repositories/factory";
 import { ConsoleAuditSink, type AuditSink } from "./observability/events";
 import { TransactionService } from "./services/transactions";
 import { queueRetryDelaySeconds } from "./queues/retry";
-import { ConsoleMetricsSink } from "./observability/metrics";
+import { ConsoleMetricsSink, NoopMetricsSink } from "./observability/metrics";
 
 export interface QueueBinding {
   send(body: unknown): Promise<void>;
