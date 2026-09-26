@@ -20,7 +20,7 @@ const EN={
   success:"e-KYC Completed Successfully!",successText:"Your identity verification has been completed for this service.",
   reference:"Reference ID",referenceValue:"NKYC-DEMO-2026-0001",status:"Completed",service:"Ration Card e-KYC",
   guidanceTitle:"Verification guide",guidanceIntro:"Follow these simple steps before the secure provider handoff.",playGuidance:"Play guidance",stopGuidance:"Stop guidance",statusTitle:"e-KYC Status",submitted:"Request submitted",otpDone:"OTP verified",faceDone:"Biometric verification completed",pdsDone:"Ration-card e-KYC completed",
-  steps:["Welcome","Ration Card","Members","Consent","OTP","Face","Verify","Complete","Status"],demo:"DEMO",simulation:"Simulation only"
+  steps:["Welcome","Ration Card","Members","Consent","OTP","Face","Verify","Complete","Status"],demo:"DEMO",simulation:"Simulation only",stageEyebrow:"NAMMA KYC",stageTitle:"Ration-card e-KYC, from start to completion.",stageLede:"A clean, citizen-first journey for Karnataka services.",journey:"Citizen journey"
 };
 const KN={
   app:"ನಮ್ಮ KYC",gov:"ಕರ್ನಾಟಕ ಸರ್ಕಾರ",tagline:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",language:"English",
@@ -43,7 +43,7 @@ const KN={
   success:"ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",successText:"ಈ ಸೇವೆಗಾಗಿ ನಿಮ್ಮ ಗುರುತು ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ.",
   reference:"ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",referenceValue:"NKYC-DEMO-2026-0001",status:"ಪೂರ್ಣಗೊಂಡಿದೆ",service:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
   guidanceTitle:"ಪರಿಶೀಲನೆ ಮಾರ್ಗದರ್ಶಿ",guidanceIntro:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಯುವ ಮೊದಲು ಈ ಸರಳ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.",playGuidance:"ಮಾರ್ಗದರ್ಶನ ಕೇಳಿ",stopGuidance:"ಮಾರ್ಗದರ್ಶನ ನಿಲ್ಲಿಸಿ",statusTitle:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",otpDone:"OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",faceDone:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pdsDone:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
-  steps:["ಸ್ವಾಗತ","ಪಡಿತರ ಚೀಟಿ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","OTP","ಮುಖ","ಪರಿಶೀಲನೆ","ಪೂರ್ಣ","ಸ್ಥಿತಿ"],demo:"ಡೆಮೊ",simulation:"ಸಿಮ್ಯುಲೇಶನ್ ಮಾತ್ರ"
+  steps:["ಸ್ವಾಗತ","ಪಡಿತರ ಚೀಟಿ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","OTP","ಮುಖ","ಪರಿಶೀಲನೆ","ಪೂರ್ಣ","ಸ್ಥಿತಿ"],demo:"ಡೆಮೊ",simulation:"ಸಿಮ್ಯುಲೇಶನ್ ಮಾತ್ರ",stageEyebrow:"ನಮ್ಮ KYC",stageTitle:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ — ಆರಂಭದಿಂದ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ.",stageLede:"ಕರ್ನಾಟಕ ಸೇವೆಗಳಿಗಾಗಿ ಸರಳ, ನಾಗರಿಕ-ಕೇಂದ್ರಿತ ಅನುಭವ.",journey:"ನಾಗರಿಕರ ಪ್ರಯಾಣ"
 };
 let lang="en",step=0;
 const S=()=>lang==="en"?EN:KN;
@@ -59,6 +59,13 @@ function render(){
  document.getElementById("language").textContent=s.language;
  document.getElementById("start").textContent=s.getStarted;
  document.getElementById("reset").textContent=s.reset;
+ document.getElementById("demo-badge").textContent=s.demo;
+ document.getElementById("demo-mode").textContent=s.simulation;
+ document.getElementById("stage-eyebrow").textContent=s.stageEyebrow;
+ document.getElementById("stage-title").textContent=s.stageTitle;
+ document.getElementById("stage-lede").textContent=s.stageLede;
+ document.getElementById("journey-eyebrow").textContent=s.stageEyebrow;
+ document.getElementById("journey-title").textContent=s.journey;
  document.querySelector(".app-top").classList.toggle("hidden",step===0); document.getElementById("progress").classList.toggle("hidden",step===0);
  document.getElementById("progress-fill").style.width=(step?Math.round(step/9*100):0)+"%";
  document.getElementById("progress-label").textContent=step?s.steps[step-1]+" · "+step+" / 9":"";
