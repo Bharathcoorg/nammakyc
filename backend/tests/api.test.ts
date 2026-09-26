@@ -54,7 +54,7 @@ describe("KYC API", () => {
     }),{QUEUE:queue});
     expect(response?.status).toBe(202);
     const body=await response?.json() as {requestId:string;status:string};
-    expect(body.status).toBe("validating");
+    expect(body.status).toBe("aadhaar_pending");
     expect(queue.drain()).toHaveLength(1);
   });
 
