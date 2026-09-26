@@ -11,7 +11,7 @@ const job: KycJob = {
     householdReference:"RC-1",
     memberReference:"M-1",
     consentReference:"consent-1",
-    idempotencyKey:"idempotency-key-12345"
+    idempotencyKey:"0000000000000000"
   },
   enqueuedAt:"2026-09-26T12:00:00.000Z",
   attempt:0
