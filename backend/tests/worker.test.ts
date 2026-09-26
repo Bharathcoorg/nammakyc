@@ -1,3 +1,4 @@
+import { AppError } from "../src/domain/errors";
 import { describe, expect, it } from "vitest";
 import { KycWorker } from "../src/queues/worker";
 import type { TransactionService } from "../src/services/transactions";
@@ -30,7 +31,7 @@ describe("KycWorker", () => {
   it("requests a retry for transient processing failure", async () => {
     const service = {
       get: async () => ({ requestId:"request-1", householdReference:"RC-1", memberReference:"M-1", status:"retrying", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:01.000Z" }),
-      process: async () => { throw Object.assign(new Error("temporary"), { code:"UPSTREAM_UNAVAILABLE" }); },
+      process: async () => { throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503); },
       markFailed: async () => { throw new Error("must not fail yet"); }
     } as unknown as TransactionService;
     const result = await new KycWorker(service).consume(job);
