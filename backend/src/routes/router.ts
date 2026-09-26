@@ -72,7 +72,8 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const householdService=new HouseholdService(pds);
    return Response.json(await householdService.lookup(decodeURIComponent(householdMatch[1])),{headers:jsonHeaders});
   }catch(error){
-   if(error instanceof AppError) return Response.json({error:{code:error.code,message:error.message}},{status:error.status,headers:jsonHeaders});
+   if(error instanceof AppError) { void metrics.increment("http.errors",{route:url.pathname}); return Response.json({error:{code:error.code,message:error.message}},{status:error.status,headers:jsonHeaders}); }
+   void metrics.increment("http.errors",{route:url.pathname});
    return Response.json({error:{code:"INVALID_REQUEST",message:"Invalid ration card reference"}},{status:400,headers:jsonHeaders});
   }
  }
@@ -129,6 +130,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    await authorize(env,"kyc.status.read",request,decodeURIComponent(statusMatch[1]));
   } catch(error) {
    const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
+   void metrics.increment("http.errors",{route:url.pathname});
    return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
   }
   try {
@@ -138,6 +140,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders});
   } catch(error) {
    const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
+   void metrics.increment("http.errors",{route:url.pathname});
    return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
   }
  }
