@@ -7,6 +7,7 @@ import type { ConsentArtifact } from "../src/domain/kyc/consent";
 class FakeD1 {
   transactions = new Map<string, Record<string, unknown>>();
   idempotency = new Map<string, Record<string, unknown>>();
+  consent = new Map<string, Record<string, unknown>>();
 
   prepare(query: string) {
     const self = this;
@@ -35,6 +36,7 @@ class FakeD1 {
     // and values through the helper below so the atomic behavior is testable.
     const txSnapshot = new Map(this.transactions);
     const idemSnapshot = new Map(this.idempotency);
+    const consentSnapshot = new Map(this.consent);
     try {
       for (const statement of statements) {
         const query = (statement as any).query ?? "";
@@ -60,12 +62,24 @@ class FakeD1 {
             request_id:values[2],
             created_at:values[3]
           });
+        } else if (query.includes("INSERT INTO consent_artifacts")) {
+          const key = String(values[0]);
+          if (this.consent.has(key)) throw new Error("UNIQUE constraint failed");
+          this.consent.set(key, {
+            consent_reference:key,
+            purpose:values[1],
+            policy_version:values[2],
+            language:values[3],
+            captured_at:values[4],
+            transaction_reference:values[5]
+          });
         }
       }
       return statements.map(() => ({ meta:{ changes:1 } }));
     } catch (error) {
       this.transactions = txSnapshot;
       this.idempotency = idemSnapshot;
+      this.consent = consentSnapshot;
       throw error;
     }
   }
@@ -110,6 +124,7 @@ describe("D1TransactionRepository", () => {
     expect(await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId))).toBe(true);
     expect(await repository.get(tx.requestId)).toBeDefined();
     expect(await repository.getIdempotency("idempotency-key-12345")).toBeDefined();
+    expect(db.consent.get("consent-1")?.transaction_reference).toBe(tx.requestId);
   });
 
   it("does not leave a transaction behind when the idempotency insert conflicts", async () => {
