@@ -1,82 +1,82 @@
-const EMBLEM="./assets/namma-kyc-mark.svg";
-
+const MARK="./assets/namma-kyc-mark.svg";
 const EN={
-  app:"Namma KYC", gov:"Karnataka", tagline:"Ration-card e-KYC",
-  getStarted:"Get Started", reset:"Reset", home:"Home", welcome:"Welcome, Citizen",
-  welcomeText:"Complete your ration-card e-KYC journey.",
-  ration:"Ration Card Reference", rationText:"Demo reference",
-  member:"Select Member", consent:"Consent & Information", instructions:"Get Ready",
-  aadhaar:"Aadhaar Verification", provider:"Aadhaar verification",
-  faceTitle:"Face Authentication / Face RD", faceText:"Secure face verification through the authorized service.",
-  otpTitle:"OTP Authentication", otpText:"OTP verification when enabled by the authorized service.",
-  continue:"Continue", voice:"Optional voice preparation", voiceText:"Short voice guidance before verification.",
-  preparation:"Before verification", prep1:"Use a well-lit place.", prep2:"Keep your face clearly visible.", prep3:"Follow the prompts in the authorized verification app.", external:"Secure verification",
-  externalText:"Simulation of the verification step.",
-  authResult:"Authentication result", authResultText:"Verification complete. Continuing to PDS e-KYC.",
-  pds:"PDS e-KYC", pdsText:"The PDS e-KYC stage begins after an authentication result is received.",
-  processing:"Processing", pdsBoundary:"Authorized PDS provider boundary",
-  success:"e-KYC Completed — Simulation", successText:"The complete journey finished in simulation.",
-  status:"e-KYC Status", submitted:"Request submitted", auth:"Aadhaar authentication result received", pdsDone:"PDS e-KYC processing completed",
-  reference:"Reference ID", referenceValue:"DEMO-NKYC-2026-0001", fictional:"Fictional reference value",
-  profile:"Profile", help:"Help & FAQ", language:"ಕನ್ನಡ",
-  demo:"DEMO",
-  steps:["Home","Member","Consent","Get Ready","Aadhaar","Result","PDS","Complete","Status","Profile"]
+  app:"Namma KYC", gov:"Government of Karnataka", tagline:"Karnataka ration-card e-KYC", language:"ಕನ್ನಡ",
+  getStarted:"Get Started", continue:"Continue", reset:"Start again", back:"Back",
+  welcome:"Let's complete your e-KYC for Karnataka services.", welcomeText:"For you and your family.",
+  feature1:"Ration Card e-KYC",feature1Text:"For you and your family",feature2:"Secure & Authorized",feature2Text:"Uses authorized government systems",feature3:"Your Data, Your Privacy",feature3Text:"Only what is required",feature4:"Fast & Easy",feature4Text:"Complete the journey in a few minutes.",
+  ration:"Ration card number",rationHint:"Use the fictional demo card below.",demoRation:"KA-DEMO-2026-001",
+  members:"Household members",selectMember:"Select the member completing e-KYC.",
+  required:"KYC required",recent:"Biometric verification completed recently",
+  consent:"Consent & Information",consentText:"Review the information before continuing.",
+  consent1:"Aadhaar verification is completed through the authorized service.",consent2:"Verification uses the authorized Aadhaar process.",consent3:"Only the information required for this service is used.",
+  agree:"I Agree & Continue",
+  aadhaar:"Aadhaar verification",aadhaarText:"Enter Aadhaar details to continue with OTP authentication.",
+  otp:"OTP verification",otpText:"An OTP is sent to the Aadhaar-registered mobile number.",demoOtp:"Demo OTP verified",
+  verifyOtp:"Verify OTP",faceReady:"Get Ready for Face Scan",faceText:"Make sure you are in a well-lit place and follow the instructions.",
+  face1:"Remove anything that covers your face",face2:"Look directly at the camera",face3:"Keep your face inside the frame",face4:"Keep the phone steady",ready:"I'm Ready",
+  capture:"Face Authentication",captureText:"Keep your face inside the frame",
+  verifying:"Verifying Identity",wait:"Please wait while authentication is completed.",
+  authDone:"Aadhaar verification complete",pds:"Ration-card e-KYC",processing:"Finalizing your e-KYC",
+  success:"e-KYC Completed Successfully!",successText:"Your identity verification has been completed for this service.",
+  reference:"Reference ID",referenceValue:"NKYC-DEMO-2026-0001",status:"Completed",service:"Ration Card e-KYC",
+  statusTitle:"e-KYC Status",submitted:"Request submitted",otpDone:"OTP verified",faceDone:"Biometric verification completed",pdsDone:"Ration-card e-KYC completed",
+  steps:["Welcome","Ration Card","Members","Consent","OTP","Face","Verify","Complete","Status"],demo:"DEMO",simulation:"Simulation only"
 };
 const KN={
-  app:"ನಮ್ಮ KYC", gov:"ಕರ್ನಾಟಕ", tagline:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
-  getStarted:"ಪ್ರಾರಂಭಿಸಿ", reset:"ಮರುಹೊಂದಿಸಿ", home:"ಮುಖಪುಟ", welcome:"ಸ್ವಾಗತ, ನಾಗರಿಕರೇ",
-  welcomeText:"ನಿಮ್ಮ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.",
-  ration:"ಪಡಿತರ ಚೀಟಿ ರೆಫರೆನ್ಸ್", rationText:"ಡೆಮೊ ರೆಫರೆನ್ಸ್",
-  member:"ಸದಸ್ಯರನ್ನು ಆಯ್ಕೆಮಾಡಿ", consent:"ಸಮ್ಮತಿ ಮತ್ತು ಮಾಹಿತಿ", instructions:"ಸಿದ್ಧರಾಗಿ",
-  aadhaar:"ಆಧಾರ್ ಪರಿಶೀಲನೆ", provider:"ಆಧಾರ್ ಪರಿಶೀಲನೆ",
-  faceTitle:"ಮುಖ ದೃಢೀಕರಣ / Face RD", faceText:"ಅನುಮೋದಿತ ಸೇವೆಯ ಮೂಲಕ ಸುರಕ್ಷಿತ ಮುಖ ಪರಿಶೀಲನೆ.",
-  otpTitle:"OTP ದೃಢೀಕರಣ", otpText:"ಅನುಮೋದಿತ ಸೇವೆಯಲ್ಲಿ ಲಭ್ಯವಿರುವಾಗ OTP ಪರಿಶೀಲನೆ.",
-  continue:"ಮುಂದುವರಿಸಿ", voice:"ಐಚ್ಛಿಕ ಧ್ವನಿ ಸಿದ್ಧತೆ", voiceText:"ಪರಿಶೀಲನೆಗೆ ಮೊದಲು ಚಿಕ್ಕ ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ.",
-  preparation:"ಪರಿಶೀಲನೆಗೆ ಮೊದಲು", prep1:"ಉತ್ತಮ ಬೆಳಕು ಇರುವ ಸ್ಥಳದಲ್ಲಿರಿ.", prep2:"ನಿಮ್ಮ ಮುಖವು ಸ್ಪಷ್ಟವಾಗಿ ಕಾಣುವಂತೆ ಮಾಡಿ.", prep3:"ಅನುಮೋದಿತ ಪರಿಶೀಲನಾ ಅಪ್ಲಿಕೇಶನ್‌ನ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.", external:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನೆ",
-  externalText:"ಪರಿಶೀಲನಾ ಹಂತದ ಸಿಮ್ಯುಲೇಶನ್.",
-  authResult:"ದೃಢೀಕರಣ ಫಲಿತಾಂಶ", authResultText:"ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ. PDS ಇ-ಕೆವೈಸಿಗೆ ಮುಂದುವರಿಯುತ್ತಿದೆ.",
-  pds:"PDS ಇ-ಕೆವೈಸಿ", pdsText:"ದೃಢೀಕರಣದ ಫಲಿತಾಂಶ ಬಂದ ನಂತರ PDS ಇ-ಕೆವೈಸಿ ಹಂತ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.",
-  processing:"ಪ್ರಕ್ರಿಯೆ", pdsBoundary:"ಅನುಮೋದಿತ PDS ಪ್ರೊವೈಡರ್ ಗಡಿ",
-  success:"ಇ-ಕೆವೈಸಿ ಪೂರ್ಣ — ಸಿಮ್ಯುಲೇಶನ್", successText:"ಸಂಪೂರ್ಣ ಪ್ರಕ್ರಿಯೆ ಸಿಮ್ಯುಲೇಶನ್‌ನಲ್ಲಿ ಪೂರ್ಣಗೊಂಡಿದೆ.",
-  status:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ", submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ", auth:"ಆಧಾರ್ ದೃಢೀಕರಣ ಫಲಿತಾಂಶ ಸ್ವೀಕರಿಸಲಾಗಿದೆ", pdsDone:"PDS ಇ-ಕೆವೈಸಿ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡಿದೆ",
-  reference:"ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ", referenceValue:"DEMO-NKYC-2026-0001", fictional:"ಕಾಲ್ಪನಿಕ ಉಲ್ಲೇಖ ಮೌಲ್ಯ",
-  profile:"ಪ್ರೊಫೈಲ್", help:"ಸಹಾಯ ಮತ್ತು FAQ", language:"English",
-  demo:"ಡೆಮೊ",
-  steps:["ಮುಖಪುಟ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","ಸಿದ್ಧತೆ","ಆಧಾರ್","ಫಲಿತಾಂಶ","PDS","ಪೂರ್ಣ","ಸ್ಥಿತಿ","ಪ್ರೊಫೈಲ್"]
+  app:"ನಮ್ಮ KYC",gov:"ಕರ್ನಾಟಕ ಸರ್ಕಾರ",tagline:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",language:"English",
+  getStarted:"ಪ್ರಾರಂಭಿಸಿ",continue:"ಮುಂದುವರಿಸಿ",reset:"ಮತ್ತೆ ಪ್ರಾರಂಭಿಸಿ",back:"ಹಿಂದೆ",
+  welcome:"ಕರ್ನಾಟಕ ಸೇವೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಇ-ಕೆವೈಸಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸೋಣ.",welcomeText:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ.",
+  feature1:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",feature1Text:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ",feature2:"ಸುರಕ್ಷಿತ ಮತ್ತು ಅನುಮೋದಿತ",feature2Text:"ಅನುಮೋದಿತ ಸರ್ಕಾರಿ ವ್ಯವಸ್ಥೆಗಳನ್ನು ಬಳಸುತ್ತದೆ",feature3:"ನಿಮ್ಮ ಡೇಟಾ, ನಿಮ್ಮ ಗೌಪ್ಯತೆ",feature3Text:"ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ",feature4:"ವೇಗ ಮತ್ತು ಸರಳ",feature4Text:"ಕೆಲವೇ ನಿಮಿಷಗಳಲ್ಲಿ ಪೂರ್ಣಗೊಳಿಸಿ.",
+  ration:"ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",rationHint:"ಕೆಳಗಿನ ಕಾಲ್ಪನಿಕ ಡೆಮೊ ಕಾರ್ಡ್ ಬಳಸಿ.",demoRation:"KA-DEMO-2026-001",
+  members:"ಕುಟುಂಬದ ಸದಸ್ಯರು",selectMember:"ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳಿಸುವ ಸದಸ್ಯರನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+  required:"KYC ಅಗತ್ಯವಿದೆ",recent:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಇತ್ತೀಚೆಗೆ ಪೂರ್ಣಗೊಂಡಿದೆ",
+  consent:"ಸಮ್ಮತಿ ಮತ್ತು ಮಾಹಿತಿ",consentText:"ಮುಂದುವರಿಸುವ ಮೊದಲು ಮಾಹಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.",
+  consent1:"ಆಧಾರ್ ಪರಿಶೀಲನೆ ಅನುಮೋದಿತ ಸೇವೆಯ ಮೂಲಕ ನಡೆಯುತ್ತದೆ.",consent2:"ಅನುಮೋದಿತ ಆಧಾರ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ.",consent3:"ಈ ಸೇವೆಗೆ ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ ಬಳಸಲಾಗುತ್ತದೆ.",
+  agree:"ಒಪ್ಪುತ್ತೇನೆ ಮತ್ತು ಮುಂದುವರಿಸಿ",
+  aadhaar:"ಆಧಾರ್ ಪರಿಶೀಲನೆ",aadhaarText:"OTP ದೃಢೀಕರಣಕ್ಕಾಗಿ ಆಧಾರ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ.",
+  otp:"OTP ಪರಿಶೀಲನೆ",otpText:"ಆಧಾರ್‌ಗೆ ನೋಂದಾಯಿಸಿದ ಮೊಬೈಲ್‌ಗೆ OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ.",demoOtp:"ಡೆಮೊ OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+  verifyOtp:"OTP ಪರಿಶೀಲಿಸಿ",faceReady:"ಮುಖ ಸ್ಕ್ಯಾನ್‌ಗೆ ಸಿದ್ಧರಾಗಿ",faceText:"ಉತ್ತಮ ಬೆಳಕಿನ ಸ್ಥಳದಲ್ಲಿದ್ದು ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.",
+  face1:"ಮುಖವನ್ನು ಮುಚ್ಚಿರುವ ವಸ್ತುಗಳನ್ನು ತೆಗೆದುಹಾಕಿ",face2:"ಕ್ಯಾಮೆರಾವನ್ನು ನೇರವಾಗಿ ನೋಡಿ",face3:"ನಿಮ್ಮ ಮುಖವನ್ನು ಫ್ರೇಮ್ ಒಳಗೆ ಇರಿಸಿ",face4:"ಫೋನ್ ಅನ್ನು ಸ್ಥಿರವಾಗಿರಿಸಿ",ready:"ನಾನು ಸಿದ್ಧ",
+  capture:"ಮುಖ ದೃಢೀಕರಣ",captureText:"ನಿಮ್ಮ ಮುಖವನ್ನು ಫ್ರೇಮ್ ಒಳಗೆ ಇರಿಸಿ",
+  verifying:"ಗುರುತು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ",wait:"ದೃಢೀಕರಣ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಕಾಯಿರಿ.",
+  authDone:"ಆಧಾರ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pds:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",processing:"ನಿಮ್ಮ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳ್ಳುತ್ತಿದೆ",
+  success:"ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",successText:"ಈ ಸೇವೆಗಾಗಿ ನಿಮ್ಮ ಗುರುತು ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ.",
+  reference:"ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",referenceValue:"NKYC-DEMO-2026-0001",status:"ಪೂರ್ಣಗೊಂಡಿದೆ",service:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
+  statusTitle:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",otpDone:"OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",faceDone:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pdsDone:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
+  steps:["ಸ್ವಾಗತ","ಪಡಿತರ ಚೀಟಿ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","OTP","ಮುಖ","ಪರಿಶೀಲನೆ","ಪೂರ್ಣ","ಸ್ಥಿತಿ"],demo:"ಡೆಮೊ",simulation:"ಸಿಮ್ಯುಲೇಶನ್ ಮಾತ್ರ"
 };
 let lang="en",step=0;
-const memberName=()=>lang==="en"?"Sujatha Devi":"ಸುಜಾತಾ ದೇವಿ";
-function S(){return lang==="en"?EN:KN}
+const S=()=>lang==="en"?EN:KN;
+function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().app+'">'}
+function emblem(){return '<div class="karnataka-emblem" aria-label="'+S().gov+'"><div class="emblem-lions">♛</div><div class="emblem-shield">✦</div><div class="emblem-base"></div></div>'}
+function soudha(){return '<div class="soudha-art"><div class="soudha-dome"></div><div class="soudha-main"></div><div class="soudha-wing left"></div><div class="soudha-wing right"></div></div>'}
+function family(){return '<div class="family-art"><div class="person father"></div><div class="person mother"></div><div class="person child"></div></div>'}
+function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
+function feature(icon,title,text){return '<div class="feature-row"><span class="feature-icon '+icon+'"></span><div><b>'+title+'</b><small>'+text+'</small></div></div>'}
 function render(){
  const s=S();
- document.querySelector(".app-top").classList.toggle("hidden",step===0);
  document.getElementById("tagline").textContent=s.tagline;
  document.getElementById("language").textContent=s.language;
  document.getElementById("start").textContent=s.getStarted;
  document.getElementById("reset").textContent=s.reset;
- const pct=step>0?Math.round(step/10*100):0;
  document.getElementById("progress").classList.toggle("hidden",step===0);
- document.getElementById("progress-fill").style.width=pct+"%";
- document.getElementById("progress-label").textContent=step>0&&step<=10?s.steps[step-1]+" · "+step+" / 10":"";
+ document.getElementById("progress-fill").style.width=(step?Math.round(step/9*100):0)+"%";
+ document.getElementById("progress-label").textContent=step?s.steps[step-1]+" · "+step+" / 9":"";
  document.getElementById("steps").innerHTML=s.steps.map((x,i)=>'<button class="demo-step '+(i===step-1?"active":"")+'" data-step="'+(i+1)+'">'+(i+1)+". "+x+"</button>").join("");
  document.querySelectorAll(".demo-step").forEach(b=>b.onclick=()=>{step=Number(b.dataset.step);render()});
- document.getElementById("screen").innerHTML=screen(s);
- wire();
+ document.getElementById("screen").innerHTML=screen(s); wire();
 }
-function emblem(){return '<img class="emblem-img" src="'+EMBLEM+'" alt="'+S().app+'">'}
-function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
 function screen(s){
- if(step===0)return '<div class="splash"><div class="splash-emblem">'+emblem()+'</div><div class="gov">'+s.gov+'</div><h2>'+s.app+'</h2><p class="splash-tag">'+s.tagline+'</p><p class="motto">'+s.demo+'</p>'+button(s.getStarted,1)+'</div>';
- if(step===1)return '<div class="home-screen"><div class="home-head">'+emblem()+'<div><small>'+s.gov+'</small><h2>'+s.welcome+'</h2></div></div><div class="kyc-card"><div class="kyc-icon">▣</div><div><b>'+s.ration+'</b><small>'+s.welcomeText+'</small></div></div><div class="notice">'+s.rationText+'</div>'+button(s.continue,2)+'</div>';
- if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.member+'</b></div><div class="member-row selected"><span class="avatar">'+memberName().charAt(0)+'</span><span><b>'+memberName()+'</b><small>'+s.ration+'</small></span><i>✓</i></div>'+button(s.continue,3)+'</div>';
- if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.consent+'</b></div><div class="security-list"><p>✓ '+s.provider+'</p><p>✓ '+s.faceText+'</p><p>✓ '+s.otpText+'</p><p>✓ '+s.rationText+'</p></div>'+button(s.continue,4)+'</div>';
- if(step===4)return '<div class="screen-card"><div class="screen-head"><b>'+s.instructions+'</b></div><h3>'+s.preparation+'</h3><div class="timeline">'+[s.prep1,s.prep2,s.prep3].map((x,i)=>'<div class="timeline-row"><span class="dot done">'+(i+1)+'</span><p>'+x+'</p></div>').join("")+'</div><div class="notice"><b>'+s.voice+'</b><br>'+s.voiceText+'</div>'+button(s.continue,5)+'</div>';
- if(step===5)return '<div class="screen-card"><div class="screen-head"><b>'+s.aadhaar+'</b></div><div class="provider-label">'+s.provider+'<br><small>'+s.external+'</small></div><h3>'+s.faceTitle+'</h3><p>'+s.faceText+'</p><h3>'+s.otpTitle+'</h3><p>'+s.otpText+'</p><div class="face-boundary"><div class="face-placeholder">↗</div></div><div class="notice">'+s.externalText+'</div>'+button(s.continue,6)+'</div>';
- if(step===6)return '<div class="screen-card center"><div class="success-check">✓</div><h2>'+s.authResult+'</h2><p>'+s.authResultText+'</p><div class="details"><small>'+s.provider+'</small><small>'+s.external+'</small></div>'+button(s.continue,7)+'</div>';
- if(step===7)return '<div class="screen-card"><div class="screen-head"><b>'+s.pds+'</b></div><h2>'+s.processing+'</h2><p>'+s.pdsText+'</p><div class="timeline">'+[[s.auth,"done"],[s.pdsDone,"active"]].map(x=>'<div class="timeline-row"><span class="dot '+x[1]+'">'+(x[1]==="done"?"✓":"•")+'</span><p>'+x[0]+'</p></div>').join("")+'</div><div class="notice"><b>'+s.pdsBoundary+'</b><br>'+s.pdsText+'</div>'+button(s.continue,8)+'</div>';
- if(step===8)return '<div class="screen-card center success"><div class="success-check">✓</div><h2>'+s.success+'</h2><p>'+s.successText+'</p><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code><small>'+s.fictional+'</small></div>'+button(s.continue,9)+'</div>';
- if(step===9)return '<div class="screen-card"><div class="screen-head"><b>'+s.status+'</b></div><div class="status-member"><span class="avatar">'+memberName().charAt(0)+'</span><b>'+memberName()+'</b></div><div class="timeline big">'+[s.submitted,s.auth,s.pdsDone].map((x,i)=>'<div class="timeline-row"><span class="dot done">✓</span><p><b>'+x+'</b></p></div>').join("")+'</div><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div>'+button(s.reset,0,"secondary")+'</div>';
- return '<div class="screen-card"><div class="profile-top"><div class="profile-avatar">N</div><h2>'+s.profile+'</h2></div><div class="profile-row">'+s.help+' <b>›</b></div>'+button(s.reset,0,"secondary")+'</div>';
+ if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">Our People · Our Karnataka · A Brighter Tomorrow</p>'+button(s.getStarted,1)+'</div>';
+ if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
+ if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
+ if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
+ if(step===4)return '<div class="screen-card"><div class="screen-head"><b>'+s.consent+'</b></div><p>'+s.consentText+'</p><div class="consent-list"><p>✓ '+s.consent1+'</p><p>✓ '+s.consent2+'</p><p>✓ '+s.consent3+'</p></div>'+button(s.agree,5)+'</div>';
+ if(step===5)return '<div class="screen-card"><div class="screen-head"><b>'+s.otp+'</b></div><p>'+s.aadhaarText+'</p><div class="aadhaar-field">•••• •••• ••••</div><div class="otp-box"><b>✓</b><span>'+s.demoOtp+'</span></div>'+button(s.verifyOtp,6)+'</div>';
+ if(step===6)return '<div class="screen-card"><div class="screen-head"><b>'+s.faceReady+'</b></div><p>'+s.faceText+'</p><div class="face-guide"><div class="face-outline"></div></div><div class="instruction-list"><p>✓ '+s.face1+'</p><p>✓ '+s.face2+'</p><p>✓ '+s.face3+'</p><p>✓ '+s.face4+'</p></div>'+button(s.ready,7)+'</div>';
+ if(step===7)return '<div class="screen-card center"><div class="capture-frame"><div class="face-outline"></div><span>'+s.captureText+'</span></div><div class="verify-title">'+s.verifying+'</div><p>'+s.wait+'</p><div class="timeline">'+[s.otpDone,s.faceDone,s.pdsDone].map((x,i)=>'<div class="timeline-row"><span class="dot '+(i<2?"done":"active")+'">'+(i<2?"✓":"•")+'</span><p>'+x+'</p></div>').join("")+'</div>'+button(s.continue,8)+'</div>';
+ if(step===8)return '<div class="screen-card center success"><div class="success-check">✓</div><h2>'+s.success+'</h2><p>'+s.successText+'</p><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code><small>'+s.service+'</small><b>'+s.status+'</b></div>'+button(s.continue,9)+'</div>';
+ return '<div class="screen-card"><div class="screen-head"><b>'+s.statusTitle+'</b></div><div class="status-member"><span class="avatar">A</span><b>Anitha Rao</b><small>'+s.faceDone+'</small></div><div class="timeline big">'+[s.submitted,s.otpDone,s.faceDone,s.pdsDone].map(x=>'<div class="timeline-row"><span class="dot done">✓</span><p><b>'+x+'</b></p></div>').join("")+'</div><div class="details"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div>'+button(s.reset,0,"secondary")+'</div>';
 }
 function wire(){
  document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{step=Number(b.dataset.next);render()});
