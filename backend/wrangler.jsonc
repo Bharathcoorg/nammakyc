@@ -4,7 +4,8 @@
  "main":"src/index.ts",
  "compatibility_date":"2026-09-26",
  "observability":{"enabled":true},
- "vars":{"ENVIRONMENT":"development"},
+ "triggers":{"crons":["0 * * * *"]},
+ "vars":{"ENVIRONMENT":"development","RETENTION_IDEMPOTENCY_DAYS":""},
  "d1_databases":[{"binding":"DB","database_name":"namma-kyc","database_id":"REPLACE_WITH_D1_DATABASE_ID","migrations_dir":"../infrastructure/cloudflare/migrations"}],
  "queues":{"producers":[{"binding":"KYC_QUEUE","queue":"namma-kyc-processing"}],"consumers":[{"queue":"namma-kyc-processing","max_batch_size":10,"max_batch_timeout":5,"max_retries":3,"dead_letter_queue":"namma-kyc-processing-dlq"}]}
 }
