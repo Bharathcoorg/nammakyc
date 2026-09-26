@@ -24,9 +24,9 @@ SELECT
   WHEN 'processing' THEN 'pds_processing'
   ELSE status
  END,
- COALESCE(authentication_method,'face'),
+ 'face',
  created_at,updated_at,
- CASE WHEN status IN ('processing','success') THEN provider_reference END,
+ CASE WHEN status='processing' THEN provider_reference END,
  CASE WHEN status='success' THEN provider_reference END,
  processing_claim_id
 FROM kyc_transactions;
