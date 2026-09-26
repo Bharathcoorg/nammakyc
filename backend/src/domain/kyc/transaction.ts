@@ -16,7 +16,7 @@ export interface KycTransaction {
   processingClaimId?:string;
 }
 
-export function createTransaction(requestId:string,householdReference:string,memberReference:string,authenticationMethod:AadhaarAuthenticationMethod="face",now=new Date().toISOString()):KycTransaction{
+export function createTransaction(requestId:string,householdReference:string,memberReference:string,authenticationMethod:AadhaarAuthenticationMethod="otp_face",now=new Date().toISOString()):KycTransaction{
  return {requestId,householdReference,memberReference,status:"received",authenticationMethod,createdAt:now,updatedAt:now};
 }
 
