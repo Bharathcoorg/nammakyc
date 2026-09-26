@@ -130,10 +130,15 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
    return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
   }
-  const repository=repositoryFor(env);
-  const tx=await repository.get(decodeURIComponent(statusMatch[1]));
-  if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
-  return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders});
+  try {
+   const repository=repositoryFor(env);
+   const tx=await repository.get(decodeURIComponent(statusMatch[1]));
+   if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
+   return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders});
+  } catch(error) {
+   const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
+   return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
+  }
  }
  return undefined;
 }
