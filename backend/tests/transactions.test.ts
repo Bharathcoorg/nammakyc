@@ -32,6 +32,16 @@ describe("TransactionService", () => {
     expect((await service.get(created.requestId))?.status).toBe("retrying");
   });
 
+  it("treats a rejected Aadhaar authentication as terminal", async () => {
+    const service = new TransactionService(new InMemoryTransactionRepository(), pds,
+      { startAuthentication: async () => ({ accepted: false }) },
+      { submit: async () => ({ success: true, providerReference: "kyc-1" }) });
+    const created = await service.create({ householdReference:"RC-1", memberReference:"M-1", consentReference:"consent-1", idempotencyKey:"rejected-auth-12345" });
+    await expect(service.process({ transactionId:created.requestId, memberReference:"M-1", consentReference:"consent-1" }))
+      .rejects.toMatchObject({ code:"AUTHENTICATION_FAILED", status:502 });
+    expect((await service.get(created.requestId))?.status).toBe("failed");
+  });
+
   it("rejects reusing an idempotency key for different input", async () => {
     const service = new TransactionService(new InMemoryTransactionRepository(), pds,
       { startAuthentication: async () => ({ accepted: true, providerReference: "auth-1" }) },
