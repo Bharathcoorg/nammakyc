@@ -23,15 +23,14 @@ export class D1TransactionRepository implements TransactionRepository{
    this.db.prepare("INSERT INTO kyc_transactions (request_id,household_reference,member_reference,status,created_at,updated_at,provider_reference) VALUES (?,?,?,?,?,?,?)")
     .bind(tx.requestId,tx.householdReference,tx.memberReference,tx.status,tx.createdAt,tx.updatedAt,tx.providerReference??null),
    this.db.prepare("INSERT INTO idempotency_keys (idempotency_key,request_fingerprint,request_id,created_at) VALUES (?,?,?,?)")
-    .bind(record.key,record.requestFingerprint,record.requestId,record.createdAt)
+    .bind(record.key,record.requestFingerprint,record.requestId,record.createdAt),
+   this.db.prepare("INSERT INTO consent_artifacts (consent_reference,purpose,policy_version,language,captured_at,transaction_reference) VALUES (?,?,?,?,?,?)")
+    .bind(consent.consentReference,consent.purpose,consent.policyVersion,consent.language,consent.capturedAt,consent.transactionReference)
   ];
   try{
    const results=await this.db.batch(statements);
    return results.every(r=>(r.meta?.changes??0)>0);
   }catch(error){
-   // D1 batches are atomic: a uniqueness/foreign-key conflict rolls back the batch.
-   // Re-read both keys so callers can safely distinguish a concurrent duplicate
-   // from an actual database failure without ever accepting a partial write.
    const [transaction,idempotency]=await Promise.all([
     this.get(tx.requestId),
     this.getIdempotency(record.key)

@@ -15,25 +15,18 @@ class FakeD1 {
     const statement = {
       query,
       get values() { return values; },
-      bind(...next: unknown[]) {
-        values = next;
-        return statement;
-      },
+      bind(...next: unknown[]) { values = next; return statement; },
       async first() {
         if (query.includes("FROM kyc_transactions")) return self.transactions.get(String(values[0]));
         if (query.includes("FROM idempotency_keys")) return self.idempotency.get(String(values[0]));
         return undefined;
       },
-      async run() {
-        return { meta: { changes: 1 } };
-      }
+      async run() { return { meta: { changes: 1 } }; }
     };
     return statement;
   }
 
-  async batch(statements: Array<{ query?: string; _values?: unknown[] }>) {
-    // The repository passes bound D1 statements. This fake records their SQL
-    // and values through the helper below so the atomic behavior is testable.
+  async batch(statements: Array<{ query?: string; values?: unknown[] }>) {
     const txSnapshot = new Map(this.transactions);
     const idemSnapshot = new Map(this.idempotency);
     const consentSnapshot = new Map(this.consent);
@@ -44,35 +37,15 @@ class FakeD1 {
         if (query.includes("INSERT INTO kyc_transactions")) {
           const key = String(values[0]);
           if (this.transactions.has(key)) throw new Error("UNIQUE constraint failed");
-          this.transactions.set(key, {
-            request_id:key,
-            household_reference:values[1],
-            member_reference:values[2],
-            status:values[3],
-            created_at:values[4],
-            updated_at:values[5],
-            provider_reference:values[6]
-          });
+          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[4], updated_at:values[5], provider_reference:values[6] });
         } else if (query.includes("INSERT INTO idempotency_keys")) {
           const key = String(values[0]);
           if (this.idempotency.has(key)) throw new Error("UNIQUE constraint failed");
-          this.idempotency.set(key, {
-            idempotency_key:key,
-            request_fingerprint:values[1],
-            request_id:values[2],
-            created_at:values[3]
-          });
+          this.idempotency.set(key, { idempotency_key:key, request_fingerprint:values[1], request_id:values[2], created_at:values[3] });
         } else if (query.includes("INSERT INTO consent_artifacts")) {
           const key = String(values[0]);
           if (this.consent.has(key)) throw new Error("UNIQUE constraint failed");
-          this.consent.set(key, {
-            consent_reference:key,
-            purpose:values[1],
-            policy_version:values[2],
-            language:values[3],
-            captured_at:values[4],
-            transaction_reference:values[5]
-          });
+          this.consent.set(key, { consent_reference:key, purpose:values[1], policy_version:values[2], language:values[3], captured_at:values[4], transaction_reference:values[5] });
         }
       }
       return statements.map(() => ({ meta:{ changes:1 } }));
@@ -86,38 +59,17 @@ class FakeD1 {
 }
 
 function transaction(requestId = "request-0000000001"): KycTransaction {
-  return {
-    requestId,
-    householdReference:"RC-1",
-    memberReference:"M-1",
-    status:"validating",
-    createdAt:"2026-09-26T12:00:00.000Z",
-    updatedAt:"2026-09-26T12:00:00.000Z"
-  };
+  return { requestId, householdReference:"RC-1", memberReference:"M-1", status:"validating", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:00.000Z" };
 }
-
 function consent(requestId: string, reference = "consent-1"): ConsentArtifact {
-  return {
-    consentReference:reference,
-    purpose:"ration-card-e-kyc",
-    policyVersion:"2026-09",
-    language:"en",
-    capturedAt:"2026-09-26T12:00:00.000Z",
-    transactionReference:requestId
-  };
+  return { consentReference:reference, purpose:"ration-card-e-kyc", policyVersion:"2026-09", language:"en", capturedAt:"2026-09-26T12:00:00.000Z", transactionReference:requestId };
 }
-
 function record(requestId: string, key = "idempotency-key-12345"): IdempotencyRecord {
-  return {
-    key,
-    requestFingerprint:"fingerprint",
-    requestId,
-    createdAt:"2026-09-26T12:00:00.000Z"
-  };
+  return { key, requestFingerprint:"fingerprint", requestId, createdAt:"2026-09-26T12:00:00.000Z" };
 }
 
 describe("D1TransactionRepository", () => {
-  it("creates transaction and idempotency record together", async () => {
+  it("creates transaction, idempotency, and consent atomically", async () => {
     const db = new FakeD1();
     const repository = new D1TransactionRepository(db);
     const tx = transaction();
@@ -136,5 +88,16 @@ describe("D1TransactionRepository", () => {
     expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId), consent(conflicting.requestId))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
     expect((await repository.getIdempotency("idempotency-key-12345"))?.requestId).toBe("request-existing");
+  });
+
+  it("rolls back all writes when the consent reference conflicts", async () => {
+    const db = new FakeD1();
+    const repository = new D1TransactionRepository(db);
+    const existing = transaction("request-existing");
+    await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId, "consent-shared"));
+    const conflicting = transaction("request-new");
+    expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId, "idempotency-new-12345"), consent(conflicting.requestId, "consent-shared"))).toBe(false);
+    expect(await repository.get(conflicting.requestId)).toBeUndefined();
+    expect(await repository.getIdempotency("idempotency-new-12345")).toBeUndefined();
   });
 });
