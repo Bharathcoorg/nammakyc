@@ -2,6 +2,19 @@
   "name": "@namma-kyc/backend",
   "version": "0.1.0",
   "private": true,
-  "scripts": {"dev":"wrangler dev","deploy":"wrangler deploy","typecheck":"tsc --noEmit","test":"vitest run"},
-  "devDependencies": {"@cloudflare/workers-types":"^4.20260901.0","typescript":"^5.9.0","vitest":"^3.2.0","wrangler":"^4.35.0"}
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260901.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0",
+    "wrangler": "^4.35.0"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  }
 }
