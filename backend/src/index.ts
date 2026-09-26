@@ -10,6 +10,7 @@ import { MockKycProvider } from "./providers/kyc/mock";
 import { createTransactionRepository } from "./repositories/factory";
 import { ConsoleAuditSink, type AuditSink } from "./observability/events";
 import { TransactionService } from "./services/transactions";
+import { queueRetryDelaySeconds } from "./queues/retry";
 
 export interface QueueBinding {
   send(body: unknown): Promise<void>;
@@ -105,7 +106,7 @@ export default {
 
         if (result.retryable && !result.acknowledged) {
           const attempt = Math.max(0, message.attempts - 1);
-          const delaySeconds = Math.min(60, 2 ** Math.min(attempt, 5));
+          const delaySeconds = queueRetryDelaySeconds(attempt);
           message.retry({ delaySeconds });
           audit.emit({
             event:"queue.retry_scheduled",
