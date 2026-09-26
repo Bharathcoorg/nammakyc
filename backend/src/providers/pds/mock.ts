@@ -1,7 +1,7 @@
 import type { PdsHousehold, PdsProvider } from "./provider";
 
 export class MockPdsProvider implements PdsProvider {
-  async lookupHousehold(rationCardReference: string): Promise<PdsHousehold> {
+  async lookupHousehold(rationCardReference: string, _signal?: AbortSignal): Promise<PdsHousehold> {
     return {
       householdReference: `demo-${rationCardReference}`,
       members: [
