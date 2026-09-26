@@ -22,6 +22,20 @@ class FakeD1 {
         return undefined;
       },
       async run() {
+        if (query.includes("UPDATE kyc_transactions SET status='authenticating'")) {
+          const key = String(values[1]);
+          const row = self.transactions.get(key);
+          const staleBefore = String(values[2]);
+          const claimable = row && (
+            row.status === "validating" ||
+            row.status === "retrying" ||
+            ((row.status === "authenticating" || row.status === "processing") && String(row.updated_at) < staleBefore)
+          );
+          if (!claimable) return { meta: { changes: 0 } };
+          row.status = "authenticating";
+          row.updated_at = values[0];
+          return { meta: { changes: 1 } };
+        }
         if (query.includes("DELETE FROM idempotency_keys")) {
           const cutoff = String(values[0]);
           let changes = 0;
@@ -80,9 +94,7 @@ function record(requestId: string, key = "idempotency-key-12345"): IdempotencyRe
 
 describe("D1TransactionRepository", () => {
   it("creates transaction, idempotency, and consent atomically", async () => {
-    const db = new FakeD1();
-    const repository = new D1TransactionRepository(db);
-    const tx = transaction();
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
     expect(await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId))).toBe(true);
     expect(await repository.get(tx.requestId)).toBeDefined();
     expect(await repository.getIdempotency("idempotency-key-12345")).toBeDefined();
@@ -90,9 +102,7 @@ describe("D1TransactionRepository", () => {
   });
 
   it("does not leave a transaction behind when the idempotency insert conflicts", async () => {
-    const db = new FakeD1();
-    const repository = new D1TransactionRepository(db);
-    const existing = transaction("request-existing");
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const existing = transaction("request-existing");
     await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId));
     const conflicting = transaction("request-new");
     expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId), consent(conflicting.requestId))).toBe(false);
@@ -101,15 +111,10 @@ describe("D1TransactionRepository", () => {
   });
 
   it("purges only idempotency records older than the supplied cutoff", async () => {
-    const db = new FakeD1();
-    const repository = new D1TransactionRepository(db);
-    const oldTx = transaction("request-old");
-    const oldRecord = record(oldTx.requestId, "idempotency-old-12345");
-    oldRecord.createdAt = "2026-09-01T00:00:00.000Z";
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db);
+    const oldTx = transaction("request-old"); const oldRecord = record(oldTx.requestId, "idempotency-old-12345"); oldRecord.createdAt = "2026-09-01T00:00:00.000Z";
     await repository.createIfAbsent(oldTx, oldRecord, consent(oldTx.requestId, "consent-old"));
-    const newTx = transaction("request-new");
-    const newRecord = record(newTx.requestId, "idempotency-new-12345");
-    newRecord.createdAt = "2026-09-25T00:00:00.000Z";
+    const newTx = transaction("request-new"); const newRecord = record(newTx.requestId, "idempotency-new-12345"); newRecord.createdAt = "2026-09-25T00:00:00.000Z";
     await repository.createIfAbsent(newTx, newRecord, consent(newTx.requestId, "consent-new"));
     expect(await repository.purgeIdempotencyBefore("2026-09-20T00:00:00.000Z")).toBe(1);
     expect(await repository.getIdempotency("idempotency-old-12345")).toBeUndefined();
@@ -117,13 +122,19 @@ describe("D1TransactionRepository", () => {
   });
 
   it("rolls back all writes when the consent reference conflicts", async () => {
-    const db = new FakeD1();
-    const repository = new D1TransactionRepository(db);
-    const existing = transaction("request-existing");
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const existing = transaction("request-existing");
     await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId, "consent-shared"));
     const conflicting = transaction("request-new");
     expect(await repository.createIfAbsent(conflicting, record(conflicting.requestId, "idempotency-new-12345"), consent(conflicting.requestId, "consent-shared"))).toBe(false);
     expect(await repository.get(conflicting.requestId)).toBeUndefined();
     expect(await repository.getIdempotency("idempotency-new-12345")).toBeUndefined();
+  });
+
+  it("atomically rejects a second processing claim while the first claim is fresh", async () => {
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
+    await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId));
+    expect(await repository.claimForProcessing(tx.requestId, "2026-09-26T12:00:01.000Z", "2026-09-26T11:59:31.000Z")).toBe(true);
+    expect(await repository.claimForProcessing(tx.requestId, "2026-09-26T12:00:02.000Z", "2026-09-26T11:59:32.000Z")).toBe(false);
+    expect((await repository.get(tx.requestId))?.status).toBe("authenticating");
   });
 });
