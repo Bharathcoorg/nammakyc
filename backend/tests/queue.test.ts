@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { InMemoryKycJobQueue, type KycJob } from "../src/queues/kyc";
+import { CloudflareKycQueue, InMemoryKycJobQueue, type KycJob } from "../src/queues/kyc";
 
 const job: KycJob = {
   jobId:"job-0000000001",
@@ -22,5 +22,14 @@ describe("KYC queue boundary", () => {
     await queue.enqueue(job);
     expect(queue.drain()).toEqual([job]);
     expect(queue.drain()).toEqual([]);
+  });
+});
+
+describe("Cloudflare queue adapter", () => {
+  it("sends the complete job envelope to the provider queue", async () => {
+    let sent: KycJob | undefined;
+    const queue = new CloudflareKycQueue({ send: async body => { sent = body; } });
+    await queue.enqueue(job);
+    expect(sent).toEqual(job);
   });
 });
