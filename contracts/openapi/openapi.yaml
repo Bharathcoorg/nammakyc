@@ -1,0 +1,28 @@
+openapi: 3.1.0
+info:
+  title: Namma KYC API
+  version: 0.1.0
+  description: >
+    Public reference API contract for the Namma KYC citizen e-KYC
+    reference implementation.
+servers:
+  - url: https://api.example.invalid
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: Service health
+  /v1/kyc/{requestId}:
+    get:
+      operationId: getKycStatus
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: KYC transaction status
