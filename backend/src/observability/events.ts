@@ -16,7 +16,7 @@ export interface KycAuditEvent {
   requestId: string;
   occurredAt: string;
   status?: string;
-  provider?: "aadhaar" | "kyc";
+  provider?: "aadhaar" | "pds";
   durationMs?: number;
   errorCode?: string;
   jobId?: string;
