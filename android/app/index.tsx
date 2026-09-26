@@ -100,7 +100,14 @@ export default function HomeScreen() {
       <InfoCard title={s.secureTitle} text={s.privacyText}/><Primary label={s.startVerification} onPress={start} disabled={!selected || !consented || loading}/>
     </Card>}
 
-    {step === "auth" && <Card>\n      <StepLabel s={s} current={3}/><Text style={styles.heading}>{s.aadhaarTitle}</Text><Text style={styles.muted}>{s.aadhaarText}</Text>\n      <InfoCard title={s.secureTitle} text={s.aadhaarBoundary}/>\n      <View style={styles.authBoundary}><Text style={styles.authBoundaryTitle}>{s.aadhaarProvider}</Text><Text style={styles.muted}>{s.mockMode}</Text></View>\n      <Primary label={loading ? s.processing : s.openAadhaar} onPress={authenticate} disabled={loading}/>\n    </Card>}\n\n    {step === "processing" && <Card>
+    {step === "auth" && <Card> 
+      <StepLabel s={s} current={3}/><Text style={styles.heading}>{s.aadhaarTitle}</Text><Text style={styles.muted}>{s.aadhaarText}</Text> 
+      <InfoCard title={s.secureTitle} text={s.aadhaarBoundary}/> 
+      <View style={styles.authBoundary}><Text style={styles.authBoundaryTitle}>{s.aadhaarProvider}</Text><Text style={styles.muted}>{s.mockMode}</Text></View> 
+      <Primary label={loading ? s.processing : s.openAadhaar} onPress={authenticate} disabled={loading}/> 
+    </Card>} 
+ 
+    {step === "processing" && <Card>
       <View style={styles.processingIcon}><Text style={styles.processingDots}>•••</Text></View>
       <Text style={styles.heading}>{s.processing}</Text><Text style={styles.muted}>{s.processingText}</Text>
       <View style={styles.progressTrack}><View style={styles.progressIndeterminate}/></View>
