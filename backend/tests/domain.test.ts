@@ -12,7 +12,7 @@ describe("KYC domain", () => {
       updatedAt: "2026-09-26T00:00:00.000Z"
     };
 
-    expect(transitionTransaction(transaction, "validating").status).toBe("validating");
+    expect(transitionTransaction(transaction, "validating").status).toBe("validating");\n    expect(transitionTransaction(transitionTransaction(transaction, "validating"), "aadhaar_pending").status).toBe("aadhaar_pending");
   });
 
   it("rejects invalid terminal transitions", () => {
