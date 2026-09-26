@@ -10,7 +10,7 @@ export class D1TransactionRepository implements TransactionRepository{
 
  async get(requestId:string){
   const r=await this.db.prepare("SELECT * FROM kyc_transactions WHERE request_id = ?").bind(requestId).first();
-  return r?{requestId:r.request_id,householdReference:r.household_reference,memberReference:r.member_reference,status:r.status,authenticationMethod:r.authentication_method??"face",createdAt:r.created_at,updatedAt:r.updated_at,aadhaarSessionReference:r.aadhaar_session_reference??undefined,aadhaarAuthenticationReference:r.aadhaar_authentication_reference??undefined,pdsTransactionReference:r.pds_transaction_reference??undefined,processingClaimId:r.processing_claim_id??undefined}:undefined;
+  return r?{requestId:r.request_id,householdReference:r.household_reference,memberReference:r.member_reference,status:r.status,authenticationMethod:r.authentication_method??"otp_face",createdAt:r.created_at,updatedAt:r.updated_at,aadhaarSessionReference:r.aadhaar_session_reference??undefined,aadhaarAuthenticationReference:r.aadhaar_authentication_reference??undefined,pdsTransactionReference:r.pds_transaction_reference??undefined,processingClaimId:r.processing_claim_id??undefined}:undefined;
  }
  async getIdempotency(key:string){
   const r=await this.db.prepare("SELECT * FROM idempotency_keys WHERE idempotency_key = ?").bind(key).first();

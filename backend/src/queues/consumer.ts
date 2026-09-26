@@ -56,7 +56,8 @@ export function decodeKycJob(value: unknown): KycJob {
     input.idempotencyKey.length > 128 ||
     (input.consentPolicyVersion !== undefined &&
       (typeof input.consentPolicyVersion !== "string" || input.consentPolicyVersion.length > 64)) ||
-    (input.consentLanguage !== undefined && input.consentLanguage !== "en" && input.consentLanguage !== "kn")
+    (input.consentLanguage !== undefined && input.consentLanguage !== "en" && input.consentLanguage !== "kn"),
+    input.authenticationMethod !== undefined && input.authenticationMethod !== "face" && input.authenticationMethod !== "otp" && input.authenticationMethod !== "otp_face"
   ) {
     throw new Error("Invalid KYC queue envelope");
   }
