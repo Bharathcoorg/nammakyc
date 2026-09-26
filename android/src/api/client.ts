@@ -1,4 +1,10 @@
-const API_BASE_URL=process.env.EXPO_PUBLIC_API_BASE_URL??"http://localhost:8787";
+const API_BASE_URL=process.env.EXPO_PUBLIC_API_BASE_URL?.trim()??"";
+
+function requireApiBaseUrl():string{
+  if(!API_BASE_URL) throw new Error("Namma KYC API endpoint is not configured.");
+  if(!/^https:\/\//i.test(API_BASE_URL) && !/^http:\/\/localhost(?::\d+)?$/i.test(API_BASE_URL)) throw new Error("Namma KYC API endpoint must use HTTPS.");
+  return API_BASE_URL.replace(/\/$/,"");
+}
 const REQUEST_TIMEOUT_MS=15_000;
 
 export interface ApiError{error:{code:string;message:string}}
@@ -14,10 +20,11 @@ async function readError(response:Response):Promise<string>{
 export async function apiRequest<T>(path:string,init?:RequestInit):Promise<T>{
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+  const signal=init?.signal??controller.signal;
   try{
-    const response=await fetch(`${API_BASE_URL}${path}`,{
+    const response=await fetch(`${requireApiBaseUrl()}${path}`,{
       ...init,
-      signal:init?.signal??controller.signal,
+      signal,
       headers:{
         Accept:"application/json",
         "Content-Type":"application/json",
