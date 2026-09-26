@@ -19,6 +19,7 @@ class FakeD1 {
       async first() {
         if (query.includes("FROM kyc_transactions")) return self.transactions.get(String(values[0]));
         if (query.includes("FROM idempotency_keys")) return self.idempotency.get(String(values[0]));
+        if (query.includes("FROM consent_artifacts")) return [...self.consent.values()].find(row => String(row.transaction_reference) === String(values[0]));
         return undefined;
       },
       async run() {
@@ -118,6 +119,11 @@ describe("D1TransactionRepository", () => {
     expect(db.consent.get("consent-1")?.transaction_reference).toBe(tx.requestId);
   });
 
+  it("loads consent by transaction reference", async () => {
+    const db = new FakeD1(); const repository = new D1TransactionRepository(db); const tx = transaction();
+    await repository.createIfAbsent(tx, record(tx.requestId), consent(tx.requestId, "consent-loaded"));
+    expect(await repository.getConsent(tx.requestId)).toMatchObject({consentReference:"consent-loaded",transactionReference:tx.requestId});
+  });
   it("does not leave a transaction behind when the idempotency insert conflicts", async () => {
     const db = new FakeD1(); const repository = new D1TransactionRepository(db); const existing = transaction("request-existing");
     await repository.createIfAbsent(existing, record(existing.requestId), consent(existing.requestId));
