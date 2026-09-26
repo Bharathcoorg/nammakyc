@@ -141,7 +141,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const repository=repositoryFor(env);
    const tx=await repository.get(decodeURIComponent(statusMatch[1]));
    if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
-   return Response.json({requestId:tx.requestId,status:tx.status,authenticationMethod:tx.authenticationMethod,reference:tx.pdsTransactionReference??tx.aadhaarAuthenticationReference},{headers:jsonHeaders});
+   return Response.json({requestId:tx.requestId,status:tx.status,authenticationMethod:tx.authenticationMethod,reference:tx.pdsTransactionReference},{headers:jsonHeaders});
   } catch(error) {
    const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
    void metrics.increment("http.errors",{route:url.pathname});
