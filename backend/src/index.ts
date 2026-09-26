@@ -5,7 +5,7 @@ import { CloudflareKycQueue, processKycJob, type KycJob } from "./queues/kyc";
 import { MockPdsProvider } from "./providers/pds/mock";
 import { MockAadhaarProvider } from "./providers/aadhaar/mock";
 import { MockKycProvider } from "./providers/kyc/mock";
-import { TransactionService } from "./services/transactions";
+import { isRetryableKycError, TransactionService } from "./services/transactions";
 import { createTransactionRepository } from "./repositories/factory";
 
 export interface QueueBinding { send(body: KycJob): Promise<void> }
@@ -42,7 +42,7 @@ export default {
       try {
         await processKycJob(message.body,service);
       } catch(error) {
-        const retryable = error instanceof Error && (error.name === "TimeoutError" || error.message.includes("temporarily unavailable"));
+        const retryable = isRetryableKycError(error);
         if(retryable) message.retry({delaySeconds: Math.min(60, 2 ** Math.min(message.body.attempt, 5))});
         else await service.markFailed(message.body.transactionId);
       }
