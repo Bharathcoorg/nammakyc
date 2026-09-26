@@ -9,7 +9,7 @@ export class KycWorker implements KycJobConsumer {
     const current=await this.service.get(job.transactionId);
     if(isDuplicateDelivery(current,job)){void this.metrics.increment("queue.duplicate",{route:"queue"});return {acknowledged:true,retryable:false};}
     try{
-      await this.service.process({transactionId:job.transactionId,memberReference:job.input.memberReference,consentReference:job.input.consentReference,authenticationMethod:job.input.authenticationMethod});
+      await this.service.process({transactionId:job.transactionId});
       void this.metrics.increment("queue.succeeded",{route:"queue"});return {acknowledged:true,retryable:false};
     }catch(error){
       if(!isRetryableKycError(error)||job.attempt+1>=this.maxAttempts){if(job.attempt+1>=this.maxAttempts){await this.service.markFailed(job.transactionId);void this.metrics.increment("queue.failed",{route:"queue"});}return {acknowledged:true,retryable:false};}
