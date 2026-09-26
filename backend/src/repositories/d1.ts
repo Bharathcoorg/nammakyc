@@ -40,6 +40,11 @@ export class D1TransactionRepository implements TransactionRepository{
   }
  }
 
+ async purgeIdempotencyBefore(cutoffIso:string){
+  const result=await this.db.prepare("DELETE FROM idempotency_keys WHERE created_at < ?").bind(cutoffIso).run();
+  return result.meta?.changes??0;
+ }
+
  async update(tx:KycTransaction){
   await this.db.prepare("UPDATE kyc_transactions SET status=?,updated_at=?,provider_reference=?,household_reference=?,member_reference=? WHERE request_id=?")
    .bind(tx.status,tx.updatedAt,tx.providerReference??null,tx.householdReference,tx.memberReference,tx.requestId).run();
