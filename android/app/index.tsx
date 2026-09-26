@@ -61,10 +61,15 @@ export default function HomeScreen() {
         headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language, authenticationMethod: "face" }),
       });
-      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "aadhaar_authenticating" || response.status === "aadhaar_pending") setStep("authenticating");\n      if (response.status === "aadhaar_authenticated") setStep("authResult");\n      if (response.status === "pds_processing" || response.status === "processing") setStep("pdsProcessing");
+      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "aadhaar_authenticating" || response.status === "aadhaar_pending") setStep("authenticating");
+      if (response.status === "aadhaar_authenticated") setStep("authResult");
+      if (response.status === "pds_processing" || response.status === "processing") setStep("pdsProcessing");
       let status = response;
       for (let attempt = 0; attempt < 20; attempt++) {
-        if (status.status === "success" || status.status === "failed") break;\n        if (status.status === "aadhaar_authenticating" || status.status === "aadhaar_pending") setStep("authenticating");\n        else if (status.status === "aadhaar_authenticated") setStep("authResult");\n        else if (status.status === "pds_processing") setStep("pdsProcessing");
+        if (status.status === "success" || status.status === "failed") break;
+        if (status.status === "aadhaar_authenticating" || status.status === "aadhaar_pending") setStep("authenticating");
+        else if (status.status === "aadhaar_authenticated") setStep("authResult");
+        else if (status.status === "pds_processing") setStep("pdsProcessing");
         await new Promise(resolve => setTimeout(resolve, 750));
         status = await getKycStatus<KycResponse>(response.requestId); setRequestStatus(status.status); if (status.status === "aadhaar_authenticating" || status.status === "aadhaar_pending") setStep("authenticating"); else if (status.status === "aadhaar_authenticated") setStep("authResult"); else if (status.status === "pds_processing") setStep("pdsProcessing");
       }
@@ -96,7 +101,7 @@ export default function HomeScreen() {
 
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     {step !== "splash" && <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
-    {step !== "splash" && step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Progress s={s} current={current} />}
+    {step !== "splash" && step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && step !== "authenticating" && step !== "authResult" && step !== "pdsProcessing" && <Progress s={s} current={current} />}
 
     {step === "splash" && <Splash s={s} onStart={() => setStep("language")} />}
 
@@ -180,9 +185,10 @@ export default function HomeScreen() {
     </Card>}
 
     {(step === "authenticating" || step === "authResult" || step === "pdsProcessing" || step === "processing") && <Card>
-      <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{s.processing}</Text><Text style={styles.muted}>{s.processingText}</Text>
-      <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={s.secureTitle} text={s.processingNote}/>
-    </Card>}
+      <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{step === "authResult" ? s.authResultTitle : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingTitle : s.processing}</Text>
+      <Text style={styles.muted}>{step === "authResult" ? s.authResultText : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingText : s.processingText}</Text>
+      <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={step === "authResult" ? s.aadhaarProvider : s.secureTitle} text={step === "authResult" ? s.authResultBoundary : s.processingNote}/>
+    </Card>
 
     {step === "status" && <Card>
       <Text accessibilityRole="header" style={styles.heading}>{s.statusTitle}</Text><Text style={styles.muted}>{s.statusUpdated}</Text>
@@ -221,7 +227,7 @@ function CheckRow({label,checked,onPress}:{label:string;checked:boolean;onPress:
 
 function ProcessingHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.processingHero}><View style={styles.processingRing}><View style={styles.processingFace}><Text style={styles.processingFaceText}>◎</Text></View></View><Text style={styles.processingCaption}>{s.aadhaarProvider}</Text></View>}
 function ProcessingTimeline({s,status}:{s:ReturnType<typeof getStrings>;status:string}){const current=status==="aadhaar_pending"?1:status==="aadhaar_authenticating"||status==="authenticating"?2:status==="aadhaar_authenticated"?3:status==="pds_processing"||status==="processing"||status==="retrying"?4:1;const items=[s.processingImage,s.processingAuth,s.processingResponse,s.processingFinal];return <View style={styles.timeline}>{items.map((label,index)=>{const done=index<current-1;const active=index===current-1;return <TimelineRow key={label} label={label} done={done} active={active} last={index===items.length-1}/>})}</View>}
-function StatusTimeline({s,status}:{s:ReturnType<typeof getStrings>;status:string}){const stages=[s.requestReceived,status==="failed"?s.statusFailed:status==="success"?s.statusSuccess:s.statusProcessing,status==="failed"?s.statusFailed:s.statusSuccess];return <View style={styles.timeline}>{stages.map((label,index)=><TimelineRow key={label+index} label={label} done={status==="success"||index===0} active={status!=="success"&&status!=="failed"&&index===1} last={index===2}/>)}</View>}
+function StatusTimeline({s,status}:{s:ReturnType<typeof getStrings>;status:string}){const stages=[s.requestReceived,s.statusAadhaarAuthenticated,s.statusPdsProcessing];const active=status==="aadhaar_authenticated"?1:2;return <View style={styles.timeline}>{stages.map((label,index)=><TimelineRow key={label+index} label={label} done={status==="success"||index<active} active={status!=="success"&&status!=="failed"&&index===active} last={index===2}/>)}</View>}
 function TimelineRow({label,done,active,last}:{label:string;done:boolean;active:boolean;last:boolean}){return <View style={styles.timelineRow}><View style={styles.timelineRail}><View style={[styles.timelineDot,done&&styles.timelineDone,active&&styles.timelineActive]}><Text style={styles.timelineDotText}>{done?"✓":active?"•":""}</Text></View>{!last&&<View style={[styles.timelineLine,done&&styles.timelineLineDone]}/>}</View><Text style={[styles.timelineText,active&&styles.timelineTextActive]}>{label}</Text></View>}
 function StatusPill({text}:{text:string}){return <View style={styles.statusPill}><View style={styles.statusDot}/><Text style={styles.statusPillText}>{text}</Text></View>}
 function SuccessHero(){return <View style={styles.successHero}><Text style={styles.confetti}>·  ·  ✦  ·  ·</Text><View style={styles.successIcon}><Text style={styles.successIconText}>✓</Text></View></View>}
