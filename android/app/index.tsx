@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
-import * as Speech from "expo-speech";
+import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
@@ -28,13 +28,9 @@ export default function HomeScreen() {
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const s = useMemo(() => getStrings(language), [language]);
 
-  function speakInstructions() {
-    const text = s.voiceSteps.join(" ");
-    Speech.stop();
-    Speech.speak(text, {
-      language: language === "kn" ? "kn-IN" : "en-IN",
-      rate: 0.9,
-    });
+  async function speakInstructions() {
+    const ok = await speakGuidance(language === "kn" ? "kn" : "en");
+    if (!ok) setError(s.voiceUnavailable);
   }
 
   async function lookup() {
@@ -152,12 +148,12 @@ export default function HomeScreen() {
           if (!voiceEnabled) setVoiceEnabled(true);
           setTimeout(speakInstructions, 0);
         }}><Text style={styles.outlineText}>🔊 {voiceEnabled ? s.replayInstructions : s.enableVoice}</Text></Pressable>
-        {voiceEnabled && <Pressable accessibilityRole="button" accessibilityLabel={s.disableVoice} onPress={() => { setVoiceEnabled(false); Speech.stop(); }}>
+        {voiceEnabled && <Pressable accessibilityRole="button" accessibilityLabel={s.disableVoice} onPress={() => { setVoiceEnabled(false); void stopGuidance(); }}>
           <Text style={styles.textButton}>{s.disableVoice}</Text>
         </Pressable>}
       </View>
       <Text style={styles.accessibilityNote}>{s.voiceAccessibility}</Text>
-      <Primary label={s.continueToAadhaar} onPress={() => { Speech.stop(); setStep("auth"); }} />
+      <Primary label={s.continueToAadhaar} onPress={() => { void stopGuidance(); setStep("auth"); }} />
     </Card>}
 
     {step === "processing" && <Card>
