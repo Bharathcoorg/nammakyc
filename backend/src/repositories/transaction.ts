@@ -34,9 +34,9 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     const claimable =
       current.status === "validating" ||
       current.status === "retrying" ||
-      ((current.status === "authenticating" || current.status === "processing") && current.updatedAt < staleBeforeIso);
+      ((current.status === "aadhaar_pending" || current.status === "aadhaar_authenticating" || current.status === "pds_processing") && current.updatedAt < staleBeforeIso);
     if (!claimable) return false;
-    this.transactions.set(requestId, { ...current, status: "authenticating", updatedAt: nowIso, processingClaimId: claimId });
+    this.transactions.set(requestId, { ...current, updatedAt: nowIso, processingClaimId: claimId });
     return true;
   }
 
