@@ -6,10 +6,11 @@ Namma KYC is designed so a production deployment can move slow or state-changing
 
 1. Validate the request and consent reference.
 2. Resolve the household and selected member.
-3. Create the transaction and idempotency record atomically.
-4. Return a request reference to the mobile client.
-5. Perform authorized downstream work asynchronously where the integration requires it.
-6. Persist state transitions and expose status through `GET /v1/kyc/:requestId`.
+3. Resolve upstream household data with bounded timeout/retry protection.
+4. Create the transaction and idempotency record atomically.
+5. Return a request reference to the mobile client.
+6. Perform authorized downstream work asynchronously where the integration requires it.
+7. Persist state transitions and expose status through `GET /v1/kyc/:requestId`.
 
 Interactive biometric capture is **not** a background job. The client must complete an authorized Aadhaar verification handoff before downstream KYC submission that depends on authentication.
 
