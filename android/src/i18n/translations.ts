@@ -3,6 +3,9 @@ export type Language = "en" | "kn";
 export const translations = {
   en: {
     appName: "Namma KYC",
+    government: "Government of Karnataka",
+    digitalIdentity: "Digital Identity for A Better Tomorrow",
+    splashMotto: "Our People\nOur Karnataka\nA Brighter Tomorrow",
     tagline: "Karnataka ration-card e-KYC",
     chooseLanguage: "Choose your language",
     languageHint: "Your choice applies to the complete journey.",
@@ -103,6 +106,9 @@ export const translations = {
   },
   kn: {
     appName: "ನಮ್ಮ KYC",
+    government: "ಕರ್ನಾಟಕ ಸರ್ಕಾರ",
+    digitalIdentity: "ಉತ್ತಮ ನಾಳೆಗಾಗಿ ಡಿಜಿಟಲ್ ಗುರುತು",
+    splashMotto: "ನಮ್ಮ ಜನರು\nನಮ್ಮ ಕರ್ನಾಟಕ\nಉಜ್ವಲ ಭವಿಷ್ಯ",
     tagline: "ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
     chooseLanguage: "ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
     languageHint: "ನಿಮ್ಮ ಆಯ್ಕೆ ಸಂಪೂರ್ಣ ಪ್ರಕ್ರಿಯೆಗೆ ಅನ್ವಯಿಸುತ್ತದೆ.",
