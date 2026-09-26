@@ -8,7 +8,7 @@ describe("start KYC request", () => {
       memberReference: "demo-member",
       consentReference: "demo-consent"
     });
-    expect(result.authenticationMethod).toBe("face");
+    expect(result.authenticationMethod).toBe("otp_face");
   });
 
   it("accepts OTP as a provider-controlled alternative", () => {
@@ -24,5 +24,5 @@ describe("start KYC request", () => {
 
 
 it("accepts the explicit provider lifecycle response",()=>{
-  expect(kycStatusResponseSchema.parse({requestId:"request-1234567890123456",status:"aadhaar_authenticated",authenticationMethod:"face"}).status).toBe("aadhaar_authenticated");
+  expect(kycStatusResponseSchema.parse({requestId:"request-1234567890123456",status:"aadhaar_authenticated",authenticationMethod:"otp_face"}).status).toBe("aadhaar_authenticated");
 });

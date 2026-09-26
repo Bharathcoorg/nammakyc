@@ -8,9 +8,9 @@ export const startKycRequestSchema=z.object({
   consentReference:consentReferenceSchema,
   consentPolicyVersion:z.string().trim().min(1).max(64).optional(),
   consentLanguage:z.enum(["en","kn"]).optional(),
-  authenticationMethod:z.enum(["face","otp"]).default("face")
+  authenticationMethod:z.enum(["face","otp","otp_face"]).default("otp_face")
 });
-export const kycStatusResponseSchema=z.object({requestId:requestIdSchema,status:kycStatusSchema,authenticationMethod:z.enum(["face","otp"]),reference:z.string().min(1).max(128).optional()});
+export const kycStatusResponseSchema=z.object({requestId:requestIdSchema,status:kycStatusSchema,authenticationMethod:z.enum(["face","otp","otp_face"]),reference:z.string().min(1).max(128).optional()});
 export type StartKycRequest=z.infer<typeof startKycRequestSchema>;
 export type KycStatusResponse=z.infer<typeof kycStatusResponseSchema>;
 

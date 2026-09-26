@@ -59,7 +59,7 @@ export default function HomeScreen() {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
         method: "POST",
         headers: { "Idempotency-Key": Crypto.randomUUID() },
-        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language, authenticationMethod: "face" }),
+        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language, authenticationMethod: "otp_face" }),
       });
       submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "aadhaar_authenticating" || response.status === "aadhaar_pending") setStep("authenticating");
       if (response.status === "aadhaar_authenticated") setStep("authResult");

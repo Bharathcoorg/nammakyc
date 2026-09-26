@@ -16,7 +16,7 @@ import { NoopMetricsSink, type MetricsSink } from "../observability/metrics";
 export interface StartKycInput { householdReference:string; memberReference:string; consentReference:string; consentPolicyVersion?:string; consentLanguage?:"en"|"kn"; authenticationMethod?:AadhaarAuthenticationMethod; idempotencyKey:string; }
 export interface ProcessKycInput { transactionId:string; memberReference:string; consentReference:string; authenticationMethod?:AadhaarAuthenticationMethod; }
 
-function fingerprint(input:StartKycInput):string{return JSON.stringify([input.householdReference.trim(),input.memberReference.trim(),input.consentReference.trim(),input.consentPolicyVersion?.trim()??"",input.consentLanguage??"",input.authenticationMethod??"face"]);}
+function fingerprint(input:StartKycInput):string{return JSON.stringify([input.householdReference.trim(),input.memberReference.trim(),input.consentReference.trim(),input.consentPolicyVersion?.trim()??"",input.consentLanguage??"",input.authenticationMethod??"otp_face"]);}
 const transient=(error:unknown)=>error instanceof TimeoutError||(error instanceof AppError&&error.code==="UPSTREAM_UNAVAILABLE");
 const providerPolicy={attempts:3,baseDelayMs:75,maxDelayMs:500};
 const processingLeaseMs=30_000;
@@ -40,7 +40,7 @@ export class TransactionService{
   if(existing){if(!sameRequest(existing,fp))throw new AppError("DUPLICATE_REQUEST","Idempotency key was already used for another request",409);const replay=await this.repository.get(existing.requestId);if(!replay)throw new AppError("INTERNAL_ERROR","Idempotency record is inconsistent",500);return replay;}
   const household=await this.pds.lookupHousehold(input.householdReference); const member=household.members.find(m=>m.memberReference===input.memberReference);
   if(!member)throw new AppError("INVALID_REQUEST","Member does not belong to household",400);
-  let transaction=createTransaction(crypto.randomUUID(),input.householdReference.trim(),member.memberReference,input.authenticationMethod??"face");
+  let transaction=createTransaction(crypto.randomUUID(),input.householdReference.trim(),member.memberReference,input.authenticationMethod??"otp_face");
   transaction=transitionTransaction(transaction,"validating"); transaction=transitionTransaction(transaction,"aadhaar_pending");
   const consent:ConsentArtifact={consentReference:input.consentReference.trim(),purpose:"ration-card-e-kyc",policyVersion:input.consentPolicyVersion?.trim()||"unspecified",language:input.consentLanguage??"en",capturedAt:transaction.createdAt,transactionReference:transaction.requestId};
   const record:IdempotencyRecord={key,requestFingerprint:fp,requestId:transaction.requestId,createdAt:transaction.createdAt};

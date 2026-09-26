@@ -1,4 +1,4 @@
-export type AadhaarAuthenticationMethod = "face" | "otp";
+export type AadhaarAuthenticationMethod = "face" | "otp" | "otp_face";
 
 export interface AuthenticationRequest {
   method: AadhaarAuthenticationMethod;
