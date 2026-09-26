@@ -1,8 +1,26 @@
 import { describe, expect, it } from "vitest";
+import { AppError } from "../src/domain/errors";
 import { route } from "../src/routes/router";
 import { InMemoryKycJobQueue } from "../src/queues/kyc";
 
 describe("KYC API", () => {
+  it("returns authorization failures from the production policy", async () => {
+    const response=await route(new Request("https://api.test/v1/kyc/request-1"), {
+      ENVIRONMENT:"production",
+      AUTHORIZATION:{authorize:async()=>{throw new AppError("AUTHENTICATION_FAILED","Unauthorized",401)}}
+    });
+    expect(response?.status).toBe(401);
+  });
+
+  it("checks authorization before production database access", async () => {
+    let called=false;
+    const response=await route(new Request("https://api.test/v1/kyc/request-1"), {
+      ENVIRONMENT:"production",
+      AUTHORIZATION:{authorize:async()=>{called=true; throw new (require("../src/domain/errors").AppError)("AUTHENTICATION_FAILED","Forbidden",403)}}
+    });
+    expect(called).toBe(true);
+    expect(response?.status).toBe(403);
+  });
   it("returns a household for a valid ration card reference", async () => {
     const response = await route(new Request("https://api.test/v1/households/RC-123"));
     expect(response?.status).toBe(200);
