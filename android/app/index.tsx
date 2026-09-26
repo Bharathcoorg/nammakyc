@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { apiRequest, getKycStatus } from "../src/api/client";
@@ -173,7 +173,7 @@ function StatusPill({text}:{text:string}){return <View style={styles.statusPill}
 function SuccessHero(){return <View style={styles.successHero}><Text style={styles.confetti}>·  ·  ✦  ·  ·</Text><View style={styles.successIcon}><Text style={styles.successIconText}>✓</Text></View></View>}
 function DetailRow({label,value,success}:{label:string;value:string;success?:boolean}){return <View style={styles.detailRow}><Text style={styles.detailLabel}>{label}</Text><Text style={[styles.detailValue,success&&styles.detailSuccess]} selectable>{value}</Text></View>}
 
-function Card({children}:{children:React.ReactNode}){return <View style={styles.card}>{children}</View>}
+function Card({children}:{children:ReactNode}){return <View style={styles.card}>{children}</View>}
 function Badge({text}:{text:string}){return <View style={styles.badge}><Text style={styles.badgeText}>✓  {text}</Text></View>}
 function InfoCard({title,text}:{title:string;text:string}){return <View style={styles.infoCard}><View style={styles.infoIcon}><Text style={styles.infoIconText}>i</Text></View><View style={{flex:1}}><Text style={styles.infoTitle}>{title}</Text><Text style={styles.infoText}>{text}</Text></View></View>}
 function Primary({label,onPress,disabled}:{label:string;onPress:()=>void;disabled?:boolean}){return <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled:!!disabled,busy:!!disabled}} disabled={disabled} onPress={onPress} style={({pressed})=>[styles.primary,disabled&&styles.disabled,pressed&&!disabled&&styles.primaryPressed]}><Text style={styles.primaryText}>{label}</Text><Text style={styles.primaryArrow}>→</Text></Pressable>}
