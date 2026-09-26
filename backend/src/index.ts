@@ -43,12 +43,7 @@ export default {
       const status = message === "JSON content type required" || message === "Request body too large" ? 415 : 500;
       return responseWithHeaders(
         Response.json(
-          {
-            error: {
-              code: status === 415 ? "INVALID_REQUEST" : "INTERNAL_ERROR",
-              message: status === 415 ? message : "Internal server error"
-            }
-          },
+          { error: { code: status === 415 ? "INVALID_REQUEST" : "INTERNAL_ERROR", message: status === 415 ? message : "Internal server error" } },
           { status }
         ),
         id
@@ -59,6 +54,7 @@ export default {
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
     const rawDays = env.RETENTION_IDEMPOTENCY_DAYS?.trim();
     if (!rawDays) return;
+    if (!env.DB) throw new Error("D1 database configuration is required for retention cleanup");
     const days = Number(rawDays);
     if (!Number.isFinite(days) || days <= 0 || days > 3650) {
       throw new Error("Invalid idempotency retention configuration");
@@ -122,9 +118,7 @@ export default {
             return undefined;
           }
         })();
-        if (job) {
-          await service.markFailed(job.transactionId);
-        }
+        if (job) await service.markFailed(job.transactionId);
         throw error;
       }
     }

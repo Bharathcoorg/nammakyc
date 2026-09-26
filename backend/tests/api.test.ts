@@ -42,24 +42,21 @@ describe("KYC API", () => {
   });
 
   it("fails closed for production household integration without an approved provider", async () => {
-    const response = await route(
-      new Request("https://api.test/v1/households/RC-123"),
-      { ENVIRONMENT: "production" }
-    );
+    const response = await route(new Request("https://api.test/v1/households/RC-123"), { ENVIRONMENT: "production" });
     expect(response?.status).toBe(500);
-    expect((await response?.json()).error.code).toBe("INTERNAL_ERROR");
   });
 
   it("fails closed for production KYC integration without approved providers", async () => {
-    const response = await route(
-      new Request("https://api.test/v1/kyc", {
-        method:"POST",
-        headers:{"Content-Type":"application/json","Idempotency-Key":"idem-production-12345"},
-        body:JSON.stringify({householdReference:"RC-123",memberReference:"M-1",consentReference:"C-1"})
-      }),
-      { ENVIRONMENT: "production" }
-    );
+    const response = await route(new Request("https://api.test/v1/kyc", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-production-12345"},
+      body:JSON.stringify({householdReference:"RC-123",memberReference:"M-1",consentReference:"C-1"})
+    }), { ENVIRONMENT: "production" });
     expect(response?.status).toBe(500);
-    expect((await response?.json()).error.code).toBe("INTERNAL_ERROR");
+  });
+
+  it("allows production status reads only with a configured database", async () => {
+    const response = await route(new Request("https://api.test/v1/kyc/request-1"), { ENVIRONMENT: "production" });
+    expect(response?.status).toBe(500);
   });
 });

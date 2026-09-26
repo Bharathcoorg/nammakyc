@@ -38,11 +38,18 @@ function providers(env: RouteEnv) {
   };
 }
 
+function repositoryFor(env: RouteEnv) {
+  if (env.ENVIRONMENT === "production" && !env.DB) {
+    throw new AppError("INTERNAL_ERROR","Production database configuration is required",500);
+  }
+  return createTransactionRepository(env.DB);
+}
+
 export async function route(request:Request,env:RouteEnv={}):Promise<Response|undefined>{
  const url=new URL(request.url);
  if(request.method==="GET"&&url.pathname==="/health")return healthResponse();
 
- const householdMatch=url.pathname.match(/^/v1/households/([^/]+)$/);
+ const householdMatch=url.pathname.match(/^\/v1\/households\/([^/]+)$/);
  if(request.method==="GET"&&householdMatch){
   try{
    const { pds } = providers(env);
@@ -54,11 +61,11 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
   }
  }
 
- const repository=createTransactionRepository(env.DB);
- const configured=providers(env);
- const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
+ const repository=repositoryFor(env);
 
  if(request.method==="POST"&&url.pathname==="/v1/kyc"){
+  const configured=providers(env);
+  const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
   const key=request.headers.get("Idempotency-Key")??"";
   try{
    const body=await request.json() as Record<string,unknown>;
@@ -95,7 +102,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
   }
  }
 
- const statusMatch=url.pathname.match(/^/v1/kyc/([^/]+)$/);
+ const statusMatch=url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
  if(request.method==="GET"&&statusMatch){
   const tx=await repository.get(decodeURIComponent(statusMatch[1]));
   if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
