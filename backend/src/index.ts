@@ -14,6 +14,7 @@ export interface Env extends RouteEnv {
   ENVIRONMENT: string;
   AUDIT?: ConsoleAuditSink;
   KYC_QUEUE?: QueueBinding;
+  RETENTION_IDEMPOTENCY_DAYS?: string;
 }
 
 function responseWithHeaders(response: Response, id: string): Response {
@@ -43,6 +44,22 @@ export default {
         id
       );
     }
+  },
+
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    const rawDays = env.RETENTION_IDEMPOTENCY_DAYS?.trim();
+    if (!rawDays) return;
+    const days = Number(rawDays);
+    if (!Number.isFinite(days) || days <= 0 || days > 3650) throw new Error("Invalid idempotency retention configuration");
+    const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+    const repository = createTransactionRepository(env.DB);
+    const deleted = await repository.purgeIdempotencyBefore(cutoff);
+    (env.AUDIT ?? new ConsoleAuditSink()).emit({
+      event: "transaction.cleanup",
+      requestId: "system-retention",
+      occurredAt: new Date().toISOString(),
+      status: `idempotency_deleted:${deleted}`
+    } as never);
   },
 
   async queue(
