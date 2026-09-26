@@ -38,3 +38,9 @@ The mobile client should poll the status endpoint rather than holding an HTTP co
 ## Cloudflare boundary
 
 Cloudflare Queues can be one deployment implementation, but the domain/service layer should remain provider-neutral. The public reference implementation must not require a Cloudflare-specific queue API to understand transaction state.
+
+## Implementation boundary
+
+The backend now exposes a provider-neutral `KycJobQueue` contract with an in-memory implementation for local tests. The production adapter can map this contract to Cloudflare Queues or another approved queue without coupling domain code to a vendor API.
+
+The transaction idempotency record remains the source of truth for duplicate suppression. Queue delivery is therefore allowed to be at-least-once; a repeated job must not create a second KYC transaction.
