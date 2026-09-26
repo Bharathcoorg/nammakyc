@@ -1,4 +1,3 @@
-import { AppError } from "../domain/errors";
 import { isRetryableKycError, type TransactionService } from "../services/transactions";
 import type { KycJob } from "./kyc";
 import { isDuplicateDelivery, type KycJobConsumer, type KycJobResult } from "./consumer";
