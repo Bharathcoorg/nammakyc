@@ -117,7 +117,7 @@ export default function HomeScreen() {
       </Pressable>
       <View style={styles.dashboardTiles}>
         <DashboardTile icon="▤" label={language==="en"?"My Ration Card":"ನನ್ನ ಪಡಿತರ ಚೀಟಿ"}/>
-        <DashboardTile icon="♟" label={language==="en"?"Family Members":"ಕುಟುಂಬದ ಸದಸ್ಯರು"} onPress={() => setStep("member")}/>
+        <DashboardTile icon="♟" label={language==="en"?"Family Members":"ಕುಟುಂಬದ ಸದಸ್ಯರು"} onPress={() => setStep("ration")}/>
         <DashboardTile icon="◎" label={language==="en"?"e-KYC Status":"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ"} onPress={() => requestId && setStep("status")}/>
         <DashboardTile icon="?" label={language==="en"?"Help & FAQ":"ಸಹಾಯ ಮತ್ತು FAQ"}/>
       </View>
