@@ -31,7 +31,14 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    if(policyVersion&&policyVersion.length>64)throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
    const input={householdReference:(body.householdReference as string).trim(),memberReference:(body.memberReference as string).trim(),consentReference:(body.consentReference as string).trim(),consentPolicyVersion:policyVersion,consentLanguage:language,idempotencyKey:key};
    const tx=env.QUEUE ? await transactionService.create(input) : await transactionService.start(input);
-   if(env.QUEUE){await env.QUEUE.enqueue({jobId:crypto.randomUUID(),transactionId:tx.requestId,input,enqueuedAt:new Date().toISOString(),attempt:0});}
+   if(env.QUEUE){
+    try {
+      await env.QUEUE.enqueue({jobId:crypto.randomUUID(),transactionId:tx.requestId,input,enqueuedAt:new Date().toISOString(),attempt:0});
+    } catch(error) {
+      await transactionService.markFailed(tx.requestId);
+      throw new AppError("UPSTREAM_UNAVAILABLE","KYC processing queue is temporarily unavailable",503);
+    }
+   }
    return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders})}catch(error){const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders})}
  }
  const statusMatch=url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
