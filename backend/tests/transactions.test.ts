@@ -47,6 +47,15 @@ describe("TransactionService",()=>{
  });
 });
 
+ it("records terminal failure metrics",async()=>{
+  const metrics=new RecordingMetrics();
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-fail"})},{submit:async()=>({success:true,providerReference:"kyc-fail"})},undefined,metrics);
+  const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-fail",idempotencyKey:"metrics-failure-12345"});
+  const failed=await service.markFailed(created.requestId);
+  expect(failed.status).toBe("failed");
+  expect(metrics.events).toEqual(["kyc.created","kyc.failed"]);
+ });
+
  it("records transaction outcome metrics without identifiers",async()=>{
   const metrics=new RecordingMetrics();
   const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-metrics"})},{submit:async()=>({success:true,providerReference:"kyc-metrics"})},undefined,metrics);
