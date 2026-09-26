@@ -7,7 +7,8 @@ export const startKycRequestSchema=z.object({
   memberReference:z.string().trim().min(1).max(128),
   consentReference:consentReferenceSchema,
   consentPolicyVersion:z.string().trim().min(1).max(64).optional(),
-  consentLanguage:z.enum(["en","kn"]).optional()
+  consentLanguage:z.enum(["en","kn"]).optional(),
+  authenticationMethod:z.enum(["face","otp"]).default("face")
 });
 export const kycStatusResponseSchema=z.object({requestId:requestIdSchema,status:kycStatusSchema,reference:z.string().min(1).max(128).optional()});
 export type StartKycRequest=z.infer<typeof startKycRequestSchema>;
