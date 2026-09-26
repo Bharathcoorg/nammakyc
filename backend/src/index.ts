@@ -7,10 +7,12 @@ import { MockAadhaarProvider } from "./providers/aadhaar/mock";
 import { MockKycProvider } from "./providers/kyc/mock";
 import { isRetryableKycError, TransactionService } from "./services/transactions";
 import { createTransactionRepository } from "./repositories/factory";
+import { ConsoleAuditSink } from "./observability/events";
 
 export interface QueueBinding { send(body: KycJob): Promise<void> }
 export interface Env extends RouteEnv {
   ENVIRONMENT: string;
+  AUDIT?: ConsoleAuditSink;
   KYC_QUEUE?: QueueBinding;
 }
 
@@ -24,8 +26,9 @@ export default {
     try {
       validateRequest(request);
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
+      const audit = env.AUDIT ?? new ConsoleAuditSink();
       return responseWithHeaders(
-        await route(request, { ...env, QUEUE: queue }) ??
+        await route(request, { ...env, QUEUE: queue, AUDIT: audit }) ??
           Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
         id
       );
@@ -53,7 +56,8 @@ export default {
     env: Env
   ): Promise<void> {
     const repository = createTransactionRepository(env.DB);
-    const service = new TransactionService(repository, new MockPdsProvider(), new MockAadhaarProvider(), new MockKycProvider());
+    const audit = env.AUDIT ?? new ConsoleAuditSink();
+    const service = new TransactionService(repository, new MockPdsProvider(), new MockAadhaarProvider(), new MockKycProvider(), audit);
 
     for (const message of batch.messages) {
       try {
