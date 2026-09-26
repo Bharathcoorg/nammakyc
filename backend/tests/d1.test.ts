@@ -29,7 +29,7 @@ class FakeD1 {
           const claimable = row && (
             row.status === "validating" ||
             row.status === "retrying" ||
-            ((row.status === "authenticating" || row.status === "processing") && String(row.updated_at) < staleBefore)
+            ((row.status === "aadhaar_pending" || row.status === "aadhaar_authenticating" || row.status === "pds_processing") && String(row.updated_at) < staleBefore)
           );
           if (!claimable) return { meta: { changes: 0 } };
           row.updated_at = values[0];
@@ -78,7 +78,7 @@ class FakeD1 {
         if (query.includes("INSERT INTO kyc_transactions")) {
           const key = String(values[0]);
           if (this.transactions.has(key)) throw new Error("UNIQUE constraint failed");
-          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], created_at:values[5], updated_at:values[6], authentication_method:values[4], created_at:values[5], updated_at:values[6], aadhaar_session_reference:values[7], aadhaar_authentication_reference:values[8], pds_transaction_reference:values[9], processing_claim_id:values[10] });
+          this.transactions.set(key, { request_id:key, household_reference:values[1], member_reference:values[2], status:values[3], authentication_method:values[4], created_at:values[5], updated_at:values[6], aadhaar_session_reference:values[7], aadhaar_authentication_reference:values[8], pds_transaction_reference:values[9], processing_claim_id:null });
         } else if (query.includes("INSERT INTO idempotency_keys")) {
           const key = String(values[0]);
           if (this.idempotency.has(key)) throw new Error("UNIQUE constraint failed");
