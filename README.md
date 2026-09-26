@@ -1,10 +1,10 @@
 # Namma KYC
 
-> Independent open-source reference implementation for secure, citizen-first Karnataka ration-card e-KYC — designed for evaluation, testing, contribution, and potential authorized adoption.
+> Namma KYC — an open-source, citizen-first reference implementation for secure, scalable Karnataka ration-card e-KYC.
 
 ## About
 
-**Namma KYC** is an independent, open-source reference implementation for a secure, accessible and citizen-first Karnataka ration-card e-KYC experience. It demonstrates a modern Android journey, provider-neutral backend architecture, security controls, and a no-data interactive browser demo. It is **not an official Government of Karnataka, NIC, or UIDAI application** and does not claim authorization to perform Aadhaar authentication. Production use would require the applicable government, PDS and Aadhaar ecosystem approvals and integrations.
+**Namma KYC** is an independent, open-source reference implementation for a secure, scalable, accessible and citizen-first Karnataka ration-card e-KYC experience. It demonstrates a modern Android journey, provider-neutral backend architecture, security controls, and a no-data interactive browser demo. It is **not an official Government of Karnataka, NIC, or UIDAI application** and does not claim authorization to perform Aadhaar authentication. Production use would require the applicable government, PDS and Aadhaar ecosystem approvals and integrations.
 
 The project is designed for public review, contribution, testing, reuse and adoption. The browser demo is simulation-only and never asks for real ration-card, Aadhaar, biometric, OTP, identity or other citizen information.
 
