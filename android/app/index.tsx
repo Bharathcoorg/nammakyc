@@ -53,7 +53,7 @@ export default function HomeScreen() {
 
   async function authenticate() {
     if (!household || !selected || !consentReference) return;
-    setError(""); setLoading(true); setStep("processing");
+    setError(""); setLoading(true);
     let submittedRequestId = "";
     try {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
@@ -61,12 +61,12 @@ export default function HomeScreen() {
         headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language }),
       });
-      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status);
+      submittedRequestId = response.requestId; setRequestId(response.requestId); setRequestStatus(response.status); if (response.status === "processing") setStep("processing");
       let status = response;
       for (let attempt = 0; attempt < 20; attempt++) {
         if (status.status === "success" || status.status === "failed") break;
         await new Promise(resolve => setTimeout(resolve, 750));
-        status = await getKycStatus<KycResponse>(response.requestId); setRequestStatus(status.status);
+        status = await getKycStatus<KycResponse>(response.requestId); setRequestStatus(status.status); if (status.status === "processing") setStep("processing");
       }
       if (status.status === "success") { setReference(status.reference ?? status.requestId); setStep("success"); }
       else setStep("status");
