@@ -6,8 +6,9 @@ import { HouseholdService } from "../services/household";
 import { TransactionService } from "../services/transactions";
 import { createTransactionRepository } from "../repositories/factory";
 import { AppError } from "../domain/errors";
+import type { KycJobQueue } from "../queues/kyc";
 
-export interface RouteEnv { DB?: Parameters<typeof createTransactionRepository>[0] }
+export interface RouteEnv { DB?: Parameters<typeof createTransactionRepository>[0]; QUEUE?: KycJobQueue }
 const pds=new MockPdsProvider();
 const householdService=new HouseholdService(pds);
 const jsonHeaders={"Cache-Control":"no-store"};
@@ -28,7 +29,10 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const policyVersion=typeof body.consentPolicyVersion==="string"?body.consentPolicyVersion.trim():undefined;
    const language=body.consentLanguage==="en"||body.consentLanguage==="kn"?body.consentLanguage:undefined;
    if(policyVersion&&policyVersion.length>64)throw new AppError("INVALID_REQUEST","Invalid consent policy version",400);
-   const tx=await transactionService.start({householdReference:(body.householdReference as string).trim(),memberReference:(body.memberReference as string).trim(),consentReference:(body.consentReference as string).trim(),consentPolicyVersion:policyVersion,consentLanguage:language,idempotencyKey:key});return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders})}catch(error){const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders})}
+   const input={householdReference:(body.householdReference as string).trim(),memberReference:(body.memberReference as string).trim(),consentReference:(body.consentReference as string).trim(),consentPolicyVersion:policyVersion,consentLanguage:language,idempotencyKey:key};
+   const tx=env.QUEUE ? await transactionService.create(input) : await transactionService.start(input);
+   if(env.QUEUE){await env.QUEUE.enqueue({jobId:crypto.randomUUID(),transactionId:tx.requestId,input,enqueuedAt:new Date().toISOString(),attempt:0});}
+   return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders})}catch(error){const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders})}
  }
  const statusMatch=url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
  if(request.method==="GET"&&statusMatch){const tx=await repository.get(decodeURIComponent(statusMatch[1]));if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders})}
