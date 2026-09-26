@@ -10,23 +10,12 @@ const MARK = `
 </svg>`;
 
 const FAMILY = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 230">
-  <defs><linearGradient id="bg" y1="0" y2="1"><stop stop-color="#EEF6F0"/><stop offset="1" stop-color="#FFF9EA"/></linearGradient></defs>
-  <rect width="500" height="230" rx="32" fill="url(#bg)"/>
-  <path d="M0 203c72-42 126-39 203-18 92 25 183 25 297-12v57H0Z" fill="#D7E9D9"/>
-  <g stroke="#17342A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="165" cy="78" r="31" fill="#C98C62"/><path d="M132 75c4-36 64-46 76 1-17-13-34-19-76-1Z" fill="#3A2C28" stroke="none"/>
-    <path d="M126 116c16-23 62-23 79 0l15 70H111Z" fill="#176B45"/>
-    <circle cx="250" cy="72" r="27" fill="#C98C62"/><path d="M224 69c3-29 48-39 61 1-12-12-29-16-61-1Z" fill="#3A2C28" stroke="none"/>
-    <path d="M215 106c14-19 47-19 61 0l13 78h-88Z" fill="#C8942E"/>
-    <circle cx="330" cy="112" r="23" fill="#C98C62"/><path d="M309 109c2-25 39-32 50 1-11-9-24-12-50-1Z" fill="#3A2C28" stroke="none"/>
-    <path d="M299 143c12-17 43-17 55 0l8 49h-71Z" fill="#2C73D2"/>
-  </g>
-  <g fill="#FFF9EA" stroke="#17342A" stroke-width="3">
-    <circle cx="154" cy="79" r="3"/><circle cx="176" cy="79" r="3"/>
-    <circle cx="241" cy="73" r="3"/><circle cx="258" cy="73" r="3"/>
-    <circle cx="323" cy="112" r="3"/><circle cx="337" cy="112" r="3"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300">
+<defs><linearGradient id="bg" y1="0" y2="1"><stop stop-color="#F0F7F2"/><stop offset="1" stop-color="#FFF9EA"/></linearGradient></defs>
+<rect width="640" height="300" rx="36" fill="url(#bg)"/><ellipse cx="320" cy="270" rx="275" ry="40" fill="#DCECDF"/>
+<g stroke="#17342A" stroke-width="3.5" stroke-linejoin="round"><circle cx="235" cy="105" r="43" fill="#C98C62"/><path d="M190 103c3-49 86-57 92 4-18-17-48-24-92-4Z" fill="#342A27" stroke="none"/><path d="M183 165c17-30 88-30 105 0l18 91H165Z" fill="#176B45"/><circle cx="219" cy="108" r="4" fill="#FFF9EA"/><circle cx="251" cy="108" r="4" fill="#FFF9EA"/><path d="M224 128q11 9 22 0" fill="none" stroke="#8D5844"/></g>
+<g stroke="#17342A" stroke-width="3.5" stroke-linejoin="round"><circle cx="350" cy="98" r="39" fill="#C98C62"/><path d="M309 96c2-45 78-51 84 4-18-14-43-20-84-4Z" fill="#342A27" stroke="none"/><path d="M301 153c15-27 78-27 94 0l17 103H284Z" fill="#C8942E"/><circle cx="335" cy="101" r="3.5" fill="#FFF9EA"/><circle cx="365" cy="101" r="3.5" fill="#FFF9EA"/><path d="M339 120q10 8 20 0" fill="none" stroke="#8D5844"/></g>
+<g stroke="#17342A" stroke-width="3.2" stroke-linejoin="round"><circle cx="455" cy="145" r="31" fill="#C98C62"/><path d="M423 143c2-34 59-40 64 3-13-11-30-15-64-3Z" fill="#342A27" stroke="none"/><path d="M415 187c11-20 52-20 63 0l11 68h-86Z" fill="#2C73D2"/><circle cx="444" cy="147" r="3" fill="#FFF9EA"/><circle cx="466" cy="147" r="3" fill="#FFF9EA"/><path d="M447 162q8 6 15 0" fill="none" stroke="#8D5844"/></g>
 </svg>`;
 
 const SERVICE_ICONS = {
