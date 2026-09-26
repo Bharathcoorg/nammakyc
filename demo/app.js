@@ -51,7 +51,7 @@ function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().ap
 function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Karnataka.png" alt="'+S().gov+'">'}
 function soudha(){return '<img class="soudha-photo" src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Government_Karnataka_8352.jpg" alt="Vidhana Soudha, Bengaluru">'}
 function family(){return '<div class="family-art"><img src="./assets/family-illustration.svg" alt="'+S().welcomeText+'"></div>'}
-function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
+function button(label,next,cls="primary"){return '<div class="actions"><button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button></div>'}
 function feature(icon,title,text){return '<div class="feature-row"><span class="feature-icon '+icon+'"></span><div><b>'+title+'</b><small>'+text+'</small></div></div>'}
 function render(){
  const s=S();
