@@ -22,7 +22,8 @@ describe("API contracts", () => {
   it("accepts a KYC status response", () => {
     expect(kycStatusResponseSchema.safeParse({
       requestId: "request-1234567890123456",
-      status: "processing"
+      status: "pds_processing",
+      authenticationMethod: "otp_face"
     }).success).toBe(true);
   });
 
