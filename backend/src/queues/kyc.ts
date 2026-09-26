@@ -1,4 +1,4 @@
-import type { StartKycInput, TransactionService } from "../services/transactions";
+import type { StartKycInput } from "../services/transactions";
 import { encodeKycJob } from "./consumer";
 
 export interface KycJob {
@@ -37,13 +37,3 @@ export class InMemoryKycJobQueue implements KycJobQueue {
   }
 }
 
-export async function processKycJob(
-  job: KycJob,
-  service: TransactionService
-): Promise<void> {
-  await service.process({
-    transactionId: job.transactionId,
-    memberReference: job.input.memberReference,
-    consentReference: job.input.consentReference
-  });
-}
