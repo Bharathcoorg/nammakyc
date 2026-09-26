@@ -19,6 +19,26 @@ export function encodeKycJob(job: KycJob): QueueEnvelope {
   return { version: 1, job };
 }
 
+export function decodeKycJob(value: unknown): KycJob {
+  if (!value || typeof value !== "object") throw new Error("Invalid KYC queue envelope");
+  const envelope = value as Partial<QueueEnvelope>;
+  if (envelope.version !== 1 || !envelope.job || typeof envelope.job !== "object") {
+    throw new Error("Invalid KYC queue envelope");
+  }
+  const job = envelope.job as Partial<KycJob>;
+  if (
+    typeof job.jobId !== "string" ||
+    typeof job.transactionId !== "string" ||
+    typeof job.enqueuedAt !== "string" ||
+    typeof job.attempt !== "number" ||
+    !job.input ||
+    typeof job.input !== "object"
+  ) {
+    throw new Error("Invalid KYC queue envelope");
+  }
+  return job as KycJob;
+}
+
 export function isDuplicateDelivery(current: KycTransaction | undefined, job: KycJob): boolean {
   if (!current) return false;
   return current.requestId === job.transactionId &&

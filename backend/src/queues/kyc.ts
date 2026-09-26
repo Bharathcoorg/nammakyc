@@ -1,4 +1,5 @@
 import type { StartKycInput, TransactionService } from "../services/transactions";
+import { encodeKycJob } from "./consumer";
 
 export interface KycJob {
   jobId: string;
@@ -13,14 +14,14 @@ export interface KycJobQueue {
 }
 
 export interface QueueProducerLike {
-  send(body: KycJob): Promise<void>;
+  send(body: unknown): Promise<void>;
 }
 
 export class CloudflareKycQueue implements KycJobQueue {
   constructor(private readonly queue: QueueProducerLike) {}
 
   async enqueue(job: KycJob): Promise<void> {
-    await this.queue.send(job);
+    await this.queue.send(encodeKycJob(job));
   }
 }
 

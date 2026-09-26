@@ -37,4 +37,14 @@ describe("KycWorker", () => {
     const result = await new KycWorker(service).consume(job);
     expect(result).toEqual({ acknowledged:false, retryable:true });
   });
+
+  it("does not retry a non-transient failure", async () => {
+    const service = {
+      get: async () => ({ requestId:"request-1", householdReference:"RC-1", memberReference:"M-1", status:"retrying", createdAt:"2026-09-26T12:00:00.000Z", updatedAt:"2026-09-26T12:00:01.000Z" }),
+      process: async () => { throw new AppError("AUTHENTICATION_FAILED","rejected",502); },
+      markFailed: async () => { throw new Error("must not fail"); }
+    } as unknown as TransactionService;
+    const result = await new KycWorker(service).consume(job);
+    expect(result).toEqual({ acknowledged:true, retryable:false });
+  });
 });

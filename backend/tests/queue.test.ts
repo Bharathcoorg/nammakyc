@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CloudflareKycQueue, InMemoryKycJobQueue, type KycJob } from "../src/queues/kyc";
+import { decodeKycJob } from "../src/queues/consumer";
 
 const job: KycJob = {
   jobId:"job-0000000001",
@@ -26,10 +27,14 @@ describe("KYC queue boundary", () => {
 });
 
 describe("Cloudflare queue adapter", () => {
-  it("sends the complete job envelope to the provider queue", async () => {
-    let sent: KycJob | undefined;
+  it("sends and decodes the versioned job envelope", async () => {
+    let sent: unknown;
     const queue = new CloudflareKycQueue({ send: async body => { sent = body; } });
     await queue.enqueue(job);
-    expect(sent).toEqual(job);
+    expect(decodeKycJob(sent)).toEqual(job);
+  });
+
+  it("rejects malformed queue payloads", () => {
+    expect(() => decodeKycJob({ version:2, job })).toThrow("Invalid KYC queue envelope");
   });
 });
