@@ -36,5 +36,7 @@ describe("Cloudflare queue adapter", () => {
 
   it("rejects malformed queue payloads", () => {
     expect(() => decodeKycJob({ version:2, job })).toThrow("Invalid KYC queue envelope");
+    expect(() => decodeKycJob({ version:1, job:{...job, attempt:-1} })).toThrow("Invalid KYC queue envelope");
+    expect(() => decodeKycJob({ version:1, job:{...job, input:{...job.input, idempotencyKey:"short"}} })).toThrow("Invalid KYC queue envelope");
   });
 });

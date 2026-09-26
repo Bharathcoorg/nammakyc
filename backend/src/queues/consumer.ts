@@ -26,13 +26,37 @@ export function decodeKycJob(value: unknown): KycJob {
     throw new Error("Invalid KYC queue envelope");
   }
   const job = envelope.job as Partial<KycJob>;
+  const input = job.input as Partial<KycJob["input"]> | undefined;
   if (
     typeof job.jobId !== "string" ||
+    job.jobId.length < 1 ||
+    job.jobId.length > 128 ||
     typeof job.transactionId !== "string" ||
+    job.transactionId.length < 1 ||
+    job.transactionId.length > 128 ||
     typeof job.enqueuedAt !== "string" ||
+    !/^\\d{4}-\\d{2}-\\d{2}T/.test(job.enqueuedAt) ||
     typeof job.attempt !== "number" ||
-    !job.input ||
-    typeof job.input !== "object"
+    !Number.isInteger(job.attempt) ||
+    job.attempt < 0 ||
+    job.attempt > 100 ||
+    !input ||
+    typeof input !== "object" ||
+    typeof input.householdReference !== "string" ||
+    input.householdReference.length < 1 ||
+    input.householdReference.length > 128 ||
+    typeof input.memberReference !== "string" ||
+    input.memberReference.length < 1 ||
+    input.memberReference.length > 128 ||
+    typeof input.consentReference !== "string" ||
+    input.consentReference.length < 1 ||
+    input.consentReference.length > 128 ||
+    typeof input.idempotencyKey !== "string" ||
+    input.idempotencyKey.length < 16 ||
+    input.idempotencyKey.length > 128 ||
+    (input.consentPolicyVersion !== undefined &&
+      (typeof input.consentPolicyVersion !== "string" || input.consentPolicyVersion.length > 64)) ||
+    (input.consentLanguage !== undefined && input.consentLanguage !== "en" && input.consentLanguage !== "kn")
   ) {
     throw new Error("Invalid KYC queue envelope");
   }
