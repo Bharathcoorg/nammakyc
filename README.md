@@ -13,6 +13,16 @@
 - Mock providers for development and testing.
 - Security, privacy, architecture, integration, and testing documentation.
 
+## Interactive demo
+
+A standalone browser simulation is available under `demo/`. It never requests or sends personal information and does not call the Namma KYC backend.
+
+- Demo source: `demo/`
+- Journey documentation: `docs/product/user-journey.md`
+- Interactive demo notes: `docs/product/interactive-demo.md`
+
+When GitHub Pages is configured for the project, the expected project-site URL is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
+
 ## Repository
 
 - android/ — citizen Android application
