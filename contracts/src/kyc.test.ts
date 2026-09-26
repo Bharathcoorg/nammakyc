@@ -21,3 +21,9 @@ describe("start KYC request", () => {
     expect(result.authenticationMethod).toBe("otp");
   });
 });
+
+
+it("accepts the explicit provider lifecycle response",()=>{
+  const { kycStatusResponseSchema } = require("./kyc");
+  expect(kycStatusResponseSchema.parse({requestId:"request-1234567890123456",status:"aadhaar_authenticated",authenticationMethod:"face"}).status).toBe("aadhaar_authenticated");
+});
