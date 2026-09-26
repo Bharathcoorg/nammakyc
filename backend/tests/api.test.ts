@@ -58,6 +58,18 @@ describe("KYC API", () => {
     expect(queue.drain()).toHaveLength(1);
   });
 
+
+  it("accepts the combined OTP and Face authentication method", async () => {
+    const response=await route(new Request("https://api.test/v1/kyc",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-otp-face-123456"},
+      body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-otp-face",authenticationMethod:"otp_face"})
+    }));
+    expect(response?.status).toBe(202);
+    const body=await response?.json() as {requestId:string;status:string};
+    expect(body.status).toBe("success");
+  });
+
   it("rejects missing idempotency keys", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-1"})}));
     expect(response?.status).toBe(400);
