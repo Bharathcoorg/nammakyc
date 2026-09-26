@@ -20,6 +20,7 @@ function fingerprint(input:StartKycInput):string{return JSON.stringify([input.ho
 const transient=(error:unknown)=>error instanceof TimeoutError||(error instanceof AppError&&error.code==="UPSTREAM_UNAVAILABLE");
 const providerPolicy={attempts:3,baseDelayMs:75,maxDelayMs:500};
 const processingLeaseMs=30_000;
+const pdsBreaker=new CircuitBreaker(5,30_000);
 const aadhaarBreaker=new CircuitBreaker(5,30_000);
 const kycBreaker=new CircuitBreaker(5,30_000);
 
@@ -38,7 +39,7 @@ export class TransactionService{
   const key=input.idempotencyKey.trim(); if(key.length<16||key.length>128)throw new AppError("INVALID_REQUEST","Invalid idempotency key",400);
   const fp=fingerprint(input); const existing=await this.repository.getIdempotency(key);
   if(existing){if(!sameRequest(existing,fp))throw new AppError("DUPLICATE_REQUEST","Idempotency key was already used for another request",409);const replay=await this.repository.get(existing.requestId);if(!replay)throw new AppError("INTERNAL_ERROR","Idempotency record is inconsistent",500);return replay;}
-  const household=await this.pds.lookupHousehold(input.householdReference); const member=household.members.find(m=>m.memberReference===input.memberReference);
+  const household=await guarded(pdsBreaker,signal=>this.pds.lookupHousehold(input.householdReference.trim(),signal)); const member=household.members.find(m=>m.memberReference===input.memberReference);
   if(!member)throw new AppError("INVALID_REQUEST","Member does not belong to household",400);
   let transaction=createTransaction(crypto.randomUUID(),input.householdReference.trim(),member.memberReference,input.authenticationMethod??"otp_face");
   transaction=transitionTransaction(transaction,"validating"); transaction=transitionTransaction(transaction,"aadhaar_pending");
