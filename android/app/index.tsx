@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import * as Crypto from "expo-crypto";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
@@ -40,7 +41,7 @@ export default function HomeScreen() {
     try {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
         method: "POST",
-        headers: { "Idempotency-Key": crypto.randomUUID() },
+        headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference: "citizen-consent", consentPolicyVersion: "2026-09", consentLanguage: language }),
       });
       let status = response;
