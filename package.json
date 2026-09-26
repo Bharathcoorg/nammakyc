@@ -2,7 +2,7 @@
   "name": "nammakyc",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@10",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
