@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { apiRequest } from "../src/api/client";
+import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
 import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "language" | "welcome" | "ration" | "member" | "consent" | "processing" | "success";
+type Step = "language" | "welcome" | "ration" | "member" | "consent" | "auth" | "processing" | "success";
 const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3 };
 
 export default function HomeScreen() {
@@ -31,6 +31,11 @@ export default function HomeScreen() {
 
   async function start() {
     if (!consented || !household || !selected) return;
+    setError(""); setStep("auth");
+  }
+
+  async function authenticate() {
+    if (!household || !selected) return;
     setError(""); setLoading(true); setStep("processing");
     try {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
@@ -38,8 +43,16 @@ export default function HomeScreen() {
         headers: { "Idempotency-Key": crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference: "citizen-consent" }),
       });
-      setReference(response.requestId); setStep("success");
-    } catch { setStep("consent"); setError(s.error); } finally { setLoading(false); }
+      let status = response;
+      for (let attempt = 0; attempt < 20; attempt++) {
+        if (status.status === "success") break;
+        if (status.status === "failed") throw new Error(s.error);
+        await new Promise(resolve => setTimeout(resolve, 750));
+        status = await getKycStatus<KycResponse>(response.requestId);
+      }
+      if (status.status !== "success") throw new Error(s.processingError);
+      setReference(status.reference ?? status.requestId); setStep("success");
+    } catch { setStep("auth"); setError(s.error); } finally { setLoading(false); }
   }
 
   const current = stepNumber[step] ?? 1;
@@ -85,7 +98,7 @@ export default function HomeScreen() {
       <InfoCard title={s.secureTitle} text={s.privacyText}/><Primary label={s.startVerification} onPress={start} disabled={!selected || !consented || loading}/>
     </Card>}
 
-    {step === "processing" && <Card>
+    {step === "auth" && <Card>\n      <StepLabel s={s} current={3}/><Text style={styles.heading}>{s.aadhaarTitle}</Text><Text style={styles.muted}>{s.aadhaarText}</Text>\n      <InfoCard title={s.secureTitle} text={s.aadhaarBoundary}/>\n      <View style={styles.authBoundary}><Text style={styles.authBoundaryTitle}>{s.aadhaarProvider}</Text><Text style={styles.muted}>{s.mockMode}</Text></View>\n      <Primary label={loading ? s.processing : s.openAadhaar} onPress={authenticate} disabled={loading}/>\n    </Card>}\n\n    {step === "processing" && <Card>
       <View style={styles.processingIcon}><Text style={styles.processingDots}>•••</Text></View>
       <Text style={styles.heading}>{s.processing}</Text><Text style={styles.muted}>{s.processingText}</Text>
       <View style={styles.progressTrack}><View style={styles.progressIndeterminate}/></View>
@@ -99,7 +112,7 @@ export default function HomeScreen() {
     </Card>}
 
     {error ? <View style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
-    {step !== "language" && step !== "welcome" && step !== "success" && <Pressable onPress={() => setStep(step === "ration" ? "welcome" : step === "member" ? "ration" : "member")}><Text style={styles.back}>{s.back}</Text></Pressable>}
+    {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Pressable onPress={() => setStep(step === "ration" ? "welcome" : step === "member" ? "ration" : step === "consent" ? "member" : "consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
     <Text style={styles.footer}>{s.demoNote}</Text>
   </ScrollView></SafeAreaView>;
 }
