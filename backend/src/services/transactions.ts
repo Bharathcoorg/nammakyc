@@ -11,6 +11,7 @@ import { TimeoutError, withTimeout } from "../reliability/timeout";
 import type { ConsentArtifact } from "../domain/kyc/consent";
 import type { AuditSink } from "../observability/events";
 import { safeErrorCode } from "../observability/events";
+import { NoopMetricsSink, type MetricsSink } from "../observability/metrics";
 
 export interface StartKycInput { householdReference:string; memberReference:string; consentReference:string; consentPolicyVersion?:string; consentLanguage?:"en"|"kn"; idempotencyKey:string; }
 export interface ProcessKycInput { transactionId:string; memberReference:string; consentReference:string; }
@@ -32,8 +33,9 @@ async function guarded<T>(breaker:CircuitBreaker,operation:(signal:AbortSignal)=
 export function isRetryableKycError(error:unknown):boolean{return transient(error);}
 
 export class TransactionService{
- constructor(private readonly repository:TransactionRepository,private readonly pds:PdsProvider,private readonly aadhaar:AadhaarProvider,private readonly kyc:KycProvider,private readonly audit?:AuditSink){}
+ constructor(private readonly repository:TransactionRepository,private readonly pds:PdsProvider,private readonly aadhaar:AadhaarProvider,private readonly kyc:KycProvider,private readonly audit?:AuditSink,private readonly metrics:MetricsSink=new NoopMetricsSink()){}
  private emit(event:Parameters<AuditSink["emit"]>[0]):void{void this.audit?.emit(event);}
+ private metric(name:Parameters<MetricsSink["increment"]>[0],labels?:Parameters<MetricsSink["increment"]>[1]):void{void this.metrics.increment(name,labels);}
 
  async create(input:StartKycInput):Promise<KycTransaction>{
   const key=input.idempotencyKey.trim();
@@ -52,7 +54,7 @@ export class TransactionService{
    if(replayRecord&&sameRequest(replayRecord,fp)){const replay=await this.repository.get(replayRecord.requestId);if(replay)return replay;}
    throw new AppError("DUPLICATE_REQUEST","Request could not be created",409);
   }
-  this.emit({event:"transaction.created",requestId:transaction.requestId,occurredAt:transaction.createdAt,status:transaction.status}); return transaction;
+  this.emit({event:"transaction.created",requestId:transaction.requestId,occurredAt:transaction.createdAt,status:transaction.status}); this.metric("kyc.created"); return transaction;
  }
  async get(requestId:string):Promise<KycTransaction|undefined>{return this.repository.get(requestId);}
  async markFailed(requestId:string):Promise<KycTransaction>{const transaction=await this.repository.get(requestId);if(!transaction)throw new AppError("NOT_FOUND","KYC transaction not found",404);if(transaction.status==="failed"||transaction.status==="success")return transaction;const failed=transitionTransaction(transaction,"failed");await this.repository.update(failed);this.emit({event:"transaction.failed",requestId,occurredAt:failed.updatedAt,status:failed.status});return failed;}
@@ -83,11 +85,11 @@ export class TransactionService{
    transaction=transitionTransaction(transaction,"success");transaction.providerReference=result.providerReference??auth.providerReference;transaction.processingClaimId=undefined;
    if(!(await this.repository.update(transaction,claimId))) return (await this.repository.get(input.transactionId))!;
 
-   this.emit({event:"transaction.succeeded",requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status});return transaction;
+   this.emit({event:"transaction.succeeded",requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status}); this.metric("kyc.succeeded"); return transaction;
   }catch(error){
-   const retryable=isRetryableKycError(error);transaction=transitionTransaction(transaction,retryable?"retrying":"failed");transaction.processingClaimId=undefined;
+   const retryable=isRetryableKycError(error); if(error instanceof TimeoutError)this.metric("provider.timeout"); else if(error instanceof AppError&&error.code==="UPSTREAM_UNAVAILABLE")this.metric("provider.failure"); transaction=transitionTransaction(transaction,retryable?"retrying":"failed");transaction.processingClaimId=undefined;
    if(!(await this.repository.update(transaction,claimId))) return (await this.repository.get(input.transactionId))!;
-   this.emit({event:retryable?"transaction.retrying":(error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"authentication.failed":"transaction.failed"),requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status,provider:error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"aadhaar":undefined,errorCode:safeErrorCode(error)});
+   this.emit({event:retryable?"transaction.retrying":(error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"authentication.failed":"transaction.failed"),requestId:transaction.requestId,occurredAt:transaction.updatedAt,status:transaction.status,provider:error instanceof AppError&&error.code==="AUTHENTICATION_FAILED"?"aadhaar":undefined,errorCode:safeErrorCode(error)}); if(!retryable)this.metric("kyc.failed");
    throw error;
   }
  }
