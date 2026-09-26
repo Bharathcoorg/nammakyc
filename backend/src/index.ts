@@ -25,7 +25,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const id = requestId(request);
     try {
-      validateRequest(request);
+      await validateRequest(request);
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
       const audit = env.AUDIT ?? new ConsoleAuditSink();
       return responseWithHeaders(
