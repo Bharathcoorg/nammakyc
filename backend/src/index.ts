@@ -60,6 +60,7 @@ export default {
           message.ack();
           continue;
         }
+        envelope.job.attempt = Math.max(envelope.job.attempt, message.attempts ?? 0);
         const result = await worker.consume(envelope.job);
         if (result.retryable) message.retry({ delaySeconds: 30 });
         else message.ack();
