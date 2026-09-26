@@ -32,6 +32,12 @@ describe("TransactionService",()=>{
   const key="idempotency-key-12345";await service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-1",idempotencyKey:key});
   await expect(service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-2",idempotencyKey:key})).rejects.toMatchObject({code:"DUPLICATE_REQUEST",status:409});
  });
+ it("treats authentication method as part of idempotency",async()=>{
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-method"})},{submit:async()=>({success:true,providerReference:"pds-method"})});
+  const key="idempotency-method-12345";
+  await service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-method",authenticationMethod:"otp",idempotencyKey:key});
+  await expect(service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-method",authenticationMethod:"face",idempotencyKey:key})).rejects.toMatchObject({code:"DUPLICATE_REQUEST",status:409});
+ });
  it("allows only one concurrent worker to claim an in-flight transaction",async()=>{
   let authCalls=0;let releaseAuth!:()=>void;const authGate=new Promise<void>(resolve=>{releaseAuth=resolve});
   const aadhaar:AadhaarProvider={startAuthentication:async()=>{authCalls++;await authGate;return {accepted:true,providerReference:"auth-concurrent"}}};
