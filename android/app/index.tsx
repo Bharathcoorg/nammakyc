@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const s = useMemo(() => getStrings(language), [language]);
+  useEffect(() => () => { void stopGuidance(); }, []);
 
   async function speakInstructions() {
     const ok = await speakGuidance(language === "kn" ? "kn" : "en");
