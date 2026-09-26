@@ -24,6 +24,7 @@ export class KycWorker implements KycJobConsumer {
       return { acknowledged: true, retryable: false };
     } catch (error) {
       if (!isRetryableKycError(error) || job.attempt + 1 >= this.maxAttempts) {
+        if (job.attempt + 1 >= this.maxAttempts) await this.service.markFailed(job.transactionId);
         return { acknowledged: true, retryable: false };
       }
       return { acknowledged: false, retryable: true };
