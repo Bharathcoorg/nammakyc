@@ -111,6 +111,15 @@ export class TransactionService {
     return this.repository.get(requestId);
   }
 
+  async markFailed(requestId: string): Promise<KycTransaction> {
+    const transaction = await this.repository.get(requestId);
+    if (!transaction) throw new AppError("NOT_FOUND", "KYC transaction not found", 404);
+    if (transaction.status === "failed" || transaction.status === "success") return transaction;
+    const failed = transitionTransaction(transaction, "failed");
+    await this.repository.update(failed);
+    return failed;
+  }
+
   async process(input: ProcessKycInput): Promise<KycTransaction> {
     let transaction = await this.repository.get(input.transactionId);
     if (!transaction) throw new AppError("NOT_FOUND", "KYC transaction not found", 404);
