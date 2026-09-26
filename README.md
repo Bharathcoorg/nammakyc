@@ -1,28 +1,39 @@
 # Namma KYC
 
-Open-source citizen-first reference implementation for Karnataka ration-card e-KYC.
+**Namma KYC** is an independent open-source reference implementation for a citizen-first Karnataka ration-card e-KYC experience.
 
-## Status
+> This project is not an official Government of Karnataka, NIC, or UIDAI application unless formally authorized or adopted.
 
-This repository contains an independent technical reference implementation. It is not an official Government of Karnataka, NIC, or UIDAI application unless formally authorized or adopted.
+## What is included
 
-Production Aadhaar and Karnataka PDS integrations require the appropriate authorization, credentials, endpoints, and security controls. The public implementation uses explicit provider boundaries and mock providers where those integrations are not available.
+- Android application built with React Native and Expo.
+- Cloudflare Workers backend.
+- Shared API schemas and OpenAPI contract.
+- Explicit provider boundaries for PDS, Aadhaar authentication, and KYC processing.
+- Mock providers for development and testing.
+- Security, privacy, architecture, integration, and testing documentation.
 
-## Project structure
+## Repository
 
-- `android/` — React Native/Expo Android application
-- `backend/` — Cloudflare Workers backend
-- `contracts/` — shared API contracts and OpenAPI definitions
-- `infrastructure/` — Cloudflare deployment configuration
-- `tests/` — integration, security, load, and failure tests
-- `docs/` — architecture, API, security, privacy, integration, testing, and operations documentation
+- android/ — citizen Android application
+- backend/ — Cloudflare Workers API
+- contracts/ — shared API contracts
+- infrastructure/ — Cloudflare deployment configuration
+- tests/ — integration, security, load, and failure testing
+- docs/ — technical documentation
+
+## Integration model
+
+Production government and identity integrations are intentionally separated from the public reference implementation. Undocumented or unauthorized endpoints are not used.
+
+The backend exposes provider interfaces so an authorized integration can be introduced without changing the core citizen workflow.
+
+## Privacy
+
+The project follows data minimization. Real Aadhaar numbers, biometric data, OTP values, credentials, private keys, or citizen records must never be committed to this repository.
 
 ## Development
 
-The project is designed as a TypeScript-first monorepo. Android uses React Native with Expo. The backend uses Cloudflare Workers. Production integrations are isolated behind provider interfaces.
+Install dependencies with pnpm, then run the Android application or Cloudflare Worker from its respective workspace.
 
-## Privacy and security
-
-The project follows data minimization as a core design principle. Real Aadhaar numbers, biometrics, OTP values, credentials, private keys, or production citizen data must never be committed to this repository.
-
-See `SECURITY.md` for reporting security issues.
+See the workspace README files and docs/ for technical details.
