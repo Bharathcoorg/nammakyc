@@ -10,6 +10,7 @@ export interface AuthenticationRequest {
 export interface AuthenticationResult {
   accepted: boolean;
   providerReference?: string;
+  sessionReference?: string;
 }
 
 export interface AadhaarProvider {
