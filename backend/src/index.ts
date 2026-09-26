@@ -45,6 +45,7 @@ export default {
       const status = message === "JSON content type required" ? 415 : message === "Request body too large" ? 413 : 500;
       const metrics = env.METRICS ?? new ConsoleMetricsSink();
       void metrics.increment("http.errors",{route:new URL(request.url).pathname});
+      void metrics.increment("http.responses", { route: new URL(request.url).pathname, status });
       return responseWithHeaders(
         Response.json(
           { error: { code: status === 415 || status === 413 ? "INVALID_REQUEST" : "INTERNAL_ERROR", message: status === 415 || status === 413 ? message : "Internal server error" } },
