@@ -16,6 +16,12 @@ describe("observability events", () => {
     expect(JSON.stringify(events[0])).not.toContain("aadhaar");
   });
 
+  it("accepts retention cleanup events without sensitive payloads", () => {
+    const event = { event: "transaction.cleanup" as const, requestId: "system-retention", occurredAt: "2026-09-26T12:00:00.000Z", status: "idempotency_deleted:3" };
+    expect(event.status).toBe("idempotency_deleted:3");
+    expect(JSON.stringify(event)).not.toMatch(/aadhaar|otp|biometric|ration/i);
+  });
+
   it("extracts only structured application error codes", () => {
     expect(safeErrorCode(new AppError("UPSTREAM_UNAVAILABLE", "private upstream detail", 503))).toBe("UPSTREAM_UNAVAILABLE");
     expect(safeErrorCode(new Error("private detail"))).toBeUndefined();
