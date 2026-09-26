@@ -34,7 +34,7 @@ describe("KYC API", () => {
   it("starts a KYC transaction with an idempotency key", async () => {
     const response=await route(new Request("https://api.test/v1/kyc", {
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-1234567890123456"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"0000000000000000"},
       body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-1"})
     }));
     expect(response?.status).toBe(202);
@@ -49,7 +49,7 @@ describe("KYC API", () => {
     const queue=new InMemoryKycJobQueue();
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-queued-12345678"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"1111111111111111"},
       body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-1"})
     }),{QUEUE:queue});
     expect(response?.status).toBe(202);
@@ -62,7 +62,7 @@ describe("KYC API", () => {
   it("accepts the combined OTP and Face authentication method", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-otp-face-123456"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"2222222222222222"},
       body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-otp-face",authenticationMethod:"otp_face"})
     }));
     expect(response?.status).toBe(202);
@@ -74,7 +74,7 @@ describe("KYC API", () => {
     const queue=new InMemoryKycJobQueue();
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-public-ref-123456"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"3333333333333333"},
       body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-public-ref"})
     }),{QUEUE:queue});
     const body=await response?.json() as {requestId:string;reference?:string};
@@ -94,7 +94,7 @@ describe("KYC API", () => {
   it("fails closed for production KYC integration without approved providers", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-production-12345"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"4444444444444444"},
       body:JSON.stringify({householdReference:"RC-123",memberReference:"M-1",consentReference:"C-1"})
     }),{ENVIRONMENT:"production"});
     expect(response?.status).toBe(500);
@@ -108,7 +108,7 @@ describe("KYC API", () => {
   it("returns 400 for malformed JSON", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-malformed-12345"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"5555555555555555"},
       body:"{not-json"
     }));
     expect(response?.status).toBe(400);
@@ -118,7 +118,7 @@ describe("KYC API", () => {
   it("rejects empty consent policy versions when supplied", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-policy-123456"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"6666666666666666"},
       body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-policy",consentPolicyVersion:""})
     }));
     expect(response?.status).toBe(400);
@@ -127,7 +127,7 @@ describe("KYC API", () => {
   it("rejects non-object JSON request bodies", async () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
-      headers:{"Content-Type":"application/json","Idempotency-Key":"idem-array-123456"},
+      headers:{"Content-Type":"application/json","Idempotency-Key":"7777777777777777"},
       body:JSON.stringify([])
     }));
     expect(response?.status).toBe(400);
