@@ -11,6 +11,7 @@ import { createTransactionRepository } from "../repositories/factory";
 import { AppError } from "../domain/errors";
 import type { KycJobQueue } from "../queues/kyc";
 import type { AuditSink } from "../observability/events";
+import { authorizeRequest, type AuthorizationPolicy } from "../security/authorization";
 
 export interface RouteEnv {
   DB?: Parameters<typeof createTransactionRepository>[0];
@@ -20,6 +21,7 @@ export interface RouteEnv {
   PDS?: PdsProvider;
   AADHAAR?: AadhaarProvider;
   KYC?: KycProvider;
+  AUTHORIZATION?: AuthorizationPolicy;
 }
 
 const jsonHeaders = {"Cache-Control":"no-store"};
@@ -45,6 +47,14 @@ function repositoryFor(env: RouteEnv) {
   return createTransactionRepository(env.DB);
 }
 
+async function authorize(env: RouteEnv, action: "household.read" | "kyc.create" | "kyc.status.read", request: Request, requestId?: string) {
+  try {
+    await authorizeRequest(env, { action, request, requestId });
+  } catch {
+    throw new AppError("INTERNAL_ERROR","Production authorization policy is required",500);
+  }
+}
+
 export async function route(request:Request,env:RouteEnv={}):Promise<Response|undefined>{
  const url=new URL(request.url);
  if(request.method==="GET"&&url.pathname==="/health")return healthResponse();
@@ -52,6 +62,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
  const householdMatch=url.pathname.match(/^\/v1\/households\/([^/]+)$/);
  if(request.method==="GET"&&householdMatch){
   try{
+   await authorize(env,"household.read",request);
    const { pds } = providers(env);
    const householdService=new HouseholdService(pds);
    return Response.json(await householdService.lookup(decodeURIComponent(householdMatch[1])),{headers:jsonHeaders});
@@ -68,6 +79,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
   const transactionService=new TransactionService(repository,configured.pds,configured.aadhaar,configured.kyc,env.AUDIT);
   const key=request.headers.get("Idempotency-Key")??"";
   try{
+   await authorize(env,"kyc.create",request);
    const body=await request.json() as Record<string,unknown>;
    const fields=["householdReference","memberReference","consentReference"] as const;
    for(const field of fields){
@@ -104,6 +116,12 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
 
  const statusMatch=url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
  if(request.method==="GET"&&statusMatch){
+  try {
+   await authorize(env,"kyc.status.read",request,decodeURIComponent(statusMatch[1]));
+  } catch(error) {
+   const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
+   return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders});
+  }
   const tx=await repository.get(decodeURIComponent(statusMatch[1]));
   if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
   return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders});
