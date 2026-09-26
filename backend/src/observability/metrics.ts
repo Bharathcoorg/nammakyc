@@ -1,6 +1,7 @@
 export type MetricName =
   | "http.requests"
   | "http.errors"
+  | "http.responses"
   | "kyc.created"
   | "kyc.succeeded"
   | "kyc.failed"
@@ -15,6 +16,7 @@ export interface MetricEvent {
   requestId?: string;
   route?: string;
   provider?: "aadhaar"|"kyc"|"pds";
+  status?: number;
   occurredAt: string;
 }
 
