@@ -50,7 +50,8 @@ function repositoryFor(env: RouteEnv) {
 async function authorize(env: RouteEnv, action: "household.read" | "kyc.create" | "kyc.status.read", request: Request, requestId?: string) {
   try {
     await authorizeRequest(env, { action, request, requestId });
-  } catch {
+  } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError("INTERNAL_ERROR","Production authorization policy is required",500);
   }
 }
