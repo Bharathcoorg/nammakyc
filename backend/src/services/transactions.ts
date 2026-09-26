@@ -13,11 +13,11 @@ import type { AuditSink } from "../observability/events";
 import { safeErrorCode } from "../observability/events";
 import { NoopMetricsSink, type MetricsSink } from "../observability/metrics";
 
-export interface StartKycInput { householdReference:string; memberReference:string; consentReference:string; consentPolicyVersion?:string; consentLanguage?:"en"|"kn"; idempotencyKey:string; }
+export interface StartKycInput { householdReference:string; memberReference:string; consentReference:string; consentPolicyVersion?:string; consentLanguage?:"en"|"kn"; authenticationMethod?:"face"|"otp"; idempotencyKey:string; }
 export interface ProcessKycInput { transactionId:string; memberReference:string; consentReference:string; }
 
 function fingerprint(input:StartKycInput):string{
- return JSON.stringify([input.householdReference.trim(),input.memberReference.trim(),input.consentReference.trim(),input.consentPolicyVersion?.trim()??"",input.consentLanguage??""]);
+ return JSON.stringify([input.householdReference.trim(),input.memberReference.trim(),input.consentReference.trim(),input.consentPolicyVersion?.trim()??"",input.consentLanguage??"",input.authenticationMethod??"face"]);
 }
 const transient=(error:unknown)=>error instanceof TimeoutError||(error instanceof AppError&&error.code==="UPSTREAM_UNAVAILABLE");
 const providerPolicy={attempts:3,baseDelayMs:75,maxDelayMs:500};
@@ -71,7 +71,7 @@ export class TransactionService{
   try{
    const authStartedAt=Date.now();
    this.emit({event:"authentication.started",requestId:transaction.requestId,occurredAt:new Date(authStartedAt).toISOString(),status:transaction.status,provider:"aadhaar"});
-   const auth=await guarded(aadhaarBreaker,signal=>this.aadhaar.startAuthentication({transactionId:transaction.requestId,memberReference:input.memberReference,consentReference:input.consentReference},signal));
+   const auth=await guarded(aadhaarBreaker,signal=>this.aadhaar.startAuthentication({method:input.authenticationMethod??"face",transactionId:transaction.requestId,memberReference:input.memberReference,consentReference:input.consentReference},signal));
    if(!auth.accepted||!auth.providerReference)throw new AppError("AUTHENTICATION_FAILED","Authentication was not accepted",502);
    this.emit({event:"authentication.completed",requestId:transaction.requestId,occurredAt:new Date().toISOString(),status:transaction.status,provider:"aadhaar",durationMs:Date.now()-authStartedAt});
    transaction=transitionTransaction(transaction,"processing");transaction.providerReference=auth.providerReference;transaction.processingClaimId=claimId;
