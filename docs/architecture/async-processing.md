@@ -35,12 +35,24 @@ Recoverable failures may use `retrying`. Terminal failures use `failed`.
 
 The mobile client should poll the status endpoint rather than holding an HTTP connection while an upstream provider is slow.
 
+## Queue envelope and worker
+
+Queue messages use a versioned envelope:
+
+```text
+{ version: 1, job: KycJob }
+```
+
+The consumer validates the envelope and bounded job fields before processing. The `KycWorker` checks the current transaction before invoking downstream providers and acknowledges terminal duplicate deliveries without re-running the transaction.
+
+Cloudflare delivery attempt counts are mapped into the worker's bounded retry decision. Malformed envelopes fail the batch rather than being interpreted as application work.
+
+The transaction state remains the source of truth. Queue delivery is at-least-once, so duplicate messages are expected and must be safe.
+
 ## Cloudflare boundary
 
-Cloudflare Queues can be one deployment implementation, but the domain/service layer should remain provider-neutral. The public reference implementation must not require a Cloudflare-specific queue API to understand transaction state.
+Cloudflare Queues can be one deployment implementation, but the domain/service layer remains provider-neutral. The public reference implementation does not require a Cloudflare-specific queue API to understand transaction state.
 
-## Implementation boundary
+The backend exposes a provider-neutral `KycJobQueue` contract with an in-memory implementation for local tests. The Cloudflare adapter serializes the same versioned envelope used by the consumer.
 
-The backend now exposes a provider-neutral `KycJobQueue` contract with an in-memory implementation for local tests. The production adapter can map this contract to Cloudflare Queues or another approved queue without coupling domain code to a vendor API.
-
-The transaction idempotency record remains the source of truth for duplicate suppression. Queue delivery is therefore allowed to be at-least-once; a repeated job must not create a second KYC transaction.
+Production queue workers must use approved PDS, Aadhaar and KYC provider adapters. Mock providers are restricted to non-production/reference execution.

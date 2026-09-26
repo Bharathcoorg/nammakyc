@@ -14,12 +14,17 @@ This repository is an independent open-source reference implementation. The cont
 ## Application
 
 - strict schema validation and bounded strings
+- production authorization policy
 - authenticated service-to-service provider calls
 - least-privilege credentials
 - idempotency and replay protection
 - timeout, retry and circuit-breaker policies
 - explicit upstream failure classification
 - generic external errors; detailed diagnostics only in protected telemetry
+
+The reference runtime fails closed in production when the authorization policy, D1 database, or approved downstream provider adapters are absent.
+
+The authorization boundary is provider-neutral. The adopting authority must supply the approved citizen/API identity, delegation, network, and access-control mechanism. Namma KYC does not invent government credentials or use Aadhaar authentication as a generic API authorization mechanism.
 
 ## Sensitive-data boundary
 
