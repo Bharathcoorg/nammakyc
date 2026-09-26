@@ -17,6 +17,7 @@ export default function HomeScreen() {
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
   const [consented, setConsented] = useState(false);
+  const [consentReference, setConsentReference] = useState("");
   const [reference, setReference] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,17 +33,17 @@ export default function HomeScreen() {
 
   async function start() {
     if (!consented || !household || !selected) return;
-    setError(""); setStep("auth");
+    setError(""); setConsentReference(Crypto.randomUUID()); setStep("auth");
   }
 
   async function authenticate() {
-    if (!household || !selected) return;
+    if (!household || !selected || !consentReference) return;
     setError(""); setLoading(true); setStep("processing");
     try {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
         method: "POST",
         headers: { "Idempotency-Key": Crypto.randomUUID() },
-        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference: "citizen-consent", consentPolicyVersion: "2026-09", consentLanguage: language }),
+        body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language }),
       });
       let status = response;
       for (let attempt = 0; attempt < 20; attempt++) {
