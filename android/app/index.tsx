@@ -87,11 +87,18 @@ export default function HomeScreen() {
   }
 
   const current = stepNumber[step] ?? 1;
+  const statusLabel = requestStatus
+    ? ({ received: s.requestReceived, validating: s.statusValidating, authenticating: s.statusAuthenticating, processing: s.statusProcessing, retrying: s.statusRetrying, success: s.statusSuccess, failed: s.statusFailed } as Record<string, string>)[requestStatus] ?? requestStatus
+    : s.requestReceived;
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
     <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />
     {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Progress s={s} current={current} />}
 
     {step === "language" && <Card>
+      <View style={styles.languageHero}>
+        <View style={styles.languageOrb}><Text style={styles.languageOrbText}>N</Text></View>
+        <View style={styles.heroAccent}><Text style={styles.heroAccentText}>{s.karnataka}</Text></View>
+      </View>
       <Badge text={s.trust} /><Text style={styles.eyebrow}>{s.appName}</Text>
       <Text style={styles.heading}>{s.chooseLanguage}</Text><Text style={styles.muted}>{s.languageHint}</Text>
       <LanguageButton label={s.english} selected={language === "en"} onPress={() => setLanguage("en")} />
@@ -146,9 +153,11 @@ export default function HomeScreen() {
       <Text style={styles.heading}>{s.statusTitle}</Text>
       <Text style={styles.muted}>{s.statusHint}</Text>
       <View style={styles.referenceCard}>
-        <Text style={styles.referenceLabel}>{s.reference}</Text>
+        <View style={styles.referenceTop}>
+          <Text style={styles.referenceLabel}>{s.reference}</Text>
+          <View style={styles.statusPill}><View style={styles.statusDot}/><Text style={styles.statusPillText}>{statusLabel}</Text></View>
+        </View>
         <Text selectable style={styles.reference}>{requestId}</Text>
-        <Text style={styles.muted}>{requestStatus || s.requestReceived}</Text>
       </View>
       <Primary label={loading ? s.processing : s.checkStatus} onPress={refreshStatus} disabled={loading}/>
       <Primary label={s.newRequest} onPress={resetJourney} disabled={loading}/>
@@ -158,7 +167,7 @@ export default function HomeScreen() {
       <View style={styles.successIcon}><Text style={styles.successIconText}>✓</Text></View>
       <Text style={styles.heading}>{s.success}</Text><Text style={styles.body}>{s.successText}</Text>
       <View style={styles.referenceCard}><Text style={styles.referenceLabel}>{s.reference}</Text><Text style={styles.reference}>{reference}</Text></View>
-      <Text style={styles.muted}>{s.demoNote}</Text>
+      <View style={styles.successMeta}><Text style={styles.successMetaMark}>✓</Text><Text style={styles.successMetaText}>{s.demoNote}</Text></View>
       <Primary label={s.newRequest} onPress={resetJourney}/>
     </Card>}
 
