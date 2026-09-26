@@ -32,3 +32,20 @@ The repository's queue configuration is an implementation reference; it does not
 D1 enforces declared foreign-key constraints by default. The schema intentionally links idempotency and consent records to their transaction rows. Production deployment should run a database integrity check as part of release validation.
 
 Cloudflare D1 supports jurisdiction controls for some regions, but the repository does not assume that a particular jurisdiction provides India-only storage. Data-location requirements must therefore be resolved against the actual deployment configuration, legal requirements, and the operating authority before production use.
+
+
+## Queue poison-message handling
+
+The production queue consumer is configured with a maximum of three delivery attempts and a dedicated dead-letter queue (`namma-kyc-processing-dlq`).
+
+Operational handling should follow these rules:
+
+- A malformed envelope is rejected rather than processed as a citizen transaction.
+- Retryable downstream failures are retried with bounded exponential delay and jitter.
+- After the configured delivery limit, the message is acknowledged and Cloudflare Queues moves it to the configured dead-letter queue.
+- Operators must investigate the dead-letter message using its opaque transaction/job reference and correlated audit/metric events.
+- Operators must not replay a dead-letter message blindly. First establish whether the downstream provider operation was already accepted, whether the transaction is terminal, and whether replay is safe and idempotent.
+- Dead-letter payload access must be restricted to authorized operations personnel and must follow the same sensitive-data handling rules as production queue data.
+- The dead-letter queue must have retention, alerting, access-control, and replay procedures documented before production activation.
+
+The reference implementation intentionally does not provide an operator-facing automatic replay endpoint. Any replay mechanism should be introduced only after the adopting authority approves the operational and authorization model.
