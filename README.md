@@ -27,11 +27,11 @@ A standalone browser simulation is available under `demo/`. It never requests or
 - Aadhaar provider boundary: `docs/architecture/aadhaar-provider-boundary.md`
 - Interactive demo notes: `docs/product/interactive-demo.md`
 
-GitHub Pages is prepared on the dedicated `gh-pages` branch. The branch contains only the static showcase files and does not contain the application backend or Android source. The expected project site is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
+GitHub Pages is published from the dedicated `gh-pages` branch. For repository consistency, `gh-pages` is currently synchronized with `main`; the root `index.html` redirects to the standalone `demo/` showcase. The expected project site is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
 
 ### GitHub Pages setup
 
-In GitHub, open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, select **`gh-pages`**, choose **`/ (root)`**, and save. GitHub will publish the static demo at the project URL above. Keep `main` as the development branch and `gh-pages` only as the published static showcase branch.
+In GitHub, open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, select **`gh-pages`**, choose **`/ (root)`**, and save. GitHub will publish the static demo at the project URL above. Keep `main` as the development branch and keep `gh-pages` synchronized with the published repository state. Do not add CI/build automation to the Pages branch.
 
 ## Repository
 
@@ -44,7 +44,7 @@ In GitHub, open **Settings → Pages**. Under **Build and deployment**, choose *
 
 ## Canonical verification flow
 
-`Language → Welcome → Ration-card/household → Member → Consent → Voice preparation → Aadhaar provider boundary → Authentication result → PDS e-KYC → Status → Completion`
+`Splash/language → Welcome → Ration-card number → Household members → Consent → Aadhaar number + OTP → Face preparation/FaceRD handoff → Authentication result → PDS e-KYC → Completion → Temporary status/reference`
 
 Face Authentication / Face RD and OTP are provider-controlled Aadhaar authentication methods. Namma KYC does not implement custom face recognition, custom liveness, or a Namma KYC OTP service. The public build uses mock providers; a production adapter requires the applicable authorized Aadhaar/PDS integrations and current technical/operational approvals.
 
