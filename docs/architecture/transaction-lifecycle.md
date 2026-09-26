@@ -4,7 +4,7 @@ A KYC request is represented as a stateful transaction with a distinct Aadhaar a
 
 `received -> validating -> aadhaar_pending -> aadhaar_authenticating -> aadhaar_authenticated -> pds_processing -> success`
 
-Recoverable upstream failures enter `retrying`. A retry resumes the unfinished provider stage: an accepted Aadhaar authentication is represented by `aadhaarAuthenticationReference`, so a PDS retry does not silently repeat Aadhaar authentication. Permanent failures enter `failed`.
+Recoverable upstream failures enter `retrying`. A retry resumes the unfinished provider stage: an accepted Aadhaar authentication is represented by `aadhaarAuthenticationReference`, so a PDS retry does not silently repeat Aadhaar authentication. The queue worker is bounded by the configured retry policy and terminal failure is recorded after retry exhaustion. Permanent failures enter `failed`.
 
 The transaction stores provider-specific references separately:
 
