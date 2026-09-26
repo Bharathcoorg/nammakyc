@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import { NammaKycLogo } from "../src/brand";
+import { FamilyIllustration, KarnatakaEmblem, NammaKycLogo, ServiceIcon, VidhanaSoudhaIllustration } from "../src/brand";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse, KycStatus } from "../src/api/types";
 import { getStrings } from "../src/i18n";
@@ -90,7 +90,7 @@ export default function HomeScreen() {
   }
 
   function resetJourney() {
-    setStep("ration"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
+    setStep("splash"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
     setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setError("");
   }
 
@@ -101,7 +101,7 @@ export default function HomeScreen() {
     {step !== "splash" && <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
     {step !== "splash" && step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && step !== "authenticating" && step !== "authResult" && step !== "pdsProcessing" && <Progress s={s} current={current} />}
 
-    {step === "splash" && <Splash s={s} onStart={() => setStep("language")} />}
+    {step === "splash" && <Splash s={s} onStart={() => setStep("welcome")} />}
 
     {step === "language" && <Card>
       <LanguageHero s={s} /><Badge text={s.trust} /><Text style={styles.eyebrow}>{s.appName}</Text>
@@ -112,27 +112,10 @@ export default function HomeScreen() {
     </Card>}
 
     {step === "welcome" && <Card>
-      <View style={styles.dashboardHeader}>
-        <NammaKycLogo size={38} />
-        <View style={styles.dashboardGovernment}><Text style={styles.dashboardGov}>{s.government}</Text><Text style={styles.dashboardWelcome}>{s.welcomeTitle}</Text></View>
-        <Text style={styles.dashboardIcon}>♧</Text><Text style={styles.dashboardIcon}>◉</Text>
-      </View>
-      <View style={styles.dashboardLandscape}><KarnatakaIllustration/></View>
-      <Pressable accessibilityRole="button" onPress={() => setStep("ration")} style={({pressed})=>[styles.dashboardKyc,pressed&&styles.pressed]}>
-        <View style={styles.dashboardKycIcon}><Text style={styles.dashboardKycIconText}>▣</Text></View>
-        <View style={styles.dashboardKycCopy}><Text style={styles.dashboardKycTitle}>{s.featureRation}</Text><Text style={styles.dashboardKycText}>{s.featureRationText}</Text></View>
-        <Text style={styles.dashboardChevron}>›</Text>
-      </Pressable>
-      <View style={styles.dashboardTiles}>
-        <DashboardTile icon="▤" label={s.myRationCard}/>
-        <DashboardTile icon="♟" label={s.familyMembers} onPress={() => setStep("ration")}/>
-        <DashboardTile icon="◎" label={s.eKycStatus} onPress={() => requestId && setStep("status")}/>
-        <DashboardTile icon="?" label={s.helpFaq}/>
-      </View>
-      <View style={styles.dashboardNav}>
-        <DashboardNav icon="⌂" label={s.home} active/><DashboardNav icon="♧" label={s.notifications}/><DashboardNav icon="◉" label={s.profile}/>
-      </View>
-      <Primary label={s.getStarted} onPress={() => setStep("ration")} />
+      <View style={styles.welcomeHeader}><View style={styles.welcomeBrand}><NammaKycLogo size={44}/><View><Text style={styles.welcomeBrandName}>{s.appName}</Text><Text style={styles.welcomeBrandTag}>{s.tagline}</Text></View></View><View style={styles.welcomeProgress}><View style={styles.welcomeProgressActive}/><View style={styles.welcomeProgressDot}/><View style={styles.welcomeProgressDot}/></View></View>
+      <Text accessibilityRole="header" style={styles.welcomeHeading}>{s.welcomeTitle}</Text><Text style={styles.welcomeIntro}>{s.welcomeText}</Text>
+      <FeatureRow icon="card" title={s.featureRation} text={s.featureRationText} tone="orange"/><FeatureRow icon="shield" title={s.featureSecure} text={s.featureSecureText} tone="green"/><FeatureRow icon="privacy" title={s.featurePrivacy} text={s.featurePrivacyText} tone="gold"/><FeatureRow icon="bolt" title={s.featureFast} text={s.featureFastText} tone="blue"/>
+      <View style={styles.familyArtwork}><FamilyIllustration width={330}/></View><Primary label={s.continue} onPress={() => setStep("ration")} />
     </Card>
 
     {step === "ration" && <Card>
@@ -143,8 +126,8 @@ export default function HomeScreen() {
 
     {step === "member" && household && <Card>
       <StepLabel s={s} current={2}/><Text accessibilityRole="header" style={styles.heading}>{s.household}</Text><Text style={styles.muted}>{s.selectMember}</Text>
-      {household.members.map(m => <Pressable key={m.memberReference} accessibilityRole="button" accessibilityLabel={`${s.household}: ${m.displayName}`} onPress={() => {setSelected(m.memberReference);setStep("consent");}} style={({pressed}) => [styles.member,pressed&&styles.pressed]}>
-        <View style={styles.avatar}><Text style={styles.avatarText}>{m.displayName.slice(0,1)}</Text></View><View style={styles.memberCopy}><Text style={styles.memberName}>{m.displayName}</Text><Text style={styles.muted}>{m.kycRequired?s.kycRequired:s.kycComplete}</Text></View><Text style={styles.arrow}>›</Text>
+      {household.members.map(m => <Pressable key={m.memberReference} accessibilityRole="button" accessibilityState={{disabled: !m.kycRequired}} onPress={() => {if(m.kycRequired){setSelected(m.memberReference);setStep("consent");}}} style={({pressed}) => [styles.member,m.kycRequired&&pressed&&styles.pressed,!m.kycRequired&&styles.memberCompleted]}>
+        <View style={[styles.avatar,!m.kycRequired&&styles.avatarCompleted]}><Text style={styles.avatarText}>{m.kycRequired?m.displayName.slice(0,1):"✓"}</Text></View><View style={styles.memberCopy}><Text style={styles.memberName}>{m.displayName}</Text><Text style={[styles.muted,!m.kycRequired&&styles.completedText]}>{m.kycRequired?s.kycRequired:s.kycRecentlyVerified}</Text></View><Text style={styles.arrow}>{m.kycRequired?"›":"✓"}</Text>
       </Pressable>)}
     </Card>}
 
@@ -206,7 +189,7 @@ export default function HomeScreen() {
     
   </ScrollView></SafeAreaView>;
 }
-function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
+function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><Pressable accessibilityRole="button" style={styles.splashLanguage}><Text style={styles.splashLanguageText}>ಕನ್ನಡ</Text></Pressable><KarnatakaEmblem width={88}/><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.digitalIdentity}</Text><View style={styles.splashIllustration}><VidhanaSoudhaIllustration width={350}/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
 function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 4</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/4)*100+"%"}]}/></View></View>}
@@ -216,7 +199,7 @@ function LanguageHero({s}:{s:ReturnType<typeof getStrings>}){return <View style=
 function WelcomeHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.welcomeHero}><View style={styles.welcomeOrb}><Text style={styles.welcomeOrbText}>N</Text></View><View style={styles.welcomeDots}><View style={styles.welcomeDotActive}/><View style={styles.welcomeDot}/><View style={styles.welcomeDot}/></View><Text style={styles.welcomeKicker}>{s.karnataka}</Text></View>}
 function KarnatakaIllustration(){return <View style={styles.illustration}><View style={styles.sun}/><View style={styles.building}><View style={styles.dome}/><View style={styles.buildingRoof}/><View style={styles.buildingBody}><View style={styles.columnRow}>{Array.from({length:7}).map((_,i)=><View key={i} style={styles.column}/>)}</View><View style={styles.door}/></View></View><View style={styles.landscape}><View style={styles.landLeft}/><View style={styles.landRight}/></View></View>}
 
-function FeatureRow({icon,title,text,tone}:{icon:string;title:string;text:string;tone:"orange"|"green"|"gold"|"blue"}){return <View style={styles.featureRow}><View style={[styles.featureIcon,tone==="orange"?styles.featureorange:tone==="green"?styles.featuregreen:tone==="gold"?styles.featuregold:styles.featureblue]}><Text style={styles.featureIconText}>{icon}</Text></View><View style={styles.featureCopy}><Text style={styles.featureTitle}>{title}</Text><Text style={styles.featureText}>{text}</Text></View></View>}
+function FeatureRow({icon,title,text,tone}:{icon:"card"|"shield"|"privacy"|"bolt";title:string;text:string;tone:"orange"|"green"|"gold"|"blue"}){return <View style={styles.featureRow}><View style={[styles.featureIcon,tone==="orange"?styles.featureorange:tone==="green"?styles.featuregreen:tone==="gold"?styles.featuregold:styles.featureblue]}><ServiceIcon name={icon} size={28}/></View><View style={styles.featureCopy}><Text style={styles.featureTitle}>{title}</Text><Text style={styles.featureText}>{text}</Text></View></View>}
 function DashboardTile({icon,label,onPress}:{icon:string;label:string;onPress?:()=>void}){return <Pressable accessibilityRole="button" onPress={onPress} style={({pressed})=>[styles.dashboardTile,pressed&&styles.pressed]}><View style={styles.dashboardTileIcon}><Text style={styles.dashboardTileIconText}>{icon}</Text></View><Text style={styles.dashboardTileText}>{label}</Text></Pressable>}
 function DashboardNav({icon,label,active}:{icon:string;label:string;active?:boolean}){return <View style={styles.dashboardNavItem}><Text style={[styles.dashboardNavIcon,active&&styles.dashboardNavActive]}>{icon}</Text><Text style={[styles.dashboardNavText,active&&styles.dashboardNavActive]}>{label}</Text></View>}
 function ValueItem({icon,text}:{icon:string;text:string}){return <View style={styles.valueItem}><Text style={styles.valueIcon}>{icon}</Text><Text style={styles.valueText}>{text}</Text></View>}
