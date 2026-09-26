@@ -7,12 +7,12 @@ import { MockAadhaarProvider } from "./providers/aadhaar/mock";
 import { MockKycProvider } from "./providers/kyc/mock";
 import { isRetryableKycError, TransactionService } from "./services/transactions";
 import { createTransactionRepository } from "./repositories/factory";
-import { ConsoleAuditSink } from "./observability/events";
+import { ConsoleAuditSink, type AuditSink } from "./observability/events";
 
 export interface QueueBinding { send(body: KycJob): Promise<void> }
 export interface Env extends RouteEnv {
   ENVIRONMENT: string;
-  AUDIT?: ConsoleAuditSink;
+  AUDIT?: AuditSink;
   KYC_QUEUE?: QueueBinding;
   RETENTION_IDEMPOTENCY_DAYS?: string;
 }
