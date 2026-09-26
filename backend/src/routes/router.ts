@@ -9,7 +9,7 @@ import { AppError } from "../domain/errors";
 import type { KycJobQueue } from "../queues/kyc";
 import type { AuditSink } from "../observability/events";
 
-export interface RouteEnv { DB?: Parameters<typeof createTransactionRepository>[0]; QUEUE?: KycJobQueue; AUDIT?: AuditSink }
+export interface RouteEnv { DB?: Parameters<typeof createTransactionRepository>[0]; QUEUE?: KycJobQueue; AUDIT?: AuditSink; ENVIRONMENT?: string }
 const pds=new MockPdsProvider();
 const householdService=new HouseholdService(pds);
 const jsonHeaders={"Cache-Control":"no-store"};
@@ -20,6 +20,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
  const householdMatch=url.pathname.match(/^\/v1\/households\/([^/]+)$/);
  if(request.method==="GET"&&householdMatch){try{return Response.json(await householdService.lookup(decodeURIComponent(householdMatch[1])),{headers:jsonHeaders})}catch{return Response.json({error:{code:"INVALID_REQUEST",message:"Invalid ration card reference"}},{status:400,headers:jsonHeaders})}}
  const repository=createTransactionRepository(env.DB);
+ if(env.ENVIRONMENT === "production") throw new AppError("INTERNAL_ERROR","Production provider configuration is required",500);
  const transactionService=new TransactionService(repository,pds,new MockAadhaarProvider(),new MockKycProvider(),env.AUDIT);
  if(request.method==="POST"&&url.pathname==="/v1/kyc"){
   const key=request.headers.get("Idempotency-Key")??"";
