@@ -2,8 +2,7 @@ openapi: 3.1.0
 info:
   title: Namma KYC API
   version: 0.1.0
-  description: >
-    API contract for the Namma KYC open-source reference implementation.
+  description: API contract for the Namma KYC open-source reference implementation.
 servers:
   - url: https://api.example.invalid
 paths:
@@ -11,8 +10,7 @@ paths:
     get:
       operationId: health
       responses:
-        "200":
-          description: Service health
+        "200": { description: Service health }
   /v1/households/{rationCardReference}:
     get:
       operationId: getHousehold
@@ -20,13 +18,11 @@ paths:
         - name: rationCardReference
           in: path
           required: true
-          schema:
-            type: string
+          schema: { type: string, minLength: 1, maxLength: 64 }
       responses:
-        "200":
-          description: Household and member information
-        "404":
-          description: Household not found
+        "200": { description: Household and member information }
+        "400": { description: Invalid ration-card reference }
+        "503": { description: Household service unavailable }
   /v1/kyc:
     post:
       operationId: startKyc
@@ -34,21 +30,18 @@ paths:
         - name: Idempotency-Key
           in: header
           required: true
-          schema:
-            type: string
+          schema: { type: string, minLength: 16, maxLength: 128 }
       requestBody:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/StartKycRequest"
+            schema: { $ref: "#/components/schemas/StartKycRequest" }
       responses:
-        "202":
-          description: KYC transaction accepted
-        "400":
-          description: Invalid request
-        "409":
-          description: Duplicate request
+        "202": { description: KYC transaction accepted }
+        "400": { description: Invalid request }
+        "404": { description: Household member not found }
+        "409": { description: Idempotency conflict }
+        "503": { description: Upstream service unavailable }
   /v1/kyc/{requestId}:
     get:
       operationId: getKycStatus
@@ -56,25 +49,27 @@ paths:
         - name: requestId
           in: path
           required: true
-          schema:
-            type: string
+          schema: { type: string, minLength: 16, maxLength: 128 }
       responses:
-        "200":
-          description: KYC transaction status
-        "404":
-          description: Transaction not found
+        "200": { description: KYC transaction status }
+        "404": { description: Transaction not found }
 components:
   schemas:
     StartKycRequest:
       type: object
-      required: [memberReference, consentReference, idempotencyKey]
+      required: [memberReference, consentReference]
       properties:
-        memberReference:
+        memberReference: { type: string, minLength: 1, maxLength: 128 }
+        consentReference: { type: string, minLength: 1, maxLength: 128 }
+    KycStatusResponse:
+      type: object
+      required: [requestId, status]
+      properties:
+        requestId: { type: string }
+        status:
           type: string
-        consentReference:
-          type: string
-        idempotencyKey:
-          type: string
+          enum: [received, validating, authenticating, processing, success, retrying, failed]
+        reference: { type: string }
     Error:
       type: object
       required: [error]
@@ -83,7 +78,5 @@ components:
           type: object
           required: [code, message]
           properties:
-            code:
-              type: string
-            message:
-              type: string
+            code: { type: string }
+            message: { type: string }
