@@ -233,7 +233,7 @@ export const translations = {
   },
 } as const;
 
-export type Strings = typeof translations.en;
+export type Strings = (typeof translations)[Language];
 
 export const accessibility = {
   en: { selected: "Selected", back: "Back", member: "Household member", error: "Error" },
