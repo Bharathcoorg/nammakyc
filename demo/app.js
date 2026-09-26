@@ -48,8 +48,8 @@ const KN={
 let lang="en",step=0;
 const S=()=>lang==="en"?EN:KN;
 function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().app+'">'}
-function emblem(){return '<div class="karnataka-emblem" aria-label="'+S().gov+'"><div class="emblem-lions">♛</div><div class="emblem-shield">✦</div><div class="emblem-base"></div></div>'}
-function soudha(){return '<div class="soudha-art"><div class="soudha-dome"></div><div class="soudha-main"></div><div class="soudha-wing left"></div><div class="soudha-wing right"></div></div>'}
+function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="'+S().gov+'">'}
+function soudha(){return '<img class="soudha-photo" src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Government_Karnataka_8352.jpg" alt="Vidhana Soudha, Bengaluru">'}
 function family(){return '<div class="family-art"><div class="person father"></div><div class="person mother"></div><div class="person child"></div></div>'}
 function button(label,next,cls="primary"){return '<button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button>'}
 function feature(icon,title,text){return '<div class="feature-row"><span class="feature-icon '+icon+'"></span><div><b>'+title+'</b><small>'+text+'</small></div></div>'}
@@ -67,7 +67,7 @@ function render(){
  document.getElementById("screen").innerHTML=screen(s); wire();
 }
 function screen(s){
- if(step===0)return '<div class="splash"><div class="splash-language">'+s.language+'</div>'+emblem()+'<div class="gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+s.tagline+'</p>'+soudha()+'<p class="motto">'+s.motto+'</p>'+button(s.getStarted,1)+'</div>';
+ if(step===0)return '<div class="splash"><div class="splash-top">'+emblem()+'<div><div class="gov">'+s.gov+'</div><small>'+(lang==="en"?"Karnataka State Services":"ಕರ್ನಾಟಕ ರಾಜ್ಯ ಸೇವೆಗಳು")+'</small></div><button class="splash-language" id="splash-language">'+s.language+'</button></div><h1>'+s.app+'</h1><p class="splash-tag">'+(lang==="en"?"Secure Identity. Better Services. A Stronger Karnataka.":"ಸುರಕ್ಷಿತ ಗುರುತು. ಉತ್ತಮ ಸೇವೆಗಳು. ಸದೃಢ ಕರ್ನಾಟಕ.")+'</p>'+soudha()+'<div class="splash-values"><span>♙<b>'+(lang==="en"?"People First":"ಜನರಿಗೆ ಮೊದಲ ಆದ್ಯತೆ")+'</b></span><span>✦<b>'+(lang==="en"?"Simple Access":"ಸರಳ ಪ್ರವೇಶ")+'</b></span><span>♡<b>'+(lang==="en"?"Digital Karnataka":"ಡಿಜಿಟಲ್ ಕರ್ನಾಟಕ")+'</b></span></div>'+button(s.getStarted,1)+'<small class="independent">'+(lang==="en"?"Independent open-source citizen initiative":"ಸ್ವತಂತ್ರ ಮುಕ್ತ-ಮೂಲ ನಾಗರಿಕ ಉಪಕ್ರಮ")+'</small></div>';
  if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
  if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
  if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
@@ -80,7 +80,7 @@ function screen(s){
 }
 function wire(){
  document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{step=Number(b.dataset.next);render()});
- document.getElementById("language").onclick=()=>{lang=lang==="en"?"kn":"en";render()};
+ document.getElementById("language").onclick=()=>{lang=lang==="en"?"kn":"en";render()}; const splashLanguage=document.getElementById("splash-language"); if(splashLanguage)splashLanguage.onclick=()=>{lang=lang==="en"?"kn":"en";render()};
  document.getElementById("start").onclick=()=>{step=1;render()};
  document.getElementById("reset").onclick=()=>{step=0;render()};
 }
