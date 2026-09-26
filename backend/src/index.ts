@@ -104,11 +104,29 @@ export default {
         });
 
         if (result.retryable && !result.acknowledged) {
-          const delaySeconds = Math.min(60, 2 ** Math.min(Math.max(0, message.attempts - 1), 5));
+          const attempt = Math.max(0, message.attempts - 1);
+          const delaySeconds = Math.min(60, 2 ** Math.min(attempt, 5));
           message.retry({ delaySeconds });
+          audit.emit({
+            event:"queue.retry_scheduled",
+            requestId:job.transactionId,
+            jobId:job.jobId,
+            attempt,
+            occurredAt:new Date().toISOString(),
+            status:"retrying"
+          });
         }
       } catch (error) {
-        if (error instanceof Error && error.message === "Invalid KYC queue envelope") throw error;
+        if (error instanceof Error && error.message === "Invalid KYC queue envelope") {
+          audit.emit({
+            event:"queue.invalid_message",
+            requestId:"unknown",
+            occurredAt:new Date().toISOString(),
+            status:"rejected",
+            errorCode:"INVALID_REQUEST"
+          });
+          throw error;
+        }
         const job = (() => {
           try { return decodeKycJob(message.body); } catch { return undefined; }
         })();

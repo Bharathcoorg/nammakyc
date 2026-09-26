@@ -7,7 +7,9 @@ export type KycEventName =
   | "transaction.retrying"
   | "transaction.failed"
   | "transaction.succeeded"
-  | "transaction.cleanup";
+  | "transaction.cleanup"
+  | "queue.retry_scheduled"
+  | "queue.invalid_message";
 
 export interface KycAuditEvent {
   event: KycEventName;
@@ -17,6 +19,8 @@ export interface KycAuditEvent {
   provider?: "aadhaar" | "kyc";
   durationMs?: number;
   errorCode?: string;
+  jobId?: string;
+  attempt?: number;
 }
 
 export interface AuditSink {
