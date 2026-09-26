@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Namma KYC",
+    "slug": "namma-kyc",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "namma-kyc",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "android": { "package": "org.nammakyc.app" }
+  }
+}
