@@ -117,3 +117,7 @@ body{font-family:Inter,"Noto Sans","Noto Sans Kannada",system-ui,-apple-system,B
 .details code{font-size:10px;line-height:14px}
 .details b{font-size:10.5px;line-height:14px}
 .success h2{max-width:100%;overflow-wrap:anywhere}
+
+/* Language-safe layout: keep long Kannada labels readable without collisions. */
+.stage-copy h1,.screen-head b,.screen-card h2,.screen-card p{overflow-wrap:anywhere;word-break:normal}.family-art img{object-fit:contain!important;padding:0 18px}.member-row .member-copy{min-width:0}.details>div{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.details code,.details b{min-width:0;overflow-wrap:anywhere}.guide-button{flex:0 0 auto;max-width:118px}.splash-tag,.splash-gov,.splash h1{overflow-wrap:anywhere}.journey h2{overflow-wrap:anywhere}
+@media(max-width:500px){.stage-copy h1{line-height:1.04}.family-art img{padding:0 10px}.details>div{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}}
