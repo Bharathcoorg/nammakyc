@@ -11,6 +11,7 @@ import { createTransactionRepository } from "./repositories/factory";
 import { ConsoleAuditSink, type AuditSink } from "./observability/events";
 import { TransactionService } from "./services/transactions";
 import { queueRetryDelaySeconds } from "./queues/retry";
+import { NoopMetricsSink } from "./observability/metrics";
 
 export interface QueueBinding {
   send(body: unknown): Promise<void>;
@@ -87,6 +88,7 @@ export default {
 
     const repository = createTransactionRepository(env.DB);
     const audit = env.AUDIT ?? new ConsoleAuditSink();
+    const metrics = env.METRICS ?? new NoopMetricsSink();
     const service = new TransactionService(
       repository,
       env.PDS ?? new MockPdsProvider(),
@@ -108,6 +110,7 @@ export default {
           const attempt = Math.max(0, message.attempts - 1);
           const delaySeconds = queueRetryDelaySeconds(attempt);
           message.retry({ delaySeconds });
+          void metrics.increment("queue.retried",{route:"queue"});
           audit.emit({
             event:"queue.retry_scheduled",
             requestId:job.transactionId,
@@ -119,6 +122,7 @@ export default {
         }
       } catch (error) {
         if (error instanceof Error && error.message === "Invalid KYC queue envelope") {
+          void metrics.increment("queue.invalid",{route:"queue"});
           audit.emit({
             event:"queue.invalid_message",
             requestId:"unknown",
