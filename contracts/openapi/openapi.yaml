@@ -3,8 +3,7 @@ info:
   title: Namma KYC API
   version: 0.1.0
   description: >
-    Public reference API contract for the Namma KYC citizen e-KYC
-    reference implementation.
+    API contract for the Namma KYC open-source reference implementation.
 servers:
   - url: https://api.example.invalid
 paths:
@@ -14,6 +13,42 @@ paths:
       responses:
         "200":
           description: Service health
+  /v1/households/{rationCardReference}:
+    get:
+      operationId: getHousehold
+      parameters:
+        - name: rationCardReference
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Household and member information
+        "404":
+          description: Household not found
+  /v1/kyc:
+    post:
+      operationId: startKyc
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartKycRequest"
+      responses:
+        "202":
+          description: KYC transaction accepted
+        "400":
+          description: Invalid request
+        "409":
+          description: Duplicate request
   /v1/kyc/{requestId}:
     get:
       operationId: getKycStatus
@@ -26,3 +61,29 @@ paths:
       responses:
         "200":
           description: KYC transaction status
+        "404":
+          description: Transaction not found
+components:
+  schemas:
+    StartKycRequest:
+      type: object
+      required: [memberReference, consentReference, idempotencyKey]
+      properties:
+        memberReference:
+          type: string
+        consentReference:
+          type: string
+        idempotencyKey:
+          type: string
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
