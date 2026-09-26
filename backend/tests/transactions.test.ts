@@ -42,8 +42,8 @@ describe("TransactionService",()=>{
   await new Promise(resolve=>setTimeout(resolve,0));
   const second=service.process({transactionId:created.requestId,memberReference:"M-1",consentReference:"consent-concurrent"});
   await new Promise(resolve=>setTimeout(resolve,0));
-  expect(await service.get(created.requestId)).toMatchObject({status:"authenticating",processingClaimId:expect.any(String)});expect(authCalls).toBe(1);
-  releaseAuth();await expect(first).resolves.toMatchObject({status:"success"});await expect(second).resolves.toMatchObject({status:"authenticating"});expect(authCalls).toBe(1);
+  expect(await service.get(created.requestId)).toMatchObject({status:"aadhaar_authenticating",processingClaimId:expect.any(String)});expect(authCalls).toBe(1);
+  releaseAuth();await expect(first).resolves.toMatchObject({status:"success"});await expect(second).resolves.toMatchObject({status:"aadhaar_authenticating"});expect(authCalls).toBe(1);
  });
 });
 
