@@ -1,5 +1,12 @@
 # Namma KYC
 
+## About
+
+**Namma KYC** is an independent, open-source reference implementation for a secure, accessible and citizen-first Karnataka ration-card e-KYC experience. It demonstrates a modern Android journey, provider-neutral backend architecture, security controls, and a no-data interactive browser demo. It is **not an official Government of Karnataka, NIC, or UIDAI application** and does not claim authorization to perform Aadhaar authentication. Production use would require the applicable government, PDS and Aadhaar ecosystem approvals and integrations.
+
+The project is designed for public review, contribution, testing, reuse and adoption. The browser demo is simulation-only and never asks for real ration-card, Aadhaar, biometric, OTP, identity or other citizen information.
+
+
 **Namma KYC** is an independent open-source reference implementation for a citizen-first Karnataka ration-card e-KYC experience.
 
 > This project is not an official Government of Karnataka, NIC, or UIDAI application unless formally authorized or adopted.
@@ -21,7 +28,7 @@ A standalone browser simulation is available under `demo/`. It never requests or
 - Journey documentation: `docs/product/user-journey.md`
 - Interactive demo notes: `docs/product/interactive-demo.md`
 
-When GitHub Pages is configured for the project, the expected project-site URL is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
+GitHub Pages can publish the static showcase from `main` → `/docs`; the project site is expected at `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
 
 ## Repository
 
