@@ -2,18 +2,19 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SvgUri } from "react-native-svg";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse } from "../src/api/types";
 import { getStrings } from "../src/i18n";
 import type { Language } from "../src/i18n/translations";
 import { theme } from "../src/theme";
 
-type Step = "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "processing" | "status" | "success";
+type Step = "splash" | "language" | "welcome" | "ration" | "member" | "consent" | "instructions" | "auth" | "processing" | "status" | "success";
 const stepNumber: Record<string, number> = { ration: 1, member: 2, consent: 3, instructions: 3, auth: 3, processing: 3, status: 3, success: 3 };
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
-  const [step, setStep] = useState<Step>("language");
+  const [step, setStep] = useState<Step>("splash");
   const [rationCard, setRationCard] = useState("");
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
@@ -89,8 +90,10 @@ export default function HomeScreen() {
     : s.requestReceived;
 
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-    <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />
-    {step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Progress s={s} current={current} />}
+    {step !== "splash" && <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
+    {step !== "splash" && step !== "language" && step !== "welcome" && step !== "success" && step !== "processing" && <Progress s={s} current={current} />}
+
+    {step === "splash" && <Splash s={s} onStart={() => setStep("language")} />}
 
     {step === "language" && <Card>
       <LanguageHero s={s} /><Badge text={s.trust} /><Text style={styles.eyebrow}>{s.appName}</Text>
@@ -176,12 +179,16 @@ export default function HomeScreen() {
     </Card>}
 
     {error ? <View accessibilityRole="alert" style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
-    {step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
+    {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
     <Text style={styles.footer}>{s.demoNote}</Text>
   </ScrollView></SafeAreaView>;
 }
 
-function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><Text style={styles.logoText}>N</Text></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
+const KARNATAKA_EMBLEM_URI = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
+
+function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><SvgUri width={96} height={84} uri={KARNATAKA_EMBLEM_URI}/><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}><Text style={styles.splashNamma}>Namma</Text><Text style={styles.splashKyc}> KYC</Text></Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
+
+function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><SvgUri width="38" height="34" uri={KARNATAKA_EMBLEM_URI}/></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <Text style={styles.stepLabel}>{s.step} {current} {s.of} 3</Text>}
 
