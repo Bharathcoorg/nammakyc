@@ -11,9 +11,17 @@ describe("MockAadhaarProvider", () => {
     });
     expect(result.accepted).toBe(true);
     expect(result.providerReference).toBe("demo-face-auth-reference");
+    expect(result.sessionReference).toBe("demo-face-session");
   });
 
-  it("returns an OTP and Face reference for the required multi-factor path", async () => {\n    const result = await new MockAadhaarProvider().startAuthentication({ method: "otp_face", transactionId: "demo-transaction", memberReference: "demo-member", consentReference: "demo-consent" });\n    expect(result.accepted).toBe(true);\n    expect(result.providerReference).toBe("demo-otp-face-auth-reference");\n  });\n\n  it("returns an OTP reference without implementing OTP itself", async () => {
+  it("returns an OTP and Face reference for the required multi-factor path", async () => {
+    const result = await new MockAadhaarProvider().startAuthentication({ method: "otp_face", transactionId: "demo-transaction", memberReference: "demo-member", consentReference: "demo-consent" });
+    expect(result.accepted).toBe(true);
+    expect(result.providerReference).toBe("demo-otp-face-auth-reference");
+    expect(result.sessionReference).toBe("demo-otp-face-session");
+  });
+
+  it("returns an OTP reference without implementing OTP itself", async () => {
     const result = await new MockAadhaarProvider().startAuthentication({
       method: "otp",
       transactionId: "demo-transaction",
@@ -22,5 +30,6 @@ describe("MockAadhaarProvider", () => {
     });
     expect(result.accepted).toBe(true);
     expect(result.providerReference).toBe("demo-otp-auth-reference");
+    expect(result.sessionReference).toBe("demo-otp-session");
   });
 });
