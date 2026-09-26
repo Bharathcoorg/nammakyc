@@ -25,3 +25,10 @@ Before deployment:
 8. Run failure, load, recovery, security and disaster-recovery validation.
 
 The repository's queue configuration is an implementation reference; it does not mean a production queue or government integration is currently active.
+
+
+## Data location and database integrity
+
+D1 enforces declared foreign-key constraints by default. The schema intentionally links idempotency and consent records to their transaction rows. Production deployment should run a database integrity check as part of release validation.
+
+Cloudflare D1 supports jurisdiction controls for some regions, but the repository does not assume that a particular jurisdiction provides India-only storage. Data-location requirements must therefore be resolved against the actual deployment configuration, legal requirements, and the operating authority before production use.
