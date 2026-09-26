@@ -28,7 +28,7 @@ describe("KYC API", () => {
   it("returns a household for a valid ration card reference", async () => {
     const response=await route(new Request("https://api.test/v1/households/RC-123"));
     expect(response?.status).toBe(200);
-    expect((await response?.json()).householdReference).toBe("demo-RC-123");
+    expect(((await response?.json()) as {householdReference:string}).householdReference).toBe("demo-RC-123");
   });
 
   it("starts a KYC transaction with an idempotency key", async () => {
@@ -112,7 +112,7 @@ describe("KYC API", () => {
       body:"{not-json"
     }));
     expect(response?.status).toBe(400);
-    expect((await response?.json()).error.code).toBe("INVALID_REQUEST");
+    expect(((await response?.json()) as {error:{code:string}}).error.code).toBe("INVALID_REQUEST");
   });
 
   it("rejects empty consent policy versions when supplied", async () => {
