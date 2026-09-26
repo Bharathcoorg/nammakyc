@@ -22,7 +22,7 @@ describe("KYC domain", () => {
     const transaction = {
       requestId: "request-1234567890123456",
       householdReference: "RC-1",
-      authenticationMethod: "face",
+      authenticationMethod: "face" as const,
       memberReference: "member-01",
       status: "success" as const,
       createdAt: "2026-09-26T00:00:00.000Z",
