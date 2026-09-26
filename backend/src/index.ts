@@ -36,7 +36,7 @@ export default {
       const queue = env.KYC_QUEUE ? new CloudflareKycQueue(env.KYC_QUEUE) : undefined;
       const audit = env.AUDIT ?? new ConsoleAuditSink();
       return responseWithHeaders(
-        await route(request, { ...env, QUEUE: queue, AUDIT: audit }) ??
+        await route(request, { ...env, QUEUE: queue, AUDIT: audit, METRICS: env.METRICS }) ??
           Response.json({ error: { code: "NOT_FOUND", message: "Route not found" } }, { status: 404 }),
         id
       );
@@ -94,7 +94,8 @@ export default {
       env.PDS ?? new MockPdsProvider(),
       env.AADHAAR ?? new MockAadhaarProvider(),
       env.KYC ?? new MockKycProvider(),
-      audit
+      audit,
+      metrics
     );
     const worker = new KycWorker(service);
 
