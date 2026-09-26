@@ -56,7 +56,7 @@ export const translations = {
     aadhaarText: "Continue to Aadhaar verification.",
     aadhaarBoundary: "Continue to secure Aadhaar verification.",
     aadhaarProvider: "Aadhaar Face Authentication",
-    faceRdTitle: "Face Authentication", faceRdBoundary: "Follow the secure instructions shown during verification.", otpProviderTitle: "OTP Authentication", otpBoundary: "OTP verification is completed securely."
+    faceRdTitle: "Face Authentication", faceRdBoundary: "Follow the secure instructions shown during verification.", otpProviderTitle: "OTP Authentication", otpBoundary: "OTP verification is completed securely.",
     pdsProcessingTitle: "Ration-card e-KYC processing", pdsProcessingText: "Your Aadhaar verification is complete. Your ration-card e-KYC is being finalized.", pdsBoundaryTitle: "PDS provider boundary", pdsBoundaryText: "Your e-KYC request is being processed securely.",
     mockMode: "Aadhaar verification",
     openAadhaar: "Continue to verification",
@@ -171,7 +171,7 @@ export const translations = {
     aadhaarText: "ಅನುಮೋದಿತ ಆಧಾರ್ ಪರಿಶೀಲನಾ ಹಂತಕ್ಕೆ ಮುಂದುವರಿಯಿರಿ.",
     aadhaarBoundary: "ಸುರಕ್ಷಿತ ಆಧಾರ್ ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಯಿರಿ.",
     aadhaarProvider: "ಆಧಾರ್ ಮುಖ ದೃಢೀಕರಣ",
-    faceRdTitle: "ಮುಖ ದೃಢೀಕರಣ", faceRdBoundary: "ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿ ತೋರಿಸುವ ಸುರಕ್ಷಿತ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.", otpProviderTitle: "OTP ದೃಢೀಕರಣ", otpBoundary: "OTP ಪರಿಶೀಲನೆ ಸುರಕ್ಷಿತವಾಗಿ ನಡೆಯುತ್ತದೆ."
+    faceRdTitle: "ಮುಖ ದೃಢೀಕರಣ", faceRdBoundary: "ಪರಿಶೀಲನೆಯ ಸಮಯದಲ್ಲಿ ತೋರಿಸುವ ಸುರಕ್ಷಿತ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.", otpProviderTitle: "OTP ದೃಢೀಕರಣ", otpBoundary: "OTP ಪರಿಶೀಲನೆ ಸುರಕ್ಷಿತವಾಗಿ ನಡೆಯುತ್ತದೆ.",
     pdsProcessingTitle: "ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪ್ರಕ್ರಿಯೆ", pdsProcessingText: "ನಿಮ್ಮ ಆಧಾರ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ. ನಿಮ್ಮ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳ್ಳುತ್ತಿದೆ.", pdsBoundaryTitle: "PDS ಪ್ರೊವೈಡರ್ ಗಡಿ", pdsBoundaryText: "ನಿಮ್ಮ ಇ-ಕೆವೈಸಿ ವಿನಂತಿಯನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ.",
     mockMode: "ಆಧಾರ್ ಪರಿಶೀಲನೆ",
     openAadhaar: "ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಸಿ",
