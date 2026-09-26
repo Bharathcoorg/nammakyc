@@ -5,7 +5,9 @@ export const consentReferenceSchema=z.string().trim().min(1).max(128);
 export const startKycRequestSchema=z.object({
   householdReference:z.string().trim().min(1).max(128),
   memberReference:z.string().trim().min(1).max(128),
-  consentReference:consentReferenceSchema
+  consentReference:consentReferenceSchema,
+  consentPolicyVersion:z.string().trim().min(1).max(64).optional(),
+  consentLanguage:z.enum(["en","kn"]).optional()
 });
 export const kycStatusResponseSchema=z.object({requestId:requestIdSchema,status:kycStatusSchema,reference:z.string().min(1).max(128).optional()});
 export type StartKycRequest=z.infer<typeof startKycRequestSchema>;
