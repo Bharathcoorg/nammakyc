@@ -41,12 +41,14 @@ export default function HomeScreen() {
   async function authenticate() {
     if (!household || !selected || !consentReference) return;
     setError(""); setLoading(true); setStep("processing");
+    let submittedRequestId = "";
     try {
       const response = await apiRequest<KycResponse>("/v1/kyc", {
         method: "POST",
         headers: { "Idempotency-Key": Crypto.randomUUID() },
         body: JSON.stringify({ householdReference: household.householdReference, memberReference: selected, consentReference, consentPolicyVersion: "2026-09", consentLanguage: language }),
       });
+      submittedRequestId = response.requestId;
       setRequestId(response.requestId);
       setRequestStatus(response.status);
       let status = response;
@@ -59,7 +61,7 @@ export default function HomeScreen() {
       }
       if (status.status !== "success") { setStep("status"); return; }
       setReference(status.reference ?? status.requestId); setStep("success");
-    } catch { setStep(requestId ? "status" : "auth"); setError(s.error); } finally { setLoading(false); }
+    } catch { setStep(submittedRequestId ? "status" : "auth"); setError(s.error); } finally { setLoading(false); }
   }
 
 
