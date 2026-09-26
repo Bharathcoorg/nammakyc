@@ -47,6 +47,16 @@ describe("TransactionService",()=>{
  });
 });
 
+ it("records transaction outcome metrics without identifiers",async()=>{
+  const metrics=new RecordingMetrics();
+  const service=new TransactionService(new InMemoryTransactionRepository(),pds,{startAuthentication:async()=>({accepted:true,providerReference:"auth-metrics"})},{submit:async()=>({success:true,providerReference:"kyc-metrics"})},undefined,metrics);
+  const result=await service.start({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-metrics",idempotencyKey:"metrics-key-12345"});
+  expect(result.status).toBe("success");
+  expect(metrics.events).toEqual(["kyc.created","kyc.succeeded"]);
+ });
+
+});
+
 
 describe("processing claim fencing",()=>{
  it("does not let a stale worker overwrite a newer claim",async()=>{
