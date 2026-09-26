@@ -119,7 +119,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
      throw new AppError("UPSTREAM_UNAVAILABLE","KYC processing queue is temporarily unavailable",503);
     }
    }
-   return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders});
+   return Response.json({requestId:tx.requestId,status:tx.status,authenticationMethod:tx.authenticationMethod,reference:tx.pdsTransactionReference??tx.aadhaarAuthenticationReference},{status:202,headers:jsonHeaders});
   }catch(error){
    const e=error instanceof AppError?error:error instanceof SyntaxError?new AppError("INVALID_REQUEST","Invalid JSON request body",400):new AppError("INTERNAL_ERROR","Internal server error",500);
    void metrics.increment("http.errors",{route:url.pathname});
@@ -140,7 +140,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const repository=repositoryFor(env);
    const tx=await repository.get(decodeURIComponent(statusMatch[1]));
    if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});
-   return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders});
+   return Response.json({requestId:tx.requestId,status:tx.status,authenticationMethod:tx.authenticationMethod,reference:tx.pdsTransactionReference??tx.aadhaarAuthenticationReference},{headers:jsonHeaders});
   } catch(error) {
    const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);
    void metrics.increment("http.errors",{route:url.pathname});
