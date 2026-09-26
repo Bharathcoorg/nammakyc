@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { AppError } from "../src/domain/errors";
 import { route } from "../src/routes/router";
 import { InMemoryKycJobQueue } from "../src/queues/kyc";
+import type { MetricName, MetricsSink } from "../src/observability/metrics";
+
+class RecordingMetrics implements MetricsSink { events:MetricName[]=[]; increment(name:MetricName):void{this.events.push(name);} }
 
 describe("KYC API", () => {
   it("returns authorization failures from the production policy", async () => {
@@ -106,4 +109,18 @@ describe("KYC API", () => {
     }));
     expect(response?.status).toBe(400);
   });
+  it("records request and error metrics for rejected API calls", async () => {
+    const metrics=new RecordingMetrics();
+    const response=await route(new Request("https://api.test/v1/kyc",{method:"POST",headers:{"Content-Type":"application/json","Idempotency-Key":"short"},body:"{}"}),{METRICS:metrics});
+    expect(response?.status).toBe(400);
+    expect(metrics.events).toEqual(["http.requests","http.errors"]);
+  });
+
+  it("records request metrics for successful health checks", async () => {
+    const metrics=new RecordingMetrics();
+    const response=await route(new Request("https://api.test/health"),{METRICS:metrics});
+    expect(response?.status).toBe(200);
+    expect(metrics.events).toEqual(["http.requests"]);
+  });
+
 });
