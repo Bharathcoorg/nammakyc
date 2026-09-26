@@ -1,4 +1,7 @@
+export type AadhaarAuthenticationMethod = "face" | "otp";
+
 export interface AuthenticationRequest {
+  method: AadhaarAuthenticationMethod;
   transactionId: string;
   memberReference: string;
   consentReference: string;
