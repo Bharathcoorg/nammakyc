@@ -11,6 +11,7 @@ import { createTransactionRepository } from "../repositories/factory";
 import { AppError } from "../domain/errors";
 import type { KycJobQueue } from "../queues/kyc";
 import type { AuditSink } from "../observability/events";
+import { NoopMetricsSink, type MetricsSink } from "../observability/metrics";
 import { authorizeRequest, type AuthorizationPolicy } from "../security/authorization";
 
 export interface RouteEnv {
@@ -22,6 +23,7 @@ export interface RouteEnv {
   AADHAAR?: AadhaarProvider;
   KYC?: KycProvider;
   AUTHORIZATION?: AuthorizationPolicy;
+  METRICS?: MetricsSink;
 }
 
 const jsonHeaders = {"Cache-Control":"no-store"};
@@ -58,6 +60,8 @@ async function authorize(env: RouteEnv, action: "household.read" | "kyc.create" 
 
 export async function route(request:Request,env:RouteEnv={}):Promise<Response|undefined>{
  const url=new URL(request.url);
+ const metrics=env.METRICS ?? new NoopMetricsSink();
+ void metrics.increment("http.requests",{route:url.pathname});
  if(request.method==="GET"&&url.pathname==="/health")return healthResponse();
 
  const householdMatch=url.pathname.match(/^\/v1\/households\/([^/]+)$/);
