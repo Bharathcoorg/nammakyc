@@ -40,10 +40,10 @@ export default {
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
-      const status = message === "JSON content type required" || message === "Request body too large" ? 415 : 500;
+      const status = message === "JSON content type required" ? 415 : message === "Request body too large" ? 413 : 500;
       return responseWithHeaders(
         Response.json(
-          { error: { code: status === 415 ? "INVALID_REQUEST" : "INTERNAL_ERROR", message: status === 415 ? message : "Internal server error" } },
+          { error: { code: status === 415 || status === 413 ? "INVALID_REQUEST" : "INTERNAL_ERROR", message: status === 415 || status === 413 ? message : "Internal server error" } },
           { status }
         ),
         id
