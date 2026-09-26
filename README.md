@@ -30,7 +30,11 @@ A standalone browser simulation is available under `demo/`. It never requests or
 - Journey documentation: `docs/product/user-journey.md`
 - Interactive demo notes: `docs/product/interactive-demo.md`
 
-GitHub Pages can publish the static showcase from `main` → `/docs`; the project site is expected at `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
+GitHub Pages is prepared on the dedicated `gh-pages` branch. The branch contains only the static showcase files and does not contain the application backend or Android source. The expected project site is `https://bharathcoorg.github.io/nammakyc/`. The demo must always be presented as a simulation, not an official government service.
+
+### GitHub Pages setup
+
+In GitHub, open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, select **`gh-pages`**, choose **`/ (root)`**, and save. GitHub will publish the static demo at the project URL above. Keep `main` as the development branch and `gh-pages` only as the published static showcase branch.
 
 ## Repository
 
