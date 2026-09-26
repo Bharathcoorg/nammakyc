@@ -30,3 +30,11 @@ Before enabling automated deletion, document legal holds, incident investigation
 ## Privacy rule
 
 Retention should never become a reason to store raw Aadhaar/PID, biometric material, OTPs, or upstream payloads. Store opaque references and the minimum metadata needed for the approved purpose.
+
+## Reference cleanup implementation
+
+The Worker includes an hourly scheduled cleanup hook for the idempotency-record class. It is intentionally disabled when `RETENTION_IDEMPOTENCY_DAYS` is empty. A production deployment must set this value only after the adopting authority approves the operational retention window.
+
+The cleanup deletes only idempotency records older than the configured cutoff. It does not delete KYC transaction, consent, provider-reference, or security-event records; those classes require their own approved retention and records-management decisions.
+
+The cleanup is bounded to 1–3650 days, uses a database-side timestamp predicate, and emits an aggregate cleanup event without citizen identifiers. Operators should monitor the cleanup event and investigate unexpected deletion counts.
