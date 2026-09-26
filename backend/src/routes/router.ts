@@ -21,7 +21,11 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
  const transactionService=new TransactionService(repository,pds,new MockAadhaarProvider(),new MockKycProvider());
  if(request.method==="POST"&&url.pathname==="/v1/kyc"){
   const key=request.headers.get("Idempotency-Key")??"";
-  try{const body=await request.json() as Record<string,unknown>;if(typeof body.householdReference!=="string"||typeof body.memberReference!=="string"||typeof body.consentReference!=="string")throw new AppError("INVALID_REQUEST","Invalid KYC request",400);const tx=await transactionService.start({householdReference:body.householdReference,memberReference:body.memberReference,consentReference:body.consentReference,idempotencyKey:key});return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders})}catch(error){const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders})}
+  try{const body=await request.json() as Record<string,unknown>;
+   const fields=["householdReference","memberReference","consentReference"] as const;
+   for(const field of fields){const value=body[field];if(typeof value!=="string"||value.trim().length<1||value.trim().length>128)throw new AppError("INVALID_REQUEST","Invalid KYC request",400);}
+   if(key.trim().length<16||key.trim().length>128)throw new AppError("INVALID_REQUEST","Invalid idempotency key",400);
+   const tx=await transactionService.start({householdReference:(body.householdReference as string).trim(),memberReference:(body.memberReference as string).trim(),consentReference:(body.consentReference as string).trim(),idempotencyKey:key});return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{status:202,headers:jsonHeaders})}catch(error){const e=error instanceof AppError?error:new AppError("INTERNAL_ERROR","Internal server error",500);return Response.json({error:{code:e.code,message:e.message}},{status:e.status,headers:jsonHeaders})}
  }
  const statusMatch=url.pathname.match(/^\/v1\/kyc\/([^/]+)$/);
  if(request.method==="GET"&&statusMatch){const tx=await repository.get(decodeURIComponent(statusMatch[1]));if(!tx)return Response.json({error:{code:"NOT_FOUND",message:"KYC transaction not found"}},{status:404,headers:jsonHeaders});return Response.json({requestId:tx.requestId,status:tx.status,reference:tx.providerReference},{headers:jsonHeaders})}
