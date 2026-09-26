@@ -91,13 +91,11 @@ export default function HomeScreen() {
 
   function resetJourney() {
     setStep("ration"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
-    setConsentReference(""); setRequestId(""); setRequestStatus(""); setReference(""); setError("");
+    setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setError("");
   }
 
   const current = stepNumber[step] ?? 1;
-  const statusLabel = requestStatus
-    ? ({ received: s.requestReceived, validating: s.statusValidating, authenticating: s.statusAuthenticating, processing: s.statusProcessing, retrying: s.statusRetrying, success: s.statusSuccess, failed: s.statusFailed } as Record<string, string>)[requestStatus] ?? requestStatus
-    : s.requestReceived;
+  const statusLabel = ({ received: s.requestReceived, validating: s.statusValidating, aadhaar_pending: s.statusAadhaarPending, aadhaar_authenticating: s.statusAuthenticating, aadhaar_authenticated: s.statusAadhaarAuthenticated, pds_processing: s.statusPdsProcessing, retrying: s.statusRetrying, success: s.statusSuccess, failed: s.statusFailed } as Record<string, string>)[requestStatus] ?? requestStatus;
 
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
     {step !== "splash" && <Header s={s} language={language} onLanguageChange={() => setLanguage(language === "en" ? "kn" : "en")} />}
@@ -160,7 +158,7 @@ export default function HomeScreen() {
     {step === "auth" && <Card>
       <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.aadhaarTitle}</Text><Text style={styles.muted}>{s.aadhaarText}</Text>
       <View style={styles.providerCard}><View style={styles.providerIcon}><Text style={styles.providerIconText}>✓</Text></View><View style={styles.providerCopy}><Text style={styles.providerTitle}>{s.aadhaarProvider}</Text><Text style={styles.muted}>{s.mockMode}</Text></View><View style={styles.providerCheck}><Text style={styles.providerCheckText}>✓</Text></View></View>
-      <InfoCard title={s.secureTitle} text={s.aadhaarBoundary}/><Primary label={loading?s.processing:s.openAadhaar} onPress={authenticate} disabled={loading}/>
+      <InfoCard title={s.aadhaarProvider} text={s.aadhaarBoundary}/><Primary label={loading?s.processing:s.openAadhaar} onPress={authenticate} disabled={loading}/>
     </Card>}
 
     {step === "instructions" && <Card>
@@ -187,7 +185,7 @@ export default function HomeScreen() {
     {(step === "authenticating" || step === "authResult" || step === "pdsProcessing" || step === "processing") && <Card>
       <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{step === "authResult" ? s.authResultTitle : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingTitle : s.processing}</Text>
       <Text style={styles.muted}>{step === "authResult" ? s.authResultText : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingText : s.processingText}</Text>
-      <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={step === "authResult" ? s.aadhaarProvider : s.secureTitle} text={step === "authResult" ? s.authResultBoundary : s.processingNote}/>
+      <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={step === "authResult" ? s.aadhaarProvider : s.pdsProcessingTitle} text={step === "authResult" ? s.authResultBoundary : s.processingNote}/>
     </Card>
 
     {step === "status" && <Card>
@@ -200,18 +198,18 @@ export default function HomeScreen() {
       <SuccessHero/><Text accessibilityRole="header" style={styles.headingCenter}>{s.success}</Text><Text style={styles.centerBody}>{s.successText}</Text>
       <View style={styles.detailsCard}><DetailRow label={s.reference} value={reference}/><DetailRow label={s.service} value={s.serviceValue}/><DetailRow label={s.currentStatus} value={s.completedStatus} success/></View>
       <Primary label={s.viewDetails} onPress={() => {}}/><Secondary label={s.goHome} onPress={resetJourney}/>
-      <View style={styles.successMeta}><Text style={styles.successMetaMark}>✓</Text><Text style={styles.successMetaText}>{s.demoNote}</Text></View>
+      
     </Card>}
 
     {error ? <View accessibilityRole="alert" style={styles.errorCard}><Text style={styles.error}>{error}</Text></View> : null}
     {step !== "splash"&&step !== "language"&&step !== "welcome"&&step !== "success"&&step !== "processing"&&step !== "authenticating"&&step !== "authResult"&&step !== "pdsProcessing"&&step !== "status"&&<Pressable onPress={() => setStep(step==="ration"?"welcome":step==="member"?"ration":step==="consent"?"member":"consent")}><Text style={styles.back}>{s.back}</Text></Pressable>}
-    <Text style={styles.footer}>{s.demoNote}</Text>
+    
   </ScrollView></SafeAreaView>;
 }
 function Splash({s,onStart}:{s:ReturnType<typeof getStrings>;onStart:()=>void}){return <View style={styles.splash}><NammaKycLogo size={84} /><Text style={styles.splashGovernment}>{s.government}</Text><Text style={styles.splashBrand}>{s.appName}</Text><Text style={styles.splashTag}>{s.tagline}</Text><View style={styles.splashIllustration}><KarnatakaIllustration/></View><Text style={styles.splashMotto}>{s.splashMotto}</Text><Primary label={s.getStarted} onPress={onStart}/></View>}
 
 function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
-function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 3</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/3)*100+"%"}]}/></View></View>}
+function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 4</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:(current/4)*100+"%"}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <Text style={styles.stepLabel}>{s.step} {current} {s.of} 4</Text>}
 
 function LanguageHero({s}:{s:ReturnType<typeof getStrings>}){return <View style={styles.languageHero}><View style={styles.emblem}><Text style={styles.emblemText}>✦</Text></View><Text style={styles.government}>{s.karnataka}</Text><Text style={styles.heroBrand}>{s.appName}</Text><Text style={styles.heroTagline}>{s.peopleFirst} · {s.simpleAccess}</Text><KarnatakaIllustration/></View>}
