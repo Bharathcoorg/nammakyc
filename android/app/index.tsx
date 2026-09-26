@@ -118,7 +118,7 @@ export default function HomeScreen() {
       <Text accessibilityRole="header" style={styles.welcomeHeading}>{s.welcomeTitle}</Text><Text style={styles.welcomeIntro}>{s.welcomeText}</Text>
       <FeatureRow icon="card" title={s.featureRation} text={s.featureRationText} tone="orange"/><FeatureRow icon="shield" title={s.featureSecure} text={s.featureSecureText} tone="green"/><FeatureRow icon="privacy" title={s.featurePrivacy} text={s.featurePrivacyText} tone="gold"/><FeatureRow icon="bolt" title={s.featureFast} text={s.featureFastText} tone="blue"/>
       <View style={styles.familyArtwork}><FamilyIllustration width={330}/></View><Primary label={s.continue} onPress={() => setStep("ration")} />
-    </Card>
+    </Card>}
 
     {step === "ration" && <Card>
       <StepLabel s={s} current={1}/><Text accessibilityRole="header" style={styles.heading}>{s.rationCard}</Text><Text style={styles.muted}>{s.rationCardHint}</Text>
@@ -169,7 +169,7 @@ export default function HomeScreen() {
       <ProcessingHero s={s}/><Text accessibilityRole="header" style={styles.heading}>{step === "authResult" ? s.authResultTitle : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingTitle : s.processing}</Text>
       <Text style={styles.muted}>{step === "authResult" ? s.authResultText : step === "pdsProcessing" || step === "processing" ? s.pdsProcessingText : s.processingText}</Text>
       <ProcessingTimeline s={s} status={requestStatus}/><InfoCard title={step === "authResult" ? s.aadhaarProvider : s.pdsProcessingTitle} text={step === "authResult" ? s.authResultBoundary : s.processingNote}/>
-    </Card>
+    </Card>}
 
     {step === "status" && <Card>
       <Text accessibilityRole="header" style={styles.heading}>{s.statusTitle}</Text><Text style={styles.muted}>{s.statusUpdated}</Text>
