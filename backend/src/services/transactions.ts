@@ -42,6 +42,7 @@ const transient = (error: unknown) =>
   (error instanceof AppError && error.code === "UPSTREAM_UNAVAILABLE");
 
 const providerPolicy = { attempts: 3, baseDelayMs: 75, maxDelayMs: 500 };
+const processingLeaseMs = 30_000;
 const aadhaarBreaker = new CircuitBreaker(5, 30_000);
 const kycBreaker = new CircuitBreaker(5, 30_000);
 
@@ -145,6 +146,13 @@ export class TransactionService {
     if (transaction.status === "success" || transaction.status === "failed") return transaction;
 
     try {
+      if (transaction.status === "authenticating" || transaction.status === "processing") {
+        const age = Date.now() - new Date(transaction.updatedAt).getTime();
+        if (!Number.isFinite(age) || age < processingLeaseMs) return transaction;
+        transaction = transitionTransaction(transaction, "retrying");
+        await this.repository.update(transaction);
+      }
+
       if (transaction.status === "validating" || transaction.status === "retrying") {
         transaction = transitionTransaction(transaction, "authenticating");
         await this.repository.update(transaction);
