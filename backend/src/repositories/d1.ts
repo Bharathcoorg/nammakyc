@@ -31,13 +31,17 @@ export class D1TransactionRepository implements TransactionRepository{
    const results=await this.db.batch(statements);
    return results.every(r=>(r.meta?.changes??0)>0);
   }catch(error){
-   const [transaction,idempotency]=await Promise.all([
-    this.get(tx.requestId),
-    this.getIdempotency(record.key)
-   ]);
+   const [transaction,idempotency]=await Promise.all([this.get(tx.requestId),this.getIdempotency(record.key)]);
    if(transaction||idempotency)return false;
    throw error;
   }
+ }
+
+ async claimForProcessing(requestId:string,nowIso:string,staleBeforeIso:string){
+  const result=await this.db.prepare(
+   "UPDATE kyc_transactions SET status='authenticating', updated_at=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('authenticating','processing') AND updated_at < ?))"
+  ).bind(nowIso,requestId,staleBeforeIso).run();
+  return (result.meta?.changes??0) === 1;
  }
 
  async purgeIdempotencyBefore(cutoffIso:string){

@@ -6,6 +6,7 @@ export interface TransactionRepository {
   get(requestId: string): Promise<KycTransaction | undefined>;
   getIdempotency(key: string): Promise<IdempotencyRecord | undefined>;
   createIfAbsent(transaction: KycTransaction, record: IdempotencyRecord, consent: ConsentArtifact): Promise<boolean>;
+  claimForProcessing(requestId: string, nowIso: string, staleBeforeIso: string): Promise<boolean>;
   update(transaction: KycTransaction): Promise<void>;
   purgeIdempotencyBefore(cutoffIso: string): Promise<number>;
 }
@@ -23,6 +24,18 @@ export class InMemoryTransactionRepository implements TransactionRepository {
     this.transactions.set(transaction.requestId, transaction);
     this.idempotency.set(record.key, record);
     this.consent.set(consent.consentReference, consent);
+    return true;
+  }
+
+  async claimForProcessing(requestId: string, nowIso: string, staleBeforeIso: string) {
+    const current = this.transactions.get(requestId);
+    if (!current) return false;
+    const claimable =
+      current.status === "validating" ||
+      current.status === "retrying" ||
+      ((current.status === "authenticating" || current.status === "processing") && current.updatedAt < staleBeforeIso);
+    if (!claimable) return false;
+    this.transactions.set(requestId, { ...current, status: "authenticating", updatedAt: nowIso });
     return true;
   }
 
