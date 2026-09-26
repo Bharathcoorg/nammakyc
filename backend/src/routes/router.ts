@@ -13,6 +13,7 @@ import type { KycJobQueue } from "../queues/kyc";
 import type { AuditSink } from "../observability/events";
 import { NoopMetricsSink, type MetricsSink } from "../observability/metrics";
 import { authorizeRequest, type AuthorizationPolicy } from "../security/authorization";
+import type { StartKycInput } from "../services/transactions";
 
 export interface RouteEnv {
   DB?: Parameters<typeof createTransactionRepository>[0];
@@ -101,7 +102,7 @@ export async function route(request:Request,env:RouteEnv={}):Promise<Response|un
    const authenticationMethod=payload.authenticationMethod==="otp"?"otp":payload.authenticationMethod==="face"?"face":payload.authenticationMethod==="otp_face"||payload.authenticationMethod===undefined?"otp_face":undefined;
    if(!authenticationMethod)throw new AppError("INVALID_REQUEST","Invalid authentication method",400);
    
-   const input={
+   const input: StartKycInput = {
     householdReference:(payload.householdReference as string).trim(),
     memberReference:(payload.memberReference as string).trim(),
     consentReference:(payload.consentReference as string).trim(),
