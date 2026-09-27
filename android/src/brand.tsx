@@ -1,3 +1,4 @@
+import { Image, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 
 const MARK = `
@@ -9,13 +10,45 @@ const MARK = `
   <path d="M198 70l5 5 10-12" fill="none" stroke="#176B45" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 
-const FAMILY = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300">
-<defs><linearGradient id="bg" y1="0" y2="1"><stop stop-color="#F0F7F2"/><stop offset="1" stop-color="#FFF9EA"/></linearGradient></defs>
-<rect width="640" height="300" rx="36" fill="url(#bg)"/><ellipse cx="320" cy="270" rx="275" ry="40" fill="#DCECDF"/>
-<g stroke="#17342A" stroke-width="3.5" stroke-linejoin="round"><circle cx="235" cy="105" r="43" fill="#C98C62"/><path d="M190 103c3-49 86-57 92 4-18-17-48-24-92-4Z" fill="#342A27" stroke="none"/><path d="M183 165c17-30 88-30 105 0l18 91H165Z" fill="#176B45"/><circle cx="219" cy="108" r="4" fill="#FFF9EA"/><circle cx="251" cy="108" r="4" fill="#FFF9EA"/><path d="M224 128q11 9 22 0" fill="none" stroke="#8D5844"/></g>
-<g stroke="#17342A" stroke-width="3.5" stroke-linejoin="round"><circle cx="350" cy="98" r="39" fill="#C98C62"/><path d="M309 96c2-45 78-51 84 4-18-14-43-20-84-4Z" fill="#342A27" stroke="none"/><path d="M301 153c15-27 78-27 94 0l17 103H284Z" fill="#C8942E"/><circle cx="335" cy="101" r="3.5" fill="#FFF9EA"/><circle cx="365" cy="101" r="3.5" fill="#FFF9EA"/><path d="M339 120q10 8 20 0" fill="none" stroke="#8D5844"/></g>
-<g stroke="#17342A" stroke-width="3.2" stroke-linejoin="round"><circle cx="455" cy="145" r="31" fill="#C98C62"/><path d="M423 143c2-34 59-40 64 3-13-11-30-15-64-3Z" fill="#342A27" stroke="none"/><path d="M415 187c11-20 52-20 63 0l11 68h-86Z" fill="#2C73D2"/><circle cx="444" cy="147" r="3" fill="#FFF9EA"/><circle cx="466" cy="147" r="3" fill="#FFF9EA"/><path d="M447 162q8 6 15 0" fill="none" stroke="#8D5844"/></g>
+const FAMILY_MINIMALIST = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 200" fill="none">
+  <ellipse cx="190" cy="188" rx="150" ry="7" fill="#0d4a36" fill-opacity="0.08"/>
+  <g class="family-member father">
+    <path d="M86 182v-48c0-22 15-36 34-36s34 14 34 36v48H86z" fill="#0d4a36"/>
+    <path d="M114 98l6 14 6-14" stroke="#c8942e" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="120" y1="112" x2="120" y2="148" stroke="#c8942e" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="120" cy="62" r="23" fill="#fcf9f2"/>
+    <path d="M98 60c0-14 10-24 22-24s22 10 22 24c0 4-1 8-3 11-4-9-11-15-22-15-9 0-16 5-19 14z" fill="#072e21"/>
+    <path d="M112 72c3 2 6 2 8 0 2 2 5 2 8 0" stroke="#072e21" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g class="family-member mother">
+    <circle cx="272" cy="62" r="13" fill="#072e21"/>
+    <circle cx="272" cy="62" r="16" stroke="#c8942e" stroke-width="2" stroke-dasharray="3 3"/>
+    <path d="M226 182v-42c0-20 15-34 34-34s34 14 34 34v42H226z" fill="#c8942e"/>
+    <path d="M228 140c12-16 28-36 42-36 7 0 15 8 18 18l-38 60h-22z" fill="#b38020"/>
+    <path d="M232 182l40-70" stroke="#166b4f" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="258" cy="66" r="21" fill="#fcf9f2"/>
+    <path d="M238 64c0-13 9-22 20-22s20 9 20 22c0 3-1 7-2 9-4-8-10-13-19-13-8 0-15 4-18 12z" fill="#072e21"/>
+    <circle cx="256" cy="62" r="2.5" fill="#c8942e"/>
+  </g>
+  <g class="family-member son">
+    <path d="M152 182v-34c0-16 12-26 26-26s26 10 26 26v34h-52z" fill="#166b4f"/>
+    <line x1="178" y1="122" x2="178" y2="150" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <circle cx="178" cy="94" r="17" fill="#fcf9f2"/>
+    <path d="M162 90c2-9 8-14 16-14s14 5 16 12c-4-4-10-6-17-4-5 1-11 5-15 6z" fill="#072e21"/>
+  </g>
+  <g class="family-member daughter">
+    <path d="M206 134c-2 10-6 18-8 26M230 134c2 10 6 18 8 26" stroke="#072e21" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="198" cy="160" r="3" fill="#c8942e"/>
+    <circle cx="238" cy="160" r="3" fill="#c8942e"/>
+    <path d="M198 182v-24c0-12 9-20 20-20s20 8 20 20v24h-40z" fill="#d97706"/>
+    <path d="M196 172h44v10h-44z" fill="#0d4a36"/>
+    <circle cx="218" cy="116" r="14" fill="#fcf9f2"/>
+    <path d="M205 112c2-7 7-10 13-10s12 3 14 9c-3-3-9-4-15-3-5 1-9 4-12 4z" fill="#072e21"/>
+    <circle cx="218" cy="114" r="1.8" fill="#c8942e"/>
+  </g>
+  <circle cx="190" cy="32" r="18" fill="#c8942e" fill-opacity="0.12"/>
+  <circle cx="190" cy="32" r="26" stroke="#c8942e" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>
 </svg>`;
 
 const SERVICE_ICONS = {
@@ -33,6 +66,14 @@ export function NammaKycLogo({ size = 56 }: { size?: number }) {
   return <SvgXml xml={MARK} width={size} height={size} />;
 }
 
-export function FamilyIllustration({ width = 340 }: { width?: number }) {
-  return <SvgXml xml={FAMILY} width={width} height={width * 0.46} />;
+export function FamilyIllustration({ width = 280 }: { width?: number | string }) {
+  return (
+    <View style={{ width: "100%", height: 165, alignItems: "center", justifyContent: "center", marginVertical: 6, backgroundColor: "transparent" }}>
+      <Image
+        source={require("../assets/family-transparent.png")}
+        style={{ width: typeof width === "number" ? width : 280, height: 165, resizeMode: "contain" }}
+        accessibilityLabel="Karnataka Family"
+      />
+    </View>
+  );
 }

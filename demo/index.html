@@ -1,1 +1,106 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Namma KYC interactive simulation. No personal information is requested."><title>Namma KYC — Interactive Demo</title><link rel="stylesheet" href="./styles.css"></head><body><main class="demo-shell"><header class="demo-banner"><strong id="demo-badge">DEMO</strong><span id="demo-mode">Simulation only</span></header><section class="stage"><div class="stage-copy"><p class="eyebrow" id="stage-eyebrow">NAMMA KYC</p><h1 id="stage-title">Ration-card e-KYC, from start to completion.</h1><p class="lede" id="stage-lede">A clean, citizen-first journey for Karnataka services.</p><div class="stage-actions"><button class="primary" id="start">Start demo</button><button class="secondary" id="reset">Reset</button></div></div><div class="phone"><div class="phone-notch"></div><div class="phone-screen"><div class="app-top hidden"><img class="brand-mark-img" src="./assets/namma-kyc-mark.svg" alt="Namma KYC"><div><strong>Namma KYC</strong><small id="tagline">Karnataka ration-card e-KYC</small></div><button class="lang" id="language">ಕನ್ನಡ</button></div><div id="progress" class="progress hidden"><span id="progress-label"></span><div><i id="progress-fill"></i></div></div><div id="screen" class="screen"></div></div></div></section><section class="journey"><div><p class="eyebrow" id="journey-eyebrow">NAMMA KYC</p><h2 id="journey-title">Citizen journey</h2></div><div id="steps" class="step-strip"></div></section></main><script src="./app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Namma KYC interactive citizen reference simulation for Karnataka ration-card e-KYC.">
+  <title>Namma KYC — Interactive Citizen Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="demo-shell">
+    <header class="demo-banner">
+      <div>
+        <strong id="demo-badge">DEMO</strong>
+        <span id="demo-mode">Citizen Simulation Experience · No Personal Data Collected</span>
+      </div>
+      <span style="font-size:11px; opacity:0.85;" id="banner-boundary">Government of Karnataka PDS & UIDAI Reference</span>
+    </header>
+
+    <section class="stage">
+      <div class="stage-copy">
+        <p class="eyebrow" id="stage-eyebrow">NAMMA KYC</p>
+        <h1 id="stage-title">Ration-card e-KYC, from start to completion.</h1>
+        <p class="lede" id="stage-lede">
+          A clean, citizen-first journey for Karnataka services, designed strictly around user privacy and official state guidelines.
+        </p>
+        <div class="stage-actions">
+          <button class="primary-btn" id="start" style="width:auto; padding:12px 24px;">Start demo →</button>
+          <button class="secondary-btn" id="reset" style="width:auto; padding:12px 20px;">Reset</button>
+        </div>
+      </div>
+
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div id="app-top" class="app-top"></div>
+          <div id="stepper-bar" class="stepper-bar"></div>
+          <div id="screen" class="screen"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="journey-section">
+      <h2 id="journey-title">Citizen Journey Navigation</h2>
+      <div id="steps" class="step-strip"></div>
+    </section>
+
+    <footer class="trust-footer-strip">
+      <div class="trust-brand-copy">
+        <b>Namma KYC</b>
+        <p>An official, secure and citizen-first digital service for Karnataka.</p>
+      </div>
+
+      <div class="trust-badges-grid">
+        <div class="trust-badge-item">
+          <div class="trust-badge-icon">✓</div>
+          <div>
+            <span>Government of Karnataka</span>
+            <small style="display:block;color:var(--text-muted);font-size:10px;">Food & Civil Supplies Dept</small>
+          </div>
+        </div>
+
+        <div class="trust-badge-item">
+          <div class="trust-badge-icon">🔒</div>
+          <div>
+            <span>Powered by UIDAI</span>
+            <small style="display:block;color:var(--text-muted);font-size:10px;">AadhaarFaceRD Service</small>
+          </div>
+        </div>
+
+        <div class="trust-badge-item">
+          <div class="trust-badge-icon">🛡️</div>
+          <div>
+            <span>Total Privacy</span>
+            <small style="display:block;color:var(--text-muted);font-size:10px;">Zero Biometric Storage</small>
+          </div>
+        </div>
+
+        <div class="trust-badge-item">
+          <div class="trust-badge-icon">👥</div>
+          <div>
+            <span>Citizen Centric</span>
+            <small style="display:block;color:var(--text-muted);font-size:10px;">For a Stronger Karnataka</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="karnataka-state-motto">
+        <svg style="width:32px;height:36px;color:var(--primary);" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8 5 6 9 6 13c0 4 3 8 6 9 3-1 6-5 6-9 0-4-2-8-6-9z"/>
+        </svg>
+        <div>
+          <div>ನಮ್ಮ ಕರ್ನಾಟಕ</div>
+          <div>ನಮ್ಮ ಜನ</div>
+          <div>ನಮ್ಮ ಹೆಮ್ಮೆ</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

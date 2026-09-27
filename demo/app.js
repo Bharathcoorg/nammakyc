@@ -1,95 +1,1480 @@
-const MARK="./assets/namma-kyc-mark.svg";
-const EN={
-  app:"Namma KYC", gov:"Government of Karnataka", tagline:"Karnataka ration-card e-KYC", language:"ಕನ್ನಡ",
-  getStarted:"Get Started", motto:"Our People · Our Karnataka · A Brighter Tomorrow", continue:"Continue", reset:"Start again", back:"Back",
-  welcome:"Let's complete your e-KYC for Karnataka services.", welcomeText:"For you and your family.",
-  feature1:"Ration Card e-KYC",feature1Text:"For you and your family",feature2:"Secure verification",feature2Text:"Designed around secure verification",feature3:"Your Data, Your Privacy",feature3Text:"Only what is required",feature4:"Fast & Easy",feature4Text:"Complete the journey in a few minutes.",
-  ration:"Ration card number",rationHint:"Use the fictional demo card below.",demoRation:"KA-DEMO-2026-001",
-  members:"Household members",selectMember:"Select the member completing e-KYC.",
-  required:"KYC required",recent:"Biometric verification completed recently",
-  consent:"Consent & Information",consentText:"Review the information before continuing.",
-  consent1:"Aadhaar verification is completed through the authorized service.",consent2:"Verification uses the authorized Aadhaar process.",consent3:"Only the information required for this service is used.",
-  agree:"I Agree & Continue",
-  aadhaar:"Aadhaar verification",aadhaarText:"Enter Aadhaar details to continue with OTP authentication.",
-  otp:"OTP verification",otpText:"An OTP is sent to the Aadhaar-registered mobile number.",demoOtp:"Demo OTP verified",
-  verifyOtp:"Verify OTP",faceReady:"Get Ready for Face Scan",faceText:"Make sure you are in a well-lit place and follow the instructions.",
-  face1:"Remove anything that covers your face",face2:"Look directly at the camera",face3:"Keep your face inside the frame",face4:"Keep the phone steady",ready:"I'm Ready",
-  capture:"Face Authentication",captureText:"Keep your face inside the frame",
-  verifying:"Verifying Identity",wait:"Please wait while authentication is completed.",
-  authDone:"Aadhaar verification complete",pds:"Ration-card e-KYC",processing:"Finalizing your e-KYC",
-  success:"e-KYC Completed Successfully!",successText:"Your identity verification has been completed for this service.",
-  reference:"Reference ID",referenceValue:"NKYC-DEMO-2026-0001",status:"Completed",service:"Ration Card e-KYC",
-  guidanceTitle:"Verification guide",guidanceIntro:"Follow these simple steps before the secure provider handoff.",playGuidance:"Play guidance",stopGuidance:"Stop guidance",statusTitle:"e-KYC Status",submitted:"Request submitted",otpDone:"OTP verified",faceDone:"Biometric verification completed",pdsDone:"Ration-card e-KYC completed",
-  steps:["Welcome","Ration Card","Members","Consent","OTP","Face","Verify","Complete","Status"],demo:"DEMO",simulation:"Simulation only",stageEyebrow:"NAMMA KYC",stageTitle:"Ration-card e-KYC, from start to completion.",stageLede:"A clean, citizen-first journey for Karnataka services.",journey:"Citizen journey"
+/**
+ * Namma KYC — Interactive Citizen Reference Demonstration
+ * Native, culturally authentic bilingual citizen journey.
+ * Compliant with Government of Karnataka PDS and UIDAI Aadhaar FaceRD specifications.
+ */
+
+const ASSETS = {
+  emblem: "./assets/karnataka-emblem.png",
+  soudha: "./assets/vidhana-soudha.jpg",
+  family: "./assets/family-transparent.png",
+  mark: "./assets/namma-kyc-mark.svg",
+  face: "./assets/citizen-face.jpg",
+  audioKn: "./assets/audio-guide-kn.mp3",
+  audioEn: "./assets/audio-guide-en.mp3"
 };
-const KN={
-  app:"ನಮ್ಮ KYC",gov:"ಕರ್ನಾಟಕ ಸರ್ಕಾರ",tagline:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",language:"English",
-  getStarted:"ಪ್ರಾರಂಭಿಸಿ",motto:"ನಮ್ಮ ಜನರು · ನಮ್ಮ ಕರ್ನಾಟಕ · ಉಜ್ವಲ ಭವಿಷ್ಯ",continue:"ಮುಂದುವರಿಸಿ",reset:"ಮತ್ತೆ ಪ್ರಾರಂಭಿಸಿ",back:"ಹಿಂದೆ",
-  welcome:"ಕರ್ನಾಟಕ ಸೇವೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಇ-ಕೆವೈಸಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸೋಣ.",welcomeText:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ.",
-  feature1:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",feature1Text:"ನಿಮಗಾಗಿ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕಾಗಿ",feature2:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನೆ",feature2Text:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನಾ ಪ್ರಕ್ರಿಯೆಗಾಗಿ ವಿನ್ಯಾಸಗೊಳಿಸಲಾಗಿದೆ",feature3:"ನಿಮ್ಮ ಡೇಟಾ, ನಿಮ್ಮ ಗೌಪ್ಯತೆ",feature3Text:"ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ",feature4:"ವೇಗ ಮತ್ತು ಸರಳ",feature4Text:"ಕೆಲವೇ ನಿಮಿಷಗಳಲ್ಲಿ ಪೂರ್ಣಗೊಳಿಸಿ.",
-  ration:"ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",rationHint:"ಕೆಳಗಿನ ಕಾಲ್ಪನಿಕ ಡೆಮೊ ಕಾರ್ಡ್ ಬಳಸಿ.",demoRation:"KA-DEMO-2026-001",
-  members:"ಕುಟುಂಬದ ಸದಸ್ಯರು",selectMember:"ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳಿಸುವ ಸದಸ್ಯರನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
-  required:"KYC ಅಗತ್ಯವಿದೆ",recent:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಇತ್ತೀಚೆಗೆ ಪೂರ್ಣಗೊಂಡಿದೆ",
-  consent:"ಸಮ್ಮತಿ ಮತ್ತು ಮಾಹಿತಿ",consentText:"ಮುಂದುವರಿಸುವ ಮೊದಲು ಮಾಹಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.",
-  consent1:"ಆಧಾರ್ ಪರಿಶೀಲನೆ ಅನುಮೋದಿತ ಸೇವೆಯ ಮೂಲಕ ನಡೆಯುತ್ತದೆ.",consent2:"ಅನುಮೋದಿತ ಆಧಾರ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ.",consent3:"ಈ ಸೇವೆಗೆ ಅಗತ್ಯವಿರುವ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ ಬಳಸಲಾಗುತ್ತದೆ.",
-  agree:"ಒಪ್ಪುತ್ತೇನೆ ಮತ್ತು ಮುಂದುವರಿಸಿ",
-  aadhaar:"ಆಧಾರ್ ಪರಿಶೀಲನೆ",aadhaarText:"OTP ದೃಢೀಕರಣಕ್ಕಾಗಿ ಆಧಾರ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ.",
-  otp:"OTP ಪರಿಶೀಲನೆ",otpText:"ಆಧಾರ್‌ಗೆ ನೋಂದಾಯಿಸಿದ ಮೊಬೈಲ್‌ಗೆ OTP ಕಳುಹಿಸಲಾಗುತ್ತದೆ.",demoOtp:"ಡೆಮೊ OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
-  verifyOtp:"OTP ಪರಿಶೀಲಿಸಿ",faceReady:"ಮುಖ ಸ್ಕ್ಯಾನ್‌ಗೆ ಸಿದ್ಧರಾಗಿ",faceText:"ಉತ್ತಮ ಬೆಳಕಿನ ಸ್ಥಳದಲ್ಲಿದ್ದು ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ.",
-  face1:"ಮುಖವನ್ನು ಮುಚ್ಚಿರುವ ವಸ್ತುಗಳನ್ನು ತೆಗೆದುಹಾಕಿ",face2:"ಕ್ಯಾಮೆರಾವನ್ನು ನೇರವಾಗಿ ನೋಡಿ",face3:"ನಿಮ್ಮ ಮುಖವನ್ನು ಫ್ರೇಮ್ ಒಳಗೆ ಇರಿಸಿ",face4:"ಫೋನ್ ಅನ್ನು ಸ್ಥಿರವಾಗಿರಿಸಿ",ready:"ನಾನು ಸಿದ್ಧ",
-  capture:"ಮುಖ ದೃಢೀಕರಣ",captureText:"ನಿಮ್ಮ ಮುಖವನ್ನು ಫ್ರೇಮ್ ಒಳಗೆ ಇರಿಸಿ",
-  verifying:"ಗುರುತು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ",wait:"ದೃಢೀಕರಣ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ ಕಾಯಿರಿ.",
-  authDone:"ಆಧಾರ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pds:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",processing:"ನಿಮ್ಮ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳ್ಳುತ್ತಿದೆ",
-  success:"ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",successText:"ಈ ಸೇವೆಗಾಗಿ ನಿಮ್ಮ ಗುರುತು ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ.",
-  reference:"ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",referenceValue:"NKYC-DEMO-2026-0001",status:"ಪೂರ್ಣಗೊಂಡಿದೆ",service:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
-  guidanceTitle:"ಪರಿಶೀಲನೆ ಮಾರ್ಗದರ್ಶಿ",guidanceIntro:"ಸುರಕ್ಷಿತ ಪರಿಶೀಲನೆಗೆ ಮುಂದುವರಿಯುವ ಮೊದಲು ಈ ಸರಳ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.",playGuidance:"ಮಾರ್ಗದರ್ಶನ ಕೇಳಿ",stopGuidance:"ಮಾರ್ಗದರ್ಶನ ನಿಲ್ಲಿಸಿ",statusTitle:"ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",submitted:"ವಿನಂತಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",otpDone:"OTP ಪರಿಶೀಲಿಸಲಾಗಿದೆ",faceDone:"ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",pdsDone:"ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
-  steps:["ಸ್ವಾಗತ","ಪಡಿತರ ಚೀಟಿ","ಸದಸ್ಯರು","ಸಮ್ಮತಿ","OTP","ಮುಖ","ಪರಿಶೀಲನೆ","ಪೂರ್ಣ","ಸ್ಥಿತಿ"],demo:"ಡೆಮೊ",simulation:"ಸಿಮ್ಯುಲೇಶನ್ ಮಾತ್ರ",stageEyebrow:"ನಮ್ಮ KYC",stageTitle:"ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ — ಆರಂಭದಿಂದ ಪೂರ್ಣಗೊಳ್ಳುವವರೆಗೆ.",stageLede:"ಕರ್ನಾಟಕ ಸೇವೆಗಳಿಗಾಗಿ ಸರಳ, ನಾಗರಿಕ-ಕೇಂದ್ರಿತ ಅನುಭವ.",journey:"ನಾಗರಿಕರ ಪ್ರಯಾಣ"
+
+const I18N = {
+  en: {
+    pageTitle: "Namma KYC — Karnataka Ration Card Citizen e-KYC Service",
+    bannerBadge: "DEMO",
+    bannerText: "Citizen Simulation Experience · No Personal Data Collected",
+    bannerSub: "Government of Karnataka PDS & UIDAI Reference",
+    app: "Namma KYC",
+    gov: "Government of Karnataka",
+    dept: "Department of Food, Civil Supplies & Consumer Affairs",
+    tagline: "Secure Identity · Uninterrupted Ration · A Stronger Karnataka",
+    langBtn: "ಕನ್ನಡ",
+    langCode: "EN",
+    getStarted: "Get Started",
+    continue: "Continue",
+    reset: "Start Again",
+    back: "Back",
+    officialBadge: "Government of Karnataka Citizen Service",
+    peopleFirst: "Citizens First",
+    simpleAccess: "Simple Digital Access",
+    digitalKarnataka: "Digital Karnataka",
+
+    welcome: "Welcome to Namma KYC",
+    welcomeSub: "Complete your Karnataka ration-card e-KYC from home securely in a few simple minutes.",
+    feat1Title: "Ration Card e-KYC",
+    feat1Text: "Instant verification for all family members on your card",
+    feat2Title: "Official & Direct",
+    feat2Text: "Directly authenticated via UIDAI AadhaarFaceRD service",
+    feat3Title: "Total Privacy Protection",
+    feat3Text: "Zero biometric storage; strictly minimal data access",
+    feat4Title: "Fast & Contactless",
+    feat4Text: "Done in just 2 minutes without visiting any office",
+
+    rationTitle: "Ration Card & Family Members",
+    rationSub: "Check the e-KYC status of family members registered on your ration card.",
+    cardNumberLabel: "Ration Card Number",
+    demoCardNumber: "KA-PDS-2026-8492",
+    cardType: "Card Type: Priority Household (BPL)",
+    familyMembersList: "Family Members & e-KYC Status",
+    kycRequiredBadge: "e-KYC Pending",
+    kycCompletedBadge: "✓ e-KYC Done",
+    tapToViewStatus: "Tap to view KYC Done details",
+    tapToProceed: "Tap to complete Face e-KYC",
+    selectMemberPrompt: "Select a family member with pending e-KYC to proceed with Aadhaar FaceRD verification.",
+
+    // Modal / View for KYC Done
+    kycDoneTitle: "e-KYC Verification Details",
+    kycDoneBadge: "✓ e-KYC Verified & Completed",
+    memberHead: "Head of Household",
+    memberWife: "Wife",
+    memberSon: "Son",
+    aadhaarNumberMasked: "Aadhaar Number",
+    verificationMode: "Verification Method",
+    verificationModeVal: "Aadhaar FaceRD (Live Face Authentication)",
+    verificationDate: "Verification Date",
+    verificationDateVal: "12 August 2024, 11:20 AM",
+    pdsStatus: "Ration Entitlement Status",
+    pdsStatusVal: "Active & Eligible for Monthly Ration",
+    kycDoneNote: "This member's e-KYC has already been successfully verified with UIDAI. No re-verification is required.",
+    closeModal: "Close (Back to List)",
+
+    stepper: ["Consent", "Method", "Face Scan", "Complete"],
+
+    consentTitle: "Citizen Consent & Important Information",
+    consent1: "This application exclusively uses UIDAI's authorized AadhaarFaceRD system for identity authentication.",
+    consent2: "Your live face image is transmitted directly and securely to UIDAI servers for verification.",
+    consent3: "No face photographs or biometric data are stored in this application or on your mobile device.",
+    consent4: "Only the strictly minimal information necessary for PDS verification is linked to Karnataka Food Dept records.",
+    consent5: "By continuing, you agree to the Government of Karnataka digital service terms and citizen privacy policies.",
+    consentCheck1: "I have read, understood, and accept all the terms and notices listed above.",
+    consentCheck2: "I give my voluntary consent to verify my identity using AadhaarFaceRD.",
+    agreeContinue: "Agree & Continue",
+
+    methodTitle: "Select Verification Method",
+    methodSub: "Choose how you wish to complete your mandatory ration-card biometric e-KYC:",
+    methodFaceTitle: "Aadhaar Face Authentication (FaceRD)",
+    methodFaceBadge: "Recommended",
+    methodFaceProvider: "(Instant from home on your mobile camera)",
+    methodFaceDesc: "Fast, contactless, and official face scan without visiting any office.",
+    methodFpsTitle: "Fair Price Shop Visit (FPS / Ration Shop)",
+    methodFpsProvider: "(Biometric Fingerprint or Iris Scan)",
+    methodFpsDesc: "If you do not have a smartphone or camera, visit your local ration shop to authenticate on the e-POS machine.",
+    methodNotice: "Important Note: Under PDS guidelines, Aadhaar OTP alone is not sufficient for ration-card e-KYC. Mandatory proof-of-life biometric authentication (FaceRD or FPS biometric) is required to ensure genuine beneficiary entitlement.",
+
+    readyTitle: "Face Scan Instructions (Do's & Don'ts)",
+    readySub: "Stand in good lighting and follow these visual rules for a successful scan:",
+    audioGuideLabel: "Voice Guidance",
+    playGuide: "Listen to Voice",
+    stopGuide: "Stop Audio",
+    tabAll: "All Instructions",
+    tabDo: "✓ What to Do (DO)",
+    tabDont: "✕ What NOT to Do (DON'T)",
+    badgeDo: "DO",
+    badgeDont: "DON'T",
+    do1Title: "Good Natural Light",
+    do1Desc: "Keep face evenly lit without dark shadows or harsh glare",
+    do2Title: "Camera at Eye Level",
+    do2Desc: "Hold smartphone straight in front of your eyes and look ahead",
+    do3Title: "Single Person Only",
+    do3Desc: "Only one beneficiary face must be present inside the frame",
+    do4Title: "Blink Naturally",
+    do4Desc: "Keep a calm, neutral expression and blink when prompted",
+    dont1Title: "No Face Coverings",
+    dont1Desc: "Remove caps, masks, dark sunglasses, or face-covering cloths",
+    dont2Title: "No Background People",
+    dont2Desc: "No family members, bystanders, or photos behind you",
+    dont3Title: "No Harsh Backlight",
+    dont3Desc: "Do not stand in front of bright windows or glaring bulbs",
+    dont4Title: "Do Not Shake Phone",
+    dont4Desc: "Keep hands steady during capture; avoid moving or tilting",
+    imReady: "I'm Ready, Start Face Scan",
+
+    keepInside: "Keep face inside the green frame",
+    capturing: "Scanning face... Please hold still and blink",
+
+    verifyingTitle: "Authenticating with UIDAI",
+    verifyingSub: "Please wait a moment while your identity is verified...",
+    vStep1: "Face image captured successfully",
+    vStep2: "Encrypted and securely transmitted to UIDAI",
+    vStep3: "Biometric proof-of-life match in progress...",
+    vStep4: "UIDAI authentication response received",
+    vStep5: "Karnataka PDS ration records updated",
+    verifyingNote: "This process takes only a few seconds. Please do not close or navigate away.",
+
+    successTitle: "e-KYC Completed Successfully!",
+    successSub: "Identity successfully authenticated with UIDAI and ration-card records updated in Karnataka Food Department.",
+    refId: "Reference ID",
+    refVal: "NKYC-KA-2026-9284F",
+    dateTime: "Date & Time",
+    dateTimeVal: "27 Sep 2026, 11:45 AM",
+    service: "Service",
+    serviceVal: "Ration Card Aadhaar FaceRD e-KYC",
+    status: "Status",
+    statusVal: "✓ Verified & Active",
+    rationEntitlement: "Ration Entitlement",
+    rationEntitlementVal: "Approved for upcoming monthly quota",
+    viewDetails: "View Family Details",
+    goHome: "Return to Home",
+
+    stageEyebrow: "NAMMA KYC",
+    stageTitle: "Ration-card e-KYC, from start to completion.",
+    stageLede: "A clean, citizen-first journey for Karnataka services, designed strictly around user privacy, accessibility, and official state guidelines.",
+    journeyHeading: "Citizen Journey Steps",
+    stepsList: ["Home", "Welcome", "Ration Card", "Consent", "Method", "Face Guide", "Capture", "Verify", "Complete"],
+
+    footerTitle: "Namma KYC",
+    footerSub: "An official citizen digital service for Karnataka.",
+    badgeGov: "Government of Karnataka",
+    badgeGovSub: "Food & Civil Supplies Dept",
+    badgeUidai: "Powered by UIDAI",
+    badgeUidaiSub: "AadhaarFaceRD Service",
+    badgePrivacy: "Total Privacy",
+    badgePrivacySub: "Zero Biometric Storage",
+    badgeCitizen: "Citizen Centric",
+    badgeCitizenSub: "For a Stronger Karnataka"
+  },
+  kn: {
+    pageTitle: "ನಮ್ಮ ಕೆವೈಸಿ — ಕರ್ನಾಟಕ ಪಡಿತರ ಚೀಟಿ ನಾಗರಿಕ ಇ-ಕೆವೈಸಿ ಸೇವೆ",
+    bannerBadge: "ಡೆಮೊ",
+    bannerText: "ನಾಗರಿಕ ಪ್ರಾತ್ಯಕ್ಷಿಕೆ ಅನುಭವ · ಯಾವುದೇ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ",
+    bannerSub: "ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಆಹಾರ ಇಲಾಖೆ ಹಾಗೂ UIDAI ಸೇವಾ ಮಾದರಿ",
+    app: "ನಮ್ಮ ಕೆವೈಸಿ",
+    gov: "ಕರ್ನಾಟಕ ಸರ್ಕಾರ",
+    dept: "ಆಹಾರ, ನಾಗರಿಕ ಸರಬರಾಜು ಮತ್ತು ಗ್ರಾಹಕರ ವ್ಯವಹಾರಗಳ ಇಲಾಖೆ",
+    tagline: "ಸುರಕ್ಷಿತ ಗುರುತು · ನಿರಂತರ ಪಡಿತರ ಸೇವೆ · ಸಶಕ್ತ ಕರ್ನಾಟಕ",
+    langBtn: "English",
+    langCode: "ಕನ್ನಡ",
+    getStarted: "ಪ್ರಾರಂಭಿಸಿ",
+    continue: "ಮುಂದುವರಿಸಿ",
+    reset: "ಮರುಪ್ರಾರಂಭಿಸಿ",
+    back: "ಹಿಂದೆ",
+    officialBadge: "ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವೆ",
+    peopleFirst: "ನಾಗರಿಕರೇ ಮೊದಲು",
+    simpleAccess: "ಸರಳ ಮತ್ತು ಸುಲಭ ಸೇವೆ",
+    digitalKarnataka: "ಡಿಜಿಟಲ್ ಕರ್ನಾಟಕ",
+
+    welcome: "ನಮ್ಮ ಕೆವೈಸಿ ಗೆ ಸುಸ್ವಾಗತ",
+    welcomeSub: "ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಪಡಿತರ ಚೀಟಿಯ ಇ-ಕೆವೈಸಿಯನ್ನು ನಿಮ್ಮ ಮನೆಯಲ್ಲೇ ಕುಳಿತು ಮೊಬೈಲ್ ಮೂಲಕ ಸುಲಭವಾಗಿ ಪೂರ್ಣಗೊಳಿಸಿ.",
+    feat1Title: "ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ",
+    feat1Text: "ಕುಟುಂಬದ ಪ್ರತಿಯೊಬ್ಬ ಸದಸ್ಯರ ಪರಿಶೀಲನೆ ಸುಲಭ",
+    feat2Title: "ಅಧಿಕೃತ ಹಾಗೂ ನೇರ",
+    feat2Text: "UIDAI ನ ಅಧಿಕೃತ ಆಧಾರ್ ಫೇಸ್ ಆರ್‌ಡಿ (FaceRD) ತಂತ್ರಜ್ಞಾನದ ಮೂಲಕ ನೇರ ಪರಿಶೀಲನೆ",
+    feat3Title: "ನಿಮ್ಮ ಗೌಪ್ಯತೆಗೆ ರಕ್ಷಣೆ",
+    feat3Text: "ಯಾವುದೇ ಬಯೋಮೆಟ್ರಿಕ್ ವಿವರಗಳನ್ನು ಈ ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ",
+    feat4Title: "ತ್ವರಿತ ಮತ್ತು ಸಂಪರ್ಕರಹಿತ",
+    feat4Text: "ಕೇವಲ 2 ನಿಮಿಷಗಳಲ್ಲಿ ಯಾವುದೇ ಕಚೇರಿಗೆ ಹೋಗದೆ ಪೂರ್ಣಗೊಳ್ಳುತ್ತದೆ",
+
+    rationTitle: "ಪಡಿತರ ಚೀಟಿ ಮತ್ತು ಕುಟುಂಬದ ಸದಸ್ಯರ ವಿವರ",
+    rationSub: "ಪಡಿತರ ಚೀಟಿಯಲ್ಲಿರುವ ಕುಟುಂಬ ಸದಸ್ಯರ ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.",
+    cardNumberLabel: "ಪಡಿತರ ಚೀಟಿ ಸಂಖ್ಯೆ",
+    demoCardNumber: "KA-PDS-2026-8492",
+    cardType: "ಕಾರ್ಡ್ ಪ್ರಕಾರ: ಆದ್ಯತಾ ಕುಟುಂಬ (ಬಿಪಿಎಲ್)",
+    familyMembersList: "ಕುಟುಂಬ ಸದಸ್ಯರ ಪಟ್ಟಿ ಮತ್ತು ಇ-ಕೆವೈಸಿ ಸ್ಥಿತಿ",
+    kycRequiredBadge: "ಇ-ಕೆವೈಸಿ ಬಾಕಿ ಇದೆ",
+    kycCompletedBadge: "✓ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
+    tapToViewStatus: "ಪರಿಶೀಲನಾ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಒತ್ತಿ",
+    tapToProceed: "ಮುಖ ದೃಢೀಕರಣ ಮಾಡಲು ಒತ್ತಿ",
+    selectMemberPrompt: "ಇ-ಕೆವೈಸಿ ಬಾಕಿ ಇರುವ ಸದಸ್ಯರನ್ನು ಆಯ್ಕೆ ಮಾಡಿ ಮುಖ ದೃಢೀಕರಣವನ್ನು ಮುಂದುವರಿಸಿ.",
+
+    // Modal / View for KYC Done
+    kycDoneTitle: "ಇ-ಕೆವೈಸಿ ಪರಿಶೀಲನಾ ವಿವರಗಳು",
+    kycDoneBadge: "✓ ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಮುಗಿದಿದೆ",
+    memberHead: "ಕುಟುಂಬದ ಮುಖ್ಯಸ್ಥ",
+    memberWife: "ಪತ್ನಿ",
+    memberSon: "ಪುತ್ರ",
+    aadhaarNumberMasked: "ಆಧಾರ್ ಸಂಖ್ಯೆ",
+    verificationMode: "ದೃಢೀಕರಣ ವಿಧಾನ",
+    verificationModeVal: "ಆಧಾರ್ ಮುಖ ದೃಢೀಕರಣ (Aadhaar FaceRD - UIDAI)",
+    verificationDate: "ದೃಢೀಕರಣ ದಿನಾಂಕ",
+    verificationDateVal: "12 ಆಗಸ್ಟ್ 2024, ಬೆಳಗ್ಗೆ 11:20",
+    pdsStatus: "ಪಡಿತರ ಹಂಚಿಕೆ ಸ್ಥಿತಿ",
+    pdsStatusVal: "ಸಕ್ರಿಯವಾಗಿದೆ — ಮಾಸಿಕ ಪಡಿತರ ಪಡೆಯಲು ಅರ್ಹವಾಗಿದೆ",
+    kycDoneNote: "ಈ ಸದಸ್ಯರ ಇ-ಕೆವೈಸಿ ಈಗಾಗಲೇ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ. ಯಾವುದೇ ಮರುಪರಿಶೀಲನೆ ಅಗತ್ಯವಿಲ್ಲ.",
+    closeModal: "ಸರಿ (ಹಿಂತಿರುಗಿ)",
+
+    stepper: ["ಸಮ್ಮತಿ", "ವಿಧಾನ", "ಮುಖ ಸ್ಕ್ಯಾನ್", "ಪೂರ್ಣ"],
+
+    consentTitle: "ನಾಗರಿಕರ ಸಮ್ಮತಿ ಮತ್ತು ಪ್ರಮುಖ ಮಾಹಿತಿ",
+    consent1: "ಸುರಕ್ಷಿತ ಗುರುತು ದೃಢೀಕರಣಕ್ಕಾಗಿ UIDAI ನ ಅಧಿಕೃತ AadhaarFaceRD ತಂತ್ರಜ್ಞಾನವನ್ನು ಮಾತ್ರ ಬಳಸಲಾಗುತ್ತದೆ.",
+    consent2: "ನಿಮ್ಮ ಮುಖದ ಚಿತ್ರವನ್ನು ನೇರವಾಗಿ ಅಧಿಕೃತ UIDAI ವ್ಯವಸ್ಥೆಗೆ ಮಾತ್ರ ರವಾನಿಸಲಾಗುತ್ತದೆ.",
+    consent3: "ಈ ಮೊಬೈಲ್ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಮುಖದ ಫೋಟೋ ಅಥವಾ ಯಾವುದೇ ಬಯೋಮೆಟ್ರಿಕ್ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಡುವುದಿಲ್ಲ.",
+    consent4: "ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿಗೆ ಕಡ್ಡಾಯವಾಗಿ ಬೇಕಾದ ಕನಿಷ್ಠ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ ಆಹಾರ ಇಲಾಖೆಯ ತಂತ್ರಾಂಶಕ್ಕೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ.",
+    consent5: "ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ನಿಯಮಾವಳಿ ಮತ್ತು ಗೌಪ್ಯತಾ ಷರತ್ತುಗಳನ್ನು ಸಮ್ಮತಿಸುತ್ತೀರಿ.",
+    consentCheck1: "ಮೇಲಿನ ಎಲ್ಲಾ ನಿಯಮಾವಳಿ ಮತ್ತು ಮಾಹಿತಿಗಳನ್ನು ನಾನು ಓದಿದ್ದೇನೆ ಮತ್ತು ಒಪ್ಪಿಕೊಂಡಿದ್ದೇನೆ.",
+    consentCheck2: "AadhaarFaceRD ಮುಖಾಂತರ ನನ್ನ ಮುಖ ದೃಢೀಕರಣ ನಡೆಸಲು ನಾನು ಸ್ವಯಂಪ್ರೇರಿತ ಸಮ್ಮತಿ ನೀಡುತ್ತೇನೆ.",
+    agreeContinue: "ಒಪ್ಪಿಗೆ ನೀಡಿ ಮುಂದುವರಿಸಿ",
+
+    methodTitle: "ದೃಢೀಕರಣ ವಿಧಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    methodSub: "ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ ಪೂರ್ಣಗೊಳಿಸಲು ಸೂಕ್ತ ವಿಧಾನವನ್ನು ಆರಿಸಿ:",
+    methodFaceTitle: "ಆಧಾರ್ ಮುಖ ದೃಢೀಕರಣ (FaceRD)",
+    methodFaceBadge: "ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ",
+    methodFaceProvider: "(ಮನೆಯಲ್ಲೇ ಕುಳಿತು ಮೊಬೈಲ್ ಕ್ಯಾಮೆರಾ ಮೂಲಕ)",
+    methodFaceDesc: "ಯಾವುದೇ ಕಚೇರಿಗೆ ಹೋಗದೆ ತ್ವರಿತವಾಗಿ, ಸುರಕ್ಷಿತವಾಗಿ ಮತ್ತು ಸಂಪರ್ಕರಹಿತವಾಗಿ ಮುಖ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",
+    methodFpsTitle: "ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿ ಭೇಟಿ (Fair Price Shop)",
+    methodFpsProvider: "(ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಬಯೋಮೆಟ್ರಿಕ್)",
+    methodFpsDesc: "ಸ್ಮಾರ್ಟ್‌ಫೋನ್ ಇಲ್ಲದಿದ್ದರೆ ಅಥವಾ ಕ್ಯಾಮೆರಾ ಬೆಂಬಲಿಸದಿದ್ದರೆ, ಹತ್ತಿರದ ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿಯಲ್ಲಿ e-POS ಯಂತ್ರದ ಮೂಲಕ ಇ-ಕೆವೈಸಿ ಮಾಡಿಸಿ.",
+    methodNotice: "ಪ್ರಮುಖ ಮಾಹಿತಿ: ಸರ್ಕಾರದ ನಿಯಮಾವಳಿಯಂತೆ ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿಗೆ ಕೇವಲ ಮೊಬೈಲ್ ಒಟಿಪಿ (OTP) ಸಾಕಾಗುವುದಿಲ್ಲ. ನೈಜ ವ್ಯಕ್ತಿ ಜೀವಂತಿಕೆ (Proof of Life) ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಖ ಅಥವಾ ಬಯೋಮೆಟ್ರಿಕ್ ಕಡ್ಡಾಯವಾಗಿದೆ.",
+
+    readyTitle: "ಮುಖ ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ಮುನ್ನ ಪ್ರಮುಖ ನಿಯಮಗಳು",
+    readySub: "ಉತ್ತಮ ಬೆಳಕಿರುವ ಸ್ಥಳದಲ್ಲಿ ನಿಂತು ಈ ಕೆಳಗಿನ ಚಿತ್ರಾತ್ಮಕ ನಿಯಮಗಳನ್ನು ಪಾಲಿಸಿ:",
+    audioGuideLabel: "ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ",
+    playGuide: "ಧ್ವನಿ ಮಾರ್ಗದರ್ಶನ ಆಲಿಸಿ",
+    stopGuide: "ಧ್ವನಿ ನಿಲ್ಲಿಸಿ",
+    tabAll: "ಎಲ್ಲಾ ನಿಯಮಗಳು",
+    tabDo: "✓ ಮಾಡಬೇಕಾದದ್ದು",
+    tabDont: "✕ ಮಾಡಬಾರದದ್ದು",
+    badgeDo: "ಮಾಡಬೇಕಾದದ್ದು",
+    badgeDont: "ಮಾಡಬಾರದ್ದು",
+    do1Title: "ಉತ್ತಮ ನೈಸರ್ಗಿಕ ಬೆಳಕು",
+    do1Desc: "ಮುಖಕ್ಕೆ ಸಮನಾಗಿ ಬೆಳಕು ಬೀಳಲಿ, ಯಾವುದೇ ಕತ್ತಲೆ ಅಥವಾ ನೆರಳು ಇರಬಾರದು",
+    do2Title: "ಕಣ್ಣಳತೆಯಲ್ಲಿ ಮೊಬೈಲ್",
+    do2Desc: "ಮೊಬೈಲ್ ಕ್ಯಾಮೆರಾವನ್ನು ನೇರವಾಗಿ ಕಣ್ಣಿನ ಎದುರು ಹಿಡಿದು ನೋಡಿ",
+    do3Title: "ನೀವು ಒಬ್ಬರೇ ಇರಿ",
+    do3Desc: "ಫ್ರೇಮ್ ಒಳಗೆ ನಿಮ್ಮೊಬ್ಬರ ಮುಖ ಮಾತ್ರ ಸ್ಪಷ್ಟವಾಗಿ ಕಾಣಿಸಬೇಕು",
+    do4Title: "ಸ್ವಾಭಾವಿಕ ಕಣ್ಣು ಮಿಟುಕಿಸಿ",
+    do4Desc: "ಮುಖವನ್ನು ಶಾಂತವಾಗಿಟ್ಟು ಕ್ಯಾಮೆರಾ ಸೂಚಿಸಿದಾಗ ಕಣ್ಣು ಮಿಟುಕಿಸಿ",
+    dont1Title: "ಮುಖ ಮುಚ್ಚುವುದು ಬೇಡ",
+    dont1Desc: "ಟೋಪಿ, ಮಾಸ್ಕ್, ಕಪ್ಪು ಕನ್ನಡಕ ಅಥವಾ ಮುಖ ಮುಚ್ಚುವ ಬಟ್ಟೆ ಧರಿಸಬೇಡಿ",
+    dont2Title: "ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಇತರರು ಬೇಡ",
+    dont2Desc: "ಕ್ಯಾಮೆರಾ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಇತರ ವ್ಯಕ್ತಿಗಳು ಅಥವಾ ಫೋಟೋಗಳು ಇರಬಾರದು",
+    dont3Title: "ಹಿಂಬೆಳಕು ಅಥವಾ ಕತ್ತಲೆ ಬೇಡ",
+    dont3Desc: "ಹಿಂಬದಿಯಲ್ಲಿ ಕಿಟಕಿ ಅಥವಾ ಬಲ್ಬ್ ಇರಬಾರದು, ಮುಖ ಮಸುಕಾಗದಂತೆ ಎಚ್ಚರವಹಿಸಿ",
+    dont4Title: "ಮೊಬೈಲ್ ಅಲುಗಾಡಿಸಬೇಡಿ",
+    dont4Desc: "ಸ್ಕ್ಯಾನ್ ಆಗುವ ಸಮಯದಲ್ಲಿ ಫೋನ್ ಅಥವಾ ಕೈಯನ್ನು ಅಲುಗಾಡಿಸಬೇಡಿ, ಸ್ಥಿರವಾಗಿರಲಿ",
+    imReady: "ನಾನು ಸಿದ್ಧನಾಗಿದ್ದೇನೆ, ಮುಖ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
+
+    keepInside: "ನಿಮ್ಮ ಮುಖವನ್ನು ಹಸಿರು ವೃತ್ತದೊಳಗೆ ಇರಿಸಿ",
+    capturing: "ಮುಖ ಸೆರೆಹಿಡಿಯಲಾಗುತ್ತಿದೆ... ದಯವಿಟ್ಟು ಸ್ಥಿರವಾಗಿರಿ",
+
+    verifyingTitle: "UIDAI ನೊಂದಿಗೆ ದೃಢೀಕರಿಸಲಾಗುತ್ತಿದೆ",
+    verifyingSub: "ದಯವಿಟ್ಟು ಕೆಲವು ಕ್ಷಣ ನಿರೀಕ್ಷಿಸಿ...",
+    vStep1: "ಮುಖದ ಚಿತ್ರವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೆರೆಹಿಡಿಯಲಾಗಿದೆ",
+    vStep2: "UIDAI ಅಧಿಕೃತ ಸರ್ವರ್‌ಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ",
+    vStep3: "ಆಧಾರ್ ಬಯೋಮೆಟ್ರಿಕ್ ಪರಿಶೀಲನೆ ಪ್ರಗತಿಯಲ್ಲಿದೆ...",
+    vStep4: "UIDAI ನಿಂದ ಯಶಸ್ವಿ ದೃಢೀಕರಣ ಸಂದೇಶ ಸ್ವೀಕರಿಸಲಾಗಿದೆ",
+    vStep5: "ಕರ್ನಾಟಕ ಪಡಿತರ ದತ್ತಾಂಶದಲ್ಲಿ ಇ-ಕೆವೈಸಿ ನವೀಕರಣ ಅಂತಿಮಗೊಂಡಿದೆ",
+    verifyingNote: "ಈ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವೇ ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಮುಗಿಯುತ್ತದೆ. ದಯವಿಟ್ಟು ಅಪ್ಲಿಕೇಶನ್ ಮುಚ್ಚಬೇಡಿ.",
+
+    successTitle: "ಇ-ಕೆವೈಸಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ!",
+    successSub: "ಲಕ್ಷ್ಮಿ ದೇವಿ ಅವರ ಗುರುತನ್ನು UIDAI ಯೊಂದಿಗೆ ಯಶಸ್ವಿಯಾಗಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ. ಪಡಿತರ ಚೀಟಿ ವಿವರಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ.",
+    refId: "ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ",
+    refVal: "NKYC-KA-2026-9284F",
+    dateTime: "ದಿನಾಂಕ ಮತ್ತು ಸಮಯ",
+    dateTimeVal: "27 ಸೆಪ್ಟೆಂಬರ್ 2026, 11:45 AM",
+    service: "ಸೇವೆ",
+    serviceVal: "ಪಡಿತರ ಚೀಟಿ ಆಧಾರ್ ಮುಖ ಇ-ಕೆವೈಸಿ",
+    status: "ಸ್ಥಿತಿ",
+    statusVal: "✓ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",
+    rationEntitlement: "ಪಡಿತರ ಸೌಲಭ್ಯ",
+    rationEntitlementVal: "ಮುಂದಿನ ತಿಂಗಳ ಪಡಿತರ ವಿತರಣೆಗೆ ಅನುಮೋದಿಸಲಾಗಿದೆ",
+    viewDetails: "ಕುಟುಂಬದ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
+    goHome: "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
+
+    stageEyebrow: "ನಮ್ಮ ಕೆವೈಸಿ",
+    stageTitle: "ಪಡಿತರ ಚೀಟಿ ಇ-ಕೆವೈಸಿ — ಆರಂಭದಿಂದ ಮುಕ್ತಾಯದವರೆಗೆ.",
+    stageLede: "ಕರ್ನಾಟಕದ ನಾಗರಿಕರಿಗಾಗಿ ಸರಳ, ಸುಲಭ ಮತ್ತು ಗೌಪ್ಯತೆ-ರಕ್ಷಿತ ಅಧಿಕೃತ ಡಿಜಿಟಲ್ ಸೇವೆ.",
+    journeyHeading: "ನಾಗರಿಕರ ಪ್ರಯಾಣದ ಹಂತಗಳು",
+    stepsList: ["ಮುಖಪುಟ", "ಸ್ವಾಗತ", "ಪಡಿತರ ಚೀಟಿ", "ಸಮ್ಮತಿ", "ವಿಧಾನ", "ಮಾರ್ಗದರ್ಶಿ", "ಸ್ಕ್ಯಾನ್", "ಪರಿಶೀಲನೆ", "ಪೂರ್ಣ"],
+
+    footerTitle: "ನಮ್ಮ ಕೆವೈಸಿ",
+    footerSub: "ಕರ್ನಾಟಕದ ನಾಗರಿಕರಿಗಾಗಿ ಸುರಕ್ಷಿತ ಮತ್ತು ಸುಲಭ ಡಿಜಿಟಲ್ ಸೇವೆ.",
+    badgeGov: "ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಸೇವೆ",
+    badgeGovSub: "ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ",
+    badgeUidai: "UIDAI ಅಧಿಕೃತ ತಂತ್ರಜ್ಞಾನ",
+    badgeUidaiSub: "AadhaarFaceRD ಮುಖ ದೃಢೀಕರಣ",
+    badgePrivacy: "ಸಂಪೂರ್ಣ ಗೌಪ್ಯತೆ",
+    badgePrivacySub: "ಯಾವುದೇ ಬಯೋಮೆಟ್ರಿಕ್ ಸಂಗ್ರಹವಿಲ್ಲ",
+    badgeCitizen: "ಜನಹಿತ ಸೇವೆ",
+    badgeCitizenSub: "ಸಶಕ್ತ ಕರ್ನಾಟಕಕ್ಕಾಗಿ"
+  }
 };
-let lang="en",step=0;
-const S=()=>lang==="en"?EN:KN;
-function mark(){return '<img class="brand-mark-img" src="'+MARK+'" alt="'+S().app+'">'}
-function emblem(){return '<img class="karnataka-emblem" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Karnataka.png" alt="'+S().gov+'" loading="eager">'}
-function soudha(){return '<img class="soudha-photo" src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Government_Karnataka_8352.jpg" alt="Vidhana Soudha, Bengaluru" loading="eager">'}
-function family(){return '<div class="family-art"><img src="./assets/family-illustration.svg" alt="'+S().welcomeText+'"></div>'}
-function button(label,next,cls="primary"){return '<div class="actions"><button class="'+cls+'" data-next="'+next+'">'+label+' <b>→</b></button></div>'}
-function feature(icon,title,text){return '<div class="feature-row"><span class="feature-icon '+icon+'"></span><div><b>'+title+'</b><small>'+text+'</small></div></div>'}
-function render(){
- const s=S();
- document.getElementById("tagline").textContent=s.tagline;
- document.getElementById("language").textContent=s.language;
- document.getElementById("start").textContent=s.getStarted;
- document.getElementById("reset").textContent=s.reset;
- document.getElementById("demo-badge").textContent=s.demo;
- document.getElementById("demo-mode").textContent=s.simulation;
- document.getElementById("stage-eyebrow").textContent=s.stageEyebrow;
- document.getElementById("stage-title").textContent=s.stageTitle;
- document.getElementById("stage-lede").textContent=s.stageLede;
- document.getElementById("journey-eyebrow").textContent=s.stageEyebrow;
- document.getElementById("journey-title").textContent=s.journey;
- document.querySelector(".app-top").classList.toggle("hidden",step===0); document.getElementById("progress").classList.toggle("hidden",step===0);
- document.getElementById("progress-fill").style.width=(step?Math.round(step/9*100):0)+"%";
- document.getElementById("progress-label").textContent=step?s.steps[step-1]+" · "+step+" / 9":"";
- document.getElementById("steps").innerHTML=s.steps.map((x,i)=>'<button class="demo-step '+(i===step-1?"active":"")+'" data-step="'+(i+1)+'">'+(i+1)+". "+x+"</button>").join("");
- document.querySelectorAll(".demo-step").forEach(b=>b.onclick=()=>{step=Number(b.dataset.step);render()});
- document.getElementById("screen").innerHTML=screen(s); wire();
+
+let currentLang = "en";
+let currentStep = 0; // 0: Splash, 1: Welcome, 2: Ration, 3: Consent, 4: Method, 5: Guide, 6: Capture, 7: Verify, 8: Success
+let consentRead = false;
+let consentProceed = false;
+let selectedMethod = "face"; // "face" or "fps"
+let isAudioPlaying = false;
+let activeAudio = null;
+let dodontTab = "all"; // "all", "do", "dont"
+let viewingKycDoneMember = null; // null | "suresh" | "ramesh" | "lakshmi"
+let completedMembers = new Set(["suresh", "ramesh"]);
+
+const t = () => I18N[currentLang];
+
+/* Helper Icons & Animated SVG Pictograms */
+const ICONS = {
+  people: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  access: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+  leaf: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13a7 7 0 0 1 13-4c1.5 3 1.5 7-1 9l-5 2Z"/><path d="M11 20V10"/></svg>`,
+  card: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 10h10M7 14h6"/></svg>`,
+  shield: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 19 6v5c0 4.5-2.8 8-7 10-4.2-2-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>`,
+  lock: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  speed: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>`,
+  faceScan: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/><circle cx="12" cy="12" r="3"/><path d="M12 17a5 5 0 0 0 4-2"/></svg>`,
+  shop: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>`,
+
+  // Animated / Pictorial SVG Illustrations for Instructions
+  picLight: `
+    <div class="pictogram-frame do-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#eaf6ee" />
+        <g class="rotating-rays">
+          <line x1="32" y1="8" x2="32" y2="12" stroke="#13824f" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="32" y1="52" x2="32" y2="56" stroke="#13824f" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="8" y1="32" x2="12" y2="32" stroke="#13824f" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="52" y1="32" x2="56" y2="32" stroke="#13824f" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="15" y1="15" x2="18" y2="18" stroke="#13824f" stroke-width="2" stroke-linecap="round"/>
+          <line x1="46" y1="46" x2="49" y2="49" stroke="#13824f" stroke-width="2" stroke-linecap="round"/>
+          <line x1="15" y1="49" x2="18" y2="46" stroke="#13824f" stroke-width="2" stroke-linecap="round"/>
+          <line x1="46" y1="18" x2="49" y2="15" stroke="#13824f" stroke-width="2" stroke-linecap="round"/>
+        </g>
+        <circle cx="32" cy="28" r="10" fill="#13824f" />
+        <path d="M20 48c0-7 5.5-12 12-12s12 5 12 12" fill="#13824f" opacity="0.8"/>
+        <circle cx="46" cy="18" r="7" fill="#22c55e" />
+        <path d="M43 18l2 2 4-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  `,
+  picEyeLevel: `
+    <div class="pictogram-frame do-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#eaf6ee" />
+        <rect x="22" y="16" width="20" height="32" rx="4" fill="none" stroke="#0d4a36" stroke-width="2.5" />
+        <line x1="28" y1="44" x2="36" y2="44" stroke="#0d4a36" stroke-width="2" stroke-linecap="round"/>
+        <circle class="pulsing-reticle" cx="32" cy="28" r="5" fill="none" stroke="#13824f" stroke-width="2" stroke-dasharray="3 2" />
+        <circle cx="32" cy="28" r="1.5" fill="#13824f" />
+        <circle cx="48" cy="18" r="7" fill="#22c55e" />
+        <path d="M45 18l2 2 4-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  `,
+  picSinglePerson: `
+    <div class="pictogram-frame do-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#eaf6ee" />
+        <rect x="18" y="14" width="28" height="36" rx="6" fill="none" stroke="#13824f" stroke-width="1.8" stroke-dasharray="4 2" />
+        <circle cx="32" cy="26" r="7" fill="#0d4a36" />
+        <path d="M22 46c0-6 4.5-10 10-10s10 4 10 10" fill="#0d4a36" />
+        <circle cx="48" cy="18" r="7" fill="#22c55e" />
+        <path d="M45 18l2 2 4-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  `,
+  picBlink: `
+    <div class="pictogram-frame do-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#eaf6ee" />
+        <circle cx="32" cy="32" r="18" fill="#ffffff" stroke="#13824f" stroke-width="2"/>
+        <g class="animated-eyelids">
+          <ellipse cx="26" cy="30" rx="3.5" ry="2" fill="#0d4a36"/>
+          <ellipse cx="38" cy="30" rx="3.5" ry="2" fill="#0d4a36"/>
+        </g>
+        <path d="M27 38c2 2 8 2 10 0" stroke="#0d4a36" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle cx="48" cy="18" r="7" fill="#22c55e" />
+        <path d="M45 18l2 2 4-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  `,
+  picNoCover: `
+    <div class="pictogram-frame dont-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#feebe9" />
+        <circle cx="32" cy="28" r="9" fill="#7f1d1d" opacity="0.3"/>
+        <path d="M20 22c3-4 8-6 12-6s9 2 12 6l-24 0z" fill="#dc2626"/>
+        <rect x="25" y="27" width="14" height="6" rx="3" fill="#dc2626"/>
+        <circle cx="48" cy="18" r="7" fill="#dc2626" />
+        <path d="M45 15l6 6M51 15l-6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="48" x2="48" y2="16" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  `,
+  picNoMultiple: `
+    <div class="pictogram-frame dont-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#feebe9" />
+        <circle cx="26" cy="28" r="7" fill="#7f1d1d" opacity="0.4"/>
+        <path d="M16 48c0-5 4-8 10-8s10 3 10 8" fill="#7f1d1d" opacity="0.4"/>
+        <circle cx="40" cy="24" r="6" fill="#dc2626" opacity="0.6"/>
+        <path d="M32 44c0-4 3-7 8-7s8 3 8 7" fill="#dc2626" opacity="0.6"/>
+        <circle cx="48" cy="18" r="7" fill="#dc2626" />
+        <path d="M45 15l6 6M51 15l-6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="48" x2="48" y2="16" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  `,
+  picNoBacklight: `
+    <div class="pictogram-frame dont-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#feebe9" />
+        <rect x="18" y="16" width="28" height="32" fill="#fde047" stroke="#ca8a04" stroke-width="1.5" />
+        <line x1="32" y1="16" x2="32" y2="48" stroke="#ca8a04" stroke-width="1.5"/>
+        <line x1="18" y1="32" x2="46" y2="32" stroke="#ca8a04" stroke-width="1.5"/>
+        <circle cx="32" cy="34" r="8" fill="#000000" />
+        <circle cx="48" cy="18" r="7" fill="#dc2626" />
+        <path d="M45 15l6 6M51 15l-6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="48" x2="48" y2="16" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  `,
+  picNoShake: `
+    <div class="pictogram-frame dont-frame">
+      <svg class="pictogram-svg" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="26" fill="#feebe9" />
+        <g class="vibrating-phone">
+          <rect x="24" y="18" width="16" height="28" rx="3" fill="none" stroke="#7f1d1d" stroke-width="2" />
+          <path d="M16 26c-2 3-2 9 0 12M48 26c2 3 2 9 0 12" stroke="#dc2626" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </g>
+        <circle cx="48" cy="18" r="7" fill="#dc2626" />
+        <path d="M45 15l6 6M51 15l-6 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="48" x2="48" y2="16" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  `
+};
+
+function render() {
+  const s = t();
+
+  // Update Document & Head Title
+  document.title = s.pageTitle;
+
+  // Outer stage copy
+  const elDemoBadge = document.getElementById("demo-badge");
+  if (elDemoBadge) elDemoBadge.textContent = s.bannerBadge;
+  const elDemoMode = document.getElementById("demo-mode");
+  if (elDemoMode) elDemoMode.textContent = s.bannerText;
+  const elBannerBoundary = document.getElementById("banner-boundary");
+  if (elBannerBoundary) elBannerBoundary.textContent = s.bannerSub;
+
+  const elStageEyebrow = document.getElementById("stage-eyebrow");
+  if (elStageEyebrow) elStageEyebrow.textContent = s.stageEyebrow;
+  const elStageTitle = document.getElementById("stage-title");
+  if (elStageTitle) elStageTitle.textContent = s.stageTitle;
+  const elStageLede = document.getElementById("stage-lede");
+  if (elStageLede) elStageLede.textContent = s.stageLede;
+  const elJourneyTitle = document.getElementById("journey-title");
+  if (elJourneyTitle) elJourneyTitle.textContent = s.journeyHeading;
+  const elStart = document.getElementById("start");
+  if (elStart) elStart.textContent = s.getStarted + " →";
+  const elReset = document.getElementById("reset");
+  if (elReset) elReset.textContent = s.reset;
+
+  // Render bottom journey steps
+  const elSteps = document.getElementById("steps");
+  if (elSteps) {
+    elSteps.innerHTML = s.stepsList.map((name, idx) => `
+      <button class="demo-step-btn ${idx === currentStep ? "active" : ""}" data-step="${idx}">
+        <span>${idx + 1}. ${name}</span>
+      </button>
+    `).join("");
+    elSteps.querySelectorAll(".demo-step-btn").forEach(btn => {
+      btn.onclick = () => {
+        stopAudioPlayback();
+        viewingKycDoneMember = null;
+        currentStep = Number(btn.dataset.step);
+        render();
+      };
+    });
+  }
+
+  // Render Phone Header
+  const elAppTop = document.getElementById("app-top");
+  if (elAppTop) {
+    if (currentStep === 0) {
+      elAppTop.innerHTML = "";
+      elAppTop.style.display = "none";
+    } else {
+      elAppTop.style.display = "flex";
+      elAppTop.innerHTML = `
+        <button class="app-top-back" id="back-nav-btn" aria-label="Back">←</button>
+        <span class="app-top-title">${s.app}</span>
+        <button class="app-top-lang" id="top-lang-btn">🌐 ${s.langCode}</button>
+      `;
+      const elBack = document.getElementById("back-nav-btn");
+      if (elBack) elBack.onclick = () => {
+        stopAudioPlayback();
+        if (viewingKycDoneMember) {
+          viewingKycDoneMember = null;
+          render();
+          return;
+        }
+        if (currentStep > 0) {
+          currentStep--;
+          render();
+        }
+      };
+      const elTopLang = document.getElementById("top-lang-btn");
+      if (elTopLang) elTopLang.onclick = toggleLanguage;
+    }
+  }
+
+  // Render Stepper Bar (steps 3 to 8)
+  const elStepper = document.getElementById("stepper-bar");
+  if (elStepper) {
+    if (currentStep >= 3 && currentStep <= 8) {
+      elStepper.style.display = "flex";
+      let activeIndex = 0; // 0: Consent, 1: Method, 2: Face Scan, 3: Complete
+      if (currentStep === 3) activeIndex = 0;
+      else if (currentStep === 4) activeIndex = 1;
+      else if (currentStep >= 5 && currentStep <= 7) activeIndex = 2;
+      else if (currentStep >= 8) activeIndex = 3;
+
+      elStepper.innerHTML = s.stepper.map((stepName, i) => {
+        const isDone = i < activeIndex;
+        const isActive = i === activeIndex;
+        return `
+          <div class="step-node ${isActive ? "active" : ""} ${isDone ? "done" : ""}">
+            <div class="step-circle">${isDone ? "✓" : i + 1}</div>
+            <span class="step-label">${stepName}</span>
+          </div>
+          ${i < 3 ? `<div class="step-connector ${isDone ? "done" : ""}"></div>` : ""}
+        `;
+      }).join("");
+    } else {
+      elStepper.style.display = "none";
+      elStepper.innerHTML = "";
+    }
+  }
+
+  // Render Screen Body
+  const elScreen = document.getElementById("screen");
+  if (elScreen) {
+    elScreen.innerHTML = getScreenHtml(s);
+    wireScreenEvents();
+  }
+
+  // Update Footer Trust Badges
+  updateFooterBadges(s);
 }
-function screen(s){
- if(step===0)return '<div class="splash"><div class="splash-top">'+emblem()+'<button class="splash-language" id="splash-language">'+(lang==="en"?"EN":"ಕನ್ನಡ")+'</button></div><div class="splash-gov">'+s.gov+'</div><h1>'+s.app+'</h1><p class="splash-tag">'+(lang==="en"?"Secure Identity. Better Services. A Stronger Karnataka.":"ಸುರಕ್ಷಿತ ಗುರುತು. ಉತ್ತಮ ಸೇವೆಗಳು. ಸದೃಢ ಕರ್ನಾಟಕ.")+'</p>'+soudha()+'<div class="splash-values"><span>♧<b>'+(lang==="en"?"People First":"ಜನರಿಗೆ ಮೊದಲ ಆದ್ಯತೆ")+'</b></span><span>✋<b>'+(lang==="en"?"Simple Access":"ಸರಳ ಪ್ರವೇಶ")+'</b></span><span>♡<b>'+(lang==="en"?"Digital Karnataka":"ಡಿಜಿಟಲ್ ಕರ್ನಾಟಕ")+'</b></span></div>'+button(s.getStarted,1)+'<small class="independent">'+(lang==="en"?"Independent open-source citizen initiative":"ಸ್ವತಂತ್ರ ಮುಕ್ತ-ಮೂಲ ನಾಗರಿಕ ಉಪಕ್ರಮ")+'</small></div>';
- if(step===1)return '<div class="screen-card welcome-card"><div class="welcome-top">'+mark()+'<div class="welcome-progress"><i></i><i></i><i></i></div></div><h2>'+s.welcome+'</h2><p>'+s.welcomeText+'</p>'+feature("card",s.feature1,s.feature1Text)+feature("shield",s.feature2,s.feature2Text)+feature("privacy",s.feature3,s.feature3Text)+feature("bolt",s.feature4,s.feature4Text)+family()+button(s.continue,2)+'</div>';
- if(step===2)return '<div class="screen-card"><div class="screen-head"><b>'+s.ration+'</b></div><p>'+s.rationHint+'</p><div class="demo-input">'+s.demoRation+'</div>'+button(s.continue,3)+'</div>';
- if(step===3)return '<div class="screen-card"><div class="screen-head"><b>'+s.members+'</b></div><p>'+s.selectMember+'</p><div class="member-row selected"><span class="avatar">A</span><span class="member-copy"><b>Anitha Rao</b><small>'+s.required+'</small></span><i>›</i></div><div class="member-row completed"><span class="avatar">✓</span><span class="member-copy"><b>Ravi Kumar</b><small>'+s.recent+'</small></span><i>✓</i></div>'+button(s.continue,4)+'</div>';
- if(step===4)return '<div class="screen-card"><div class="screen-head"><b>'+s.consent+'</b></div><p>'+s.consentText+'</p><div class="consent-list"><p>✓ '+s.consent1+'</p><p>✓ '+s.consent2+'</p><p>✓ '+s.consent3+'</p></div>'+button(s.agree,5)+'</div>';
- if(step===5)return '<div class="screen-card"><div class="screen-head"><b>'+s.otp+'</b></div><p>'+s.aadhaarText+'</p><div class="aadhaar-field">•••• •••• ••••</div><div class="otp-box"><b>✓</b><span>'+s.demoOtp+'</span></div>'+button(s.verifyOtp,6)+'</div>';
- if(step===6)return '<div class="screen-card"><div class="screen-head"><b>'+s.faceReady+'</b></div><p>'+s.faceText+'</p><div class="face-guide"><div class="face-outline"></div></div><div class="guidance-head"><div><b>'+s.guidanceTitle+'</b><small>'+s.guidanceIntro+'</small></div><button class="guide-button" id="guide-button">'+s.playGuidance+'</button></div><div class="instruction-list"><p><b>1</b>'+s.face1+'</p><p><b>2</b>'+s.face2+'</p><p><b>3</b>'+s.face3+'</p><p><b>4</b>'+s.face4+'</p></div>'+button(s.ready,7)+'</div>';
- if(step===7)return '<div class="screen-card center"><div class="capture-frame"><div class="face-outline"></div><span>'+s.captureText+'</span></div><div class="verify-title">'+s.verifying+'</div><p>'+s.wait+'</p><div class="timeline">'+[s.otpDone,s.faceDone,s.pdsDone].map((x,i)=>'<div class="timeline-row"><span class="dot '+(i<2?"done":"active")+'">'+(i<2?"✓":"•")+'</span><p>'+x+'</p></div>').join("")+'</div>'+button(s.continue,8)+'</div>';
- if(step===8)return '<div class="screen-card center success"><div class="success-check">✓</div><h2>'+s.success+'</h2><p>'+s.successText+'</p><div class="details"><div class="detail-row"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div><div class="detail-row"><small>'+s.service+'</small><b>'+s.status+'</b></div></div>'+button(s.continue,9)+'</div>';
- return '<div class="screen-card"><div class="screen-head"><b>'+s.statusTitle+'</b></div><div class="status-member"><span class="avatar">A</span><b>Anitha Rao</b><small>'+s.faceDone+'</small></div><div class="timeline big">'+[s.submitted,s.otpDone,s.faceDone,s.pdsDone].map(x=>'<div class="timeline-row"><span class="dot done">✓</span><p><b>'+x+'</b></p></div>').join("")+'</div><div class="details"><div class="detail-row"><small>'+s.reference+'</small><code>'+s.referenceValue+'</code></div></div>'+button(s.reset,0,"secondary")+'</div>';
+
+function updateFooterBadges(s) {
+  const brandEl = document.querySelector(".trust-brand-copy");
+  if (brandEl) {
+    brandEl.innerHTML = `
+      <b>${s.footerTitle}</b>
+      <p>${s.footerSub}</p>
+    `;
+  }
+  const badgesGrid = document.querySelector(".trust-badges-grid");
+  if (badgesGrid) {
+    badgesGrid.innerHTML = `
+      <div class="trust-badge-item">
+        <div class="trust-badge-icon">✓</div>
+        <div>
+          <span>${s.badgeGov}</span>
+          <small style="display:block;color:var(--text-muted);font-size:10px;">${s.badgeGovSub}</small>
+        </div>
+      </div>
+      <div class="trust-badge-item">
+        <div class="trust-badge-icon">🔒</div>
+        <div>
+          <span>${s.badgeUidai}</span>
+          <small style="display:block;color:var(--text-muted);font-size:10px;">${s.badgeUidaiSub}</small>
+        </div>
+      </div>
+      <div class="trust-badge-item">
+        <div class="trust-badge-icon">🛡️</div>
+        <div>
+          <span>${s.badgePrivacy}</span>
+          <small style="display:block;color:var(--text-muted);font-size:10px;">${s.badgePrivacySub}</small>
+        </div>
+      </div>
+      <div class="trust-badge-item">
+        <div class="trust-badge-icon">👥</div>
+        <div>
+          <span>${s.badgeCitizen}</span>
+          <small style="display:block;color:var(--text-muted);font-size:10px;">${s.badgeCitizenSub}</small>
+        </div>
+      </div>
+    `;
+  }
 }
-function wire(){
- document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>{step=Number(b.dataset.next);render()});
- document.getElementById("language").onclick=()=>{lang=lang==="en"?"kn":"en";render()}; const splashLanguage=document.getElementById("splash-language"); if(splashLanguage)splashLanguage.onclick=()=>{lang=lang==="en"?"kn":"en";render()};
- document.getElementById("start").onclick=()=>{step=1;render()};
- document.getElementById("reset").onclick=()=>{step=0;render()};
- const guide=document.getElementById("guide-button"); if(guide)guide.onclick=()=>{if(!("speechSynthesis" in window)){guide.textContent=S().playGuidance;return} if(speechSynthesis.speaking){speechSynthesis.cancel();guide.textContent=S().playGuidance;return} const text=[S().face1,S().face2,S().face3,S().face4].join(". "); const u=new SpeechSynthesisUtterance(text);u.lang=lang==="kn"?"kn-IN":"en-IN";u.rate=.88;u.onend=()=>guide.textContent=S().playGuidance;guide.textContent=S().stopGuidance;speechSynthesis.speak(u)};
+
+function getScreenHtml(s) {
+  // Screen 0: Splash Screen
+  if (currentStep === 0) {
+    return `
+      <div class="splash-container">
+        <div class="splash-header-row">
+          <img class="splash-emblem" src="${ASSETS.emblem}" alt="${s.gov}" />
+          <button class="splash-lang-btn" id="splash-lang-toggle">🌐 ${s.langBtn}</button>
+        </div>
+        <div class="splash-gov-title">${s.gov}</div>
+        <div class="splash-dept-title">${s.dept}</div>
+        <div class="splash-brand">
+          <h1>${s.app}</h1>
+          <div class="splash-brand-dot"></div>
+        </div>
+        <p class="splash-tagline">${s.tagline}</p>
+        <div class="soudha-frame">
+          <img class="soudha-photo" src="${ASSETS.soudha}" alt="Vidhana Soudha, Bengaluru" />
+        </div>
+        <div class="splash-values-strip">
+          <div class="value-item">
+            <div class="value-icon-circle">${ICONS.people}</div>
+            <span>${s.peopleFirst}</span>
+          </div>
+          <div class="value-item">
+            <div class="value-icon-circle">${ICONS.access}</div>
+            <span>${s.simpleAccess}</span>
+          </div>
+          <div class="value-item">
+            <div class="value-icon-circle">${ICONS.leaf}</div>
+            <span>${s.digitalKarnataka}</span>
+          </div>
+        </div>
+        <div class="splash-actions">
+          <button class="primary-btn" id="splash-start-btn">${s.getStarted} →</button>
+        </div>
+        <div class="splash-disclosure">
+          <svg class="karnataka-map-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 5 6 9 6 13c0 4 3 8 6 9 3-1 6-5 6-9 0-4-2-8-6-9z"/></svg>
+          <span>${s.officialBadge}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 1: Welcome Screen
+  if (currentStep === 1) {
+    return `
+      <div class="screen-card">
+        <div class="welcome-progress-dots">
+          <i class="active"></i><i></i><i></i>
+        </div>
+        <h2>${s.welcome}</h2>
+        <p class="screen-desc">${s.welcomeSub}</p>
+
+        <div class="feature-card-list">
+          <div class="feature-box">
+            <div class="feature-box-icon orange">${ICONS.card}</div>
+            <div class="feature-box-copy">
+              <b>${s.feat1Title}</b>
+              <small>${s.feat1Text}</small>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-box-icon green">${ICONS.shield}</div>
+            <div class="feature-box-copy">
+              <b>${s.feat2Title}</b>
+              <small>${s.feat2Text}</small>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-box-icon gold">${ICONS.lock}</div>
+            <div class="feature-box-copy">
+              <b>${s.feat3Title}</b>
+              <small>${s.feat3Text}</small>
+            </div>
+          </div>
+          <div class="feature-box">
+            <div class="feature-box-icon blue">${ICONS.speed}</div>
+            <div class="feature-box-copy">
+              <b>${s.feat4Title}</b>
+              <small>${s.feat4Text}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="family-art-wrapper">
+          <img class="family-art-img" src="${ASSETS.family}" alt="Family illustration" />
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="welcome-continue-btn">${s.continue} →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 2: Ration Card & Household Members (with KYC Done inspection)
+  if (currentStep === 2) {
+    if (viewingKycDoneMember) {
+      return getKycDoneModalHtml(s, viewingKycDoneMember);
+    }
+
+    const isLakshmiCompleted = completedMembers.has("lakshmi");
+
+    return `
+      <div class="screen-card">
+        <h2>${s.rationTitle}</h2>
+        <p class="screen-desc">${s.rationSub}</p>
+
+        <div class="ration-card-banner">
+          <div class="ration-card-header-row">
+            <span class="ration-chip">${s.cardNumberLabel}</span>
+            <span class="ration-type-badge">${s.cardType}</span>
+          </div>
+          <div class="ration-number-display">${s.demoCardNumber}</div>
+        </div>
+
+        <div class="member-list-heading">
+          <span>${s.familyMembersList}</span>
+        </div>
+
+        <div class="member-list">
+          <!-- Member 1: Suresh Kumar (KYC Completed) -->
+          <div class="member-card completed" id="member-suresh-card" role="button" tabindex="0">
+            <div class="member-avatar done">✓</div>
+            <div class="member-info">
+              <div class="member-name-row">
+                <b>${currentLang === "kn" ? "ಸುರೇಶ್ ಕುಮಾರ್" : "Suresh Kumar"}</b>
+                <span class="member-rel">(${s.memberHead})</span>
+              </div>
+              <small class="member-status-text done">${s.kycCompletedBadge} · ${s.tapToViewStatus}</small>
+            </div>
+            <span class="member-action-badge done">✓ ${currentLang === "kn" ? "ವಿವರ" : "View"}</span>
+          </div>
+
+          <!-- Member 2: Lakshmi Devi (Pending or Completed) -->
+          <div class="member-card ${isLakshmiCompleted ? "completed" : "pending-action"}" id="member-lakshmi-card" role="button" tabindex="0">
+            <div class="member-avatar ${isLakshmiCompleted ? "done" : "pending"}">${isLakshmiCompleted ? "✓" : "L"}</div>
+            <div class="member-info">
+              <div class="member-name-row">
+                <b>${currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ" : "Lakshmi Devi"}</b>
+                <span class="member-rel">(${s.memberWife})</span>
+              </div>
+              <small class="member-status-text ${isLakshmiCompleted ? "done" : "pending"}">
+                ${isLakshmiCompleted ? `${s.kycCompletedBadge} · ${s.tapToViewStatus}` : `⚠️ ${s.kycRequiredBadge}`}
+              </small>
+            </div>
+            <span class="member-action-badge ${isLakshmiCompleted ? "done" : "action"}">
+              ${isLakshmiCompleted ? (currentLang === "kn" ? "ವಿವರ" : "View") : (currentLang === "kn" ? "ಪ್ರಾರಂಭಿಸಿ →" : "Verify →")}
+            </span>
+          </div>
+
+          <!-- Member 3: Ramesh Kumar (KYC Completed) -->
+          <div class="member-card completed" id="member-ramesh-card" role="button" tabindex="0">
+            <div class="member-avatar done">✓</div>
+            <div class="member-info">
+              <div class="member-name-row">
+                <b>${currentLang === "kn" ? "ರಮೇಶ್ ಕುಮಾರ್" : "Ramesh Kumar"}</b>
+                <span class="member-rel">(${s.memberSon})</span>
+              </div>
+              <small class="member-status-text done">${s.kycCompletedBadge} · ${s.tapToViewStatus}</small>
+            </div>
+            <span class="member-action-badge done">✓ ${currentLang === "kn" ? "ವಿವರ" : "View"}</span>
+          </div>
+        </div>
+
+        <div class="ration-helper-note">
+          <span>ℹ</span>
+          <span>${s.selectMemberPrompt}</span>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="ration-continue-btn">
+            ${isLakshmiCompleted ? s.continue : (currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ ಅವರ ಇ-ಕೆವೈಸಿ ಮುಂದುವರಿಸಿ →" : "Verify Lakshmi Devi →")}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 3: Consent & Information
+  if (currentStep === 3) {
+    return `
+      <div class="screen-card">
+        <h2>${s.consentTitle}</h2>
+        
+        <div class="consent-list-container">
+          <div class="consent-statement">
+            <div class="consent-icon">${ICONS.faceScan}</div>
+            <span>${s.consent1}</span>
+          </div>
+          <div class="consent-statement">
+            <div class="consent-icon">${ICONS.shield}</div>
+            <span>${s.consent2}</span>
+          </div>
+          <div class="consent-statement">
+            <div class="consent-icon">${ICONS.lock}</div>
+            <span>${s.consent3}</span>
+          </div>
+          <div class="consent-statement">
+            <div class="consent-icon">${ICONS.card}</div>
+            <span>${s.consent4}</span>
+          </div>
+          <div class="consent-statement">
+            <div class="consent-icon">${ICONS.leaf}</div>
+            <span>${s.consent5}</span>
+          </div>
+        </div>
+
+        <div class="checkbox-row" id="check-read-row">
+          <div class="check-square ${consentRead ? "checked" : ""}">
+            ${consentRead ? ICONS.check : ""}
+          </div>
+          <span>${s.consentCheck1}</span>
+        </div>
+
+        <div class="checkbox-row" id="check-proceed-row">
+          <div class="check-square ${consentProceed ? "checked" : ""}">
+            ${consentProceed ? ICONS.check : ""}
+          </div>
+          <span>${s.consentCheck2}</span>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="consent-continue-btn" ${(!consentRead || !consentProceed) ? "disabled" : ""}>
+            ${s.agreeContinue} →
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 4: Select Biometric Verification Method (Authentic PDS Options)
+  if (currentStep === 4) {
+    return `
+      <div class="screen-card">
+        <h2>${s.methodTitle}</h2>
+        <p class="screen-desc">${s.methodSub}</p>
+
+        <div class="choice-cards-container">
+          <!-- Method 1: FaceRD (Recommended mobile method) -->
+          <div class="method-choice-card ${selectedMethod === "face" ? "selected" : ""}" id="choose-face-card">
+            <div class="method-icon-box">${ICONS.faceScan}</div>
+            <div class="method-copy">
+              <div class="method-title-row">
+                <b>${s.methodFaceTitle}</b>
+                <span class="badge-recommended">${s.methodFaceBadge}</span>
+              </div>
+              <small class="method-provider">${s.methodFaceProvider}</small>
+              <small>${s.methodFaceDesc}</small>
+            </div>
+            <div class="radio-indicator">
+              ${selectedMethod === "face" ? ICONS.check : ""}
+            </div>
+          </div>
+
+          <!-- Method 2: Fair Price Shop Biometric (Official PDS fallback) -->
+          <div class="method-choice-card ${selectedMethod === "fps" ? "selected" : ""}" id="choose-fps-card">
+            <div class="method-icon-box">${ICONS.shop}</div>
+            <div class="method-copy">
+              <div class="method-title-row">
+                <b>${s.methodFpsTitle}</b>
+              </div>
+              <small class="method-provider">${s.methodFpsProvider}</small>
+              <small>${s.methodFpsDesc}</small>
+            </div>
+            <div class="radio-indicator">
+              ${selectedMethod === "fps" ? ICONS.check : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="info-callout">
+          <span>ℹ</span>
+          <div>${s.methodNotice}</div>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="method-continue-btn">${s.continue} →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 5: Face Authentication Preparation — Rich Animated & Pictorial Instructions
+  if (currentStep === 5) {
+    const showDos = dodontTab === "all" || dodontTab === "do";
+    const showDonts = dodontTab === "all" || dodontTab === "dont";
+    return `
+      <div class="screen-card">
+        <h2>${s.readyTitle}</h2>
+        <p class="screen-desc">${s.readySub}</p>
+
+        <div class="guide-header-strip">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="sound-wave-icon">🔊</span>
+            <span style="font-size:12.5px;font-weight:800;color:var(--text);">${s.audioGuideLabel}</span>
+          </div>
+          <button class="guide-audio-btn ${isAudioPlaying ? "playing" : ""}" id="audio-guide-btn">
+            ${isAudioPlaying ? `
+              <div class="audio-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              ${s.stopGuide}
+            ` : `
+              ▶ ${s.playGuide}
+            `}
+          </button>
+        </div>
+
+        <div class="dodont-filter-tabs">
+          <button class="dodont-tab ${dodontTab === "all" ? "active" : ""}" id="tab-all-btn">${s.tabAll}</button>
+          <button class="dodont-tab ${dodontTab === "do" ? "active" : ""}" id="tab-do-btn">${s.tabDo}</button>
+          <button class="dodont-tab ${dodontTab === "dont" ? "active" : ""}" id="tab-dont-btn">${s.tabDont}</button>
+        </div>
+
+        <div class="dodont-grid">
+          ${showDos ? `
+            <!-- DO 1: Good Lighting -->
+            <div class="dodont-card do">
+              ${ICONS.picLight}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+                <b>${s.do1Title}</b>
+                <small>${s.do1Desc}</small>
+              </div>
+            </div>
+
+            <!-- DO 2: Camera at Eye Level -->
+            <div class="dodont-card do">
+              ${ICONS.picEyeLevel}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+                <b>${s.do2Title}</b>
+                <small>${s.do2Desc}</small>
+              </div>
+            </div>
+
+            <!-- DO 3: Single Person Only -->
+            <div class="dodont-card do">
+              ${ICONS.picSinglePerson}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+                <b>${s.do3Title}</b>
+                <small>${s.do3Desc}</small>
+              </div>
+            </div>
+
+            <!-- DO 4: Blink Naturally -->
+            <div class="dodont-card do">
+              ${ICONS.picBlink}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+                <b>${s.do4Title}</b>
+                <small>${s.do4Desc}</small>
+              </div>
+            </div>
+          ` : ""}
+
+          ${showDonts ? `
+            <!-- DON'T 1: No Face Coverings -->
+            <div class="dodont-card dont">
+              ${ICONS.picNoCover}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+                <b>${s.dont1Title}</b>
+                <small>${s.dont1Desc}</small>
+              </div>
+            </div>
+
+            <!-- DON'T 2: No Multiple People -->
+            <div class="dodont-card dont">
+              ${ICONS.picNoMultiple}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+                <b>${s.dont2Title}</b>
+                <small>${s.dont2Desc}</small>
+              </div>
+            </div>
+
+            <!-- DON'T 3: No Backlight or Dark -->
+            <div class="dodont-card dont">
+              ${ICONS.picNoBacklight}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+                <b>${s.dont3Title}</b>
+                <small>${s.dont3Desc}</small>
+              </div>
+            </div>
+
+            <!-- DON'T 4: Do Not Shake Mobile -->
+            <div class="dodont-card dont">
+              ${ICONS.picNoShake}
+              <div class="dodont-card-copy">
+                <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+                <b>${s.dont4Title}</b>
+                <small>${s.dont4Desc}</small>
+              </div>
+            </div>
+          ` : ""}
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="guide-ready-btn">${s.imReady} →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 6: Face Capture Simulation
+  if (currentStep === 6) {
+    return `
+      <div class="screen-card" style="padding:14px;">
+        <div class="camera-viewfinder">
+          <img class="camera-bg-image" src="${ASSETS.face}" alt="Citizen face" />
+          <div class="camera-scanline"></div>
+          <div class="camera-top-pill">
+            <span>👁</span>
+            <span>${s.keepInside}</span>
+          </div>
+          <div class="camera-face-bracket"></div>
+          <div class="camera-bottom-status">
+            <div class="capture-spinner"></div>
+            <span>${s.capturing}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="capture-advance-btn">${s.continue} →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 7: Verifying Identity (UIDAI Verification Stage)
+  if (currentStep === 7) {
+    return `
+      <div class="screen-card">
+        <div class="verifying-container">
+          <div class="pulsing-radar">
+            <div class="radar-ring r1"></div>
+            <div class="radar-ring r2"></div>
+            <div class="pulsing-radar-icon">${ICONS.faceScan}</div>
+          </div>
+          <h2>${s.verifyingTitle}</h2>
+          <p class="screen-desc" style="margin-bottom:8px;">${s.verifyingSub}</p>
+
+          <div class="timeline-verification">
+            <div class="v-timeline-row done">
+              <div class="v-dot">✓</div>
+              <span>${s.vStep1}</span>
+            </div>
+            <div class="v-timeline-row done">
+              <div class="v-dot">✓</div>
+              <span>${s.vStep2}</span>
+            </div>
+            <div class="v-timeline-row active">
+              <div class="v-dot">•</div>
+              <span>${s.vStep3}</span>
+            </div>
+            <div class="v-timeline-row">
+              <div class="v-dot">○</div>
+              <span>${s.vStep4}</span>
+            </div>
+            <div class="v-timeline-row">
+              <div class="v-dot">○</div>
+              <span>${s.vStep5}</span>
+            </div>
+          </div>
+
+          <div class="info-callout" style="width:100%;text-align:left;">
+            <span>ℹ</span>
+            <span>${s.verifyingNote}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary-btn" id="verify-continue-btn">${s.continue} →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Screen 8: e-KYC Completed Successfully!
+  return `
+    <div class="screen-card">
+      <div class="completion-container">
+        <div class="celebration-badge">
+          <div class="confetti-layer">
+            <span class="confetti-piece"></span>
+            <span class="confetti-piece"></span>
+            <span class="confetti-piece"></span>
+            <span class="confetti-piece"></span>
+          </div>
+          <div class="success-check-circle">✓</div>
+        </div>
+        <h2>${s.successTitle}</h2>
+        <p class="screen-desc">${s.successSub}</p>
+
+        <div class="details-card-box">
+          <div class="detail-line">
+            <small>${s.refId}</small>
+            <code>${s.refVal}</code>
+          </div>
+          <div class="detail-line">
+            <small>${s.dateTime}</small>
+            <b>${s.dateTimeVal}</b>
+          </div>
+          <div class="detail-line">
+            <small>${s.service}</small>
+            <b>${s.serviceVal}</b>
+          </div>
+          <div class="detail-line">
+            <small>${s.rationEntitlement}</small>
+            <b style="color:var(--success);">${s.rationEntitlementVal}</b>
+          </div>
+          <div class="detail-line">
+            <small>${s.status}</small>
+            <span class="badge-completed">${s.statusVal}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary-btn" id="success-view-btn">${s.viewDetails}</button>
+        <button class="secondary-btn" id="success-home-btn">${s.goHome}</button>
+      </div>
+    </div>
+  `;
 }
+
+// Modal view when citizen clicks on a member whose KYC is already done
+function getKycDoneModalHtml(s, memberKey) {
+  let memberName = "";
+  let memberRel = "";
+  let aadhaarMask = "XXXX-XXXX-8421";
+  let vDate = "12 Aug 2024, 11:20 AM";
+
+  if (memberKey === "suresh") {
+    memberName = currentLang === "kn" ? "ಸುರೇಶ್ ಕುಮಾರ್" : "Suresh Kumar";
+    memberRel = s.memberHead;
+    aadhaarMask = "XXXX-XXXX-8421";
+    vDate = currentLang === "kn" ? "12 ಆಗಸ್ಟ್ 2024, ಬೆಳಗ್ಗೆ 11:20" : "12 Aug 2024, 11:20 AM";
+  } else if (memberKey === "ramesh") {
+    memberName = currentLang === "kn" ? "ರಮೇಶ್ ಕುಮಾರ್" : "Ramesh Kumar";
+    memberRel = s.memberSon;
+    aadhaarMask = "XXXX-XXXX-9104";
+    vDate = currentLang === "kn" ? "20 ಜನವರಿ 2025, ಮಧ್ಯಾಹ್ನ 02:45" : "20 Jan 2025, 02:45 PM";
+  } else {
+    memberName = currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ" : "Lakshmi Devi";
+    memberRel = s.memberWife;
+    aadhaarMask = "XXXX-XXXX-4819";
+    vDate = currentLang === "kn" ? "27 ಸೆಪ್ಟೆಂಬರ್ 2026, ಬೆಳಗ್ಗೆ 11:45" : "27 Sep 2026, 11:45 AM";
+  }
+
+  return `
+    <div class="screen-card kyc-done-card">
+      <div class="kyc-done-header">
+        <div class="kyc-done-shield">✓</div>
+        <span class="kyc-done-badge-pill">${s.kycDoneBadge}</span>
+      </div>
+
+      <h2 style="margin-bottom:4px;">${memberName}</h2>
+      <p class="screen-desc" style="margin-bottom:16px;">${memberRel} · ${s.demoCardNumber}</p>
+
+      <div class="details-card-box">
+        <div class="detail-line">
+          <small>${s.aadhaarNumberMasked}</small>
+          <code>${aadhaarMask}</code>
+        </div>
+        <div class="detail-line">
+          <small>${s.verificationMode}</small>
+          <b>${s.verificationModeVal}</b>
+        </div>
+        <div class="detail-line">
+          <small>${s.verificationDate}</small>
+          <b>${vDate}</b>
+        </div>
+        <div class="detail-line">
+          <small>${s.pdsStatus}</small>
+          <b style="color:var(--success);">${s.pdsStatusVal}</b>
+        </div>
+      </div>
+
+      <div class="info-callout" style="margin-top:14px;background:#eef7f1;border-color:#cce7d6;color:#135939;">
+        <span>✓</span>
+        <span>${s.kycDoneNote}</span>
+      </div>
+
+      <div class="actions" style="margin-top:20px;">
+        <button class="primary-btn" id="kyc-done-close-btn">${s.closeModal}</button>
+      </div>
+    </div>
+  `;
+}
+
+function wireScreenEvents() {
+  const s = t();
+
+  // Splash
+  const splashStart = document.getElementById("splash-start-btn");
+  if (splashStart) splashStart.onclick = () => { currentStep = 1; render(); };
+  const splashLang = document.getElementById("splash-lang-toggle");
+  if (splashLang) splashLang.onclick = toggleLanguage;
+
+  // Welcome
+  const welcomeCont = document.getElementById("welcome-continue-btn");
+  if (welcomeCont) welcomeCont.onclick = () => { currentStep = 2; render(); };
+
+  // Ration Card Member Clicks & Modal
+  const sureshCard = document.getElementById("member-suresh-card");
+  if (sureshCard) sureshCard.onclick = () => { viewingKycDoneMember = "suresh"; render(); };
+
+  const rameshCard = document.getElementById("member-ramesh-card");
+  if (rameshCard) rameshCard.onclick = () => { viewingKycDoneMember = "ramesh"; render(); };
+
+  const lakshmiCard = document.getElementById("member-lakshmi-card");
+  if (lakshmiCard) {
+    lakshmiCard.onclick = () => {
+      if (completedMembers.has("lakshmi")) {
+        viewingKycDoneMember = "lakshmi";
+        render();
+      } else {
+        currentStep = 3; // Proceed to consent
+        render();
+      }
+    };
+  }
+
+  const kycDoneClose = document.getElementById("kyc-done-close-btn");
+  if (kycDoneClose) {
+    kycDoneClose.onclick = () => {
+      viewingKycDoneMember = null;
+      render();
+    };
+  }
+
+  const rationCont = document.getElementById("ration-continue-btn");
+  if (rationCont) {
+    rationCont.onclick = () => {
+      if (completedMembers.has("lakshmi")) {
+        currentStep = 8; // already done, go to success
+      } else {
+        currentStep = 3; // Proceed to consent for Lakshmi
+      }
+      render();
+    };
+  }
+
+  // Consent
+  const checkRead = document.getElementById("check-read-row");
+  if (checkRead) checkRead.onclick = () => { consentRead = !consentRead; render(); };
+  const checkProceed = document.getElementById("check-proceed-row");
+  if (checkProceed) checkProceed.onclick = () => { consentProceed = !consentProceed; render(); };
+  const consentCont = document.getElementById("consent-continue-btn");
+  if (consentCont) consentCont.onclick = () => {
+    if (consentRead && consentProceed) {
+      currentStep = 4;
+      render();
+    }
+  };
+
+  // Method Selection
+  const chooseFace = document.getElementById("choose-face-card");
+  if (chooseFace) chooseFace.onclick = () => { selectedMethod = "face"; render(); };
+  const chooseFps = document.getElementById("choose-fps-card");
+  if (chooseFps) {
+    chooseFps.onclick = () => {
+      selectedMethod = "fps";
+      render();
+      alert(currentLang === "kn"
+        ? "ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿ ಭೇಟಿ: ನಿಮ್ಮ ಸಮೀಪದ ರೇಷನ್ ಅಂಗಡಿಗೆ ಭೇಟಿ ನೀಡಿ e-POS ಯಂತ್ರದಲ್ಲಿ ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಸ್ಕ್ಯಾನ್ ಮೂಲಕ ಇ-ಕೆವೈಸಿ ಮಾಡಿಸಿ."
+        : "Fair Price Shop: Visit your local ration shop to complete e-KYC using biometric fingerprint/iris on the e-POS machine.");
+    };
+  }
+  const methodCont = document.getElementById("method-continue-btn");
+  if (methodCont) methodCont.onclick = () => { currentStep = 5; render(); };
+
+  // Face Guide Do's & Don'ts Filter Tabs
+  const tabAll = document.getElementById("tab-all-btn");
+  if (tabAll) tabAll.onclick = () => { dodontTab = "all"; render(); };
+  const tabDo = document.getElementById("tab-do-btn");
+  if (tabDo) tabDo.onclick = () => { dodontTab = "do"; render(); };
+  const tabDont = document.getElementById("tab-dont-btn");
+  if (tabDont) tabDont.onclick = () => { dodontTab = "dont"; render(); };
+
+  // Face Guide Voice Audio
+  const audioBtn = document.getElementById("audio-guide-btn");
+  if (audioBtn) {
+    audioBtn.onclick = () => {
+      toggleVoicePlayback();
+    };
+  }
+  const guideReady = document.getElementById("guide-ready-btn");
+  if (guideReady) guideReady.onclick = () => {
+    stopAudioPlayback();
+    currentStep = 6;
+    render();
+    // Simulate automated biometric scan
+    setTimeout(() => {
+      if (currentStep === 6) {
+        currentStep = 7;
+        render();
+        // Simulate UIDAI verification & update
+        setTimeout(() => {
+          if (currentStep === 7) {
+            completedMembers.add("lakshmi");
+            currentStep = 8;
+            render();
+          }
+        }, 2400);
+      }
+    }, 2800);
+  };
+
+  // Capture
+  const captureCont = document.getElementById("capture-advance-btn");
+  if (captureCont) {
+    captureCont.onclick = () => {
+      currentStep = 7;
+      render();
+      setTimeout(() => {
+        if (currentStep === 7) {
+          completedMembers.add("lakshmi");
+          currentStep = 8;
+          render();
+        }
+      }, 2000);
+    };
+  }
+
+  // Verify
+  const verifyCont = document.getElementById("verify-continue-btn");
+  if (verifyCont) {
+    verifyCont.onclick = () => {
+      completedMembers.add("lakshmi");
+      currentStep = 8;
+      render();
+    };
+  }
+
+  // Success
+  const successView = document.getElementById("success-view-btn");
+  if (successView) {
+    successView.onclick = () => {
+      currentStep = 2; // return to ration card members where Lakshmi is now KYC Done!
+      render();
+    };
+  }
+  const successHome = document.getElementById("success-home-btn");
+  if (successHome) {
+    successHome.onclick = () => {
+      currentStep = 0;
+      consentRead = false;
+      consentProceed = false;
+      stopAudioPlayback();
+      render();
+    };
+  }
+}
+
+function toggleVoicePlayback() {
+  if (isAudioPlaying) {
+    stopAudioPlayback();
+  } else {
+    playVoiceGuidance();
+  }
+}
+
+function playVoiceGuidance() {
+  const audioSrc = currentLang === "kn" ? ASSETS.audioKn : ASSETS.audioEn;
+  
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio = null;
+  }
+
+  activeAudio = new Audio(audioSrc);
+  isAudioPlaying = true;
+  render();
+
+  activeAudio.play().then(() => {
+    // Playing successfully
+  }).catch((err) => {
+    console.warn("Audio file playback blocked by browser, trying speech synthesis fallback:", err);
+    playSpeechSynthesisFallback();
+  });
+
+  activeAudio.onended = () => {
+    stopAudioPlayback();
+  };
+
+  activeAudio.onerror = () => {
+    playSpeechSynthesisFallback();
+  };
+}
+
+function stopAudioPlayback() {
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio.currentTime = 0;
+    activeAudio = null;
+  }
+  if ("speechSynthesis" in window && speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+  }
+  isAudioPlaying = false;
+  render();
+}
+
+function playSpeechSynthesisFallback() {
+  if (!("speechSynthesis" in window)) {
+    isAudioPlaying = false;
+    render();
+    return;
+  }
+  const s = t();
+  const text = [s.do1Title, s.do2Title, s.do3Title, s.do4Title].join(". ");
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = currentLang === "kn" ? "kn-IN" : "en-IN";
+  u.rate = 0.9;
+  u.onend = () => {
+    isAudioPlaying = false;
+    render();
+  };
+  speechSynthesis.speak(u);
+}
+
+function toggleLanguage() {
+  stopAudioPlayback();
+  currentLang = currentLang === "en" ? "kn" : "en";
+  render();
+}
+
+// Stage CTA actions
+const elStageStart = document.getElementById("start");
+if (elStageStart) elStageStart.onclick = () => { currentStep = 1; render(); };
+const elStageReset = document.getElementById("reset");
+if (elStageReset) elStageReset.onclick = () => {
+  currentStep = 0;
+  consentRead = false;
+  consentProceed = false;
+  completedMembers = new Set(["suresh", "ramesh"]);
+  viewingKycDoneMember = null;
+  stopAudioPlayback();
+  render();
+};
+
+// Initial Render
 render();
