@@ -143,7 +143,7 @@ export default function HomeScreen() {
           <Text style={styles.centerBody}>
             {language === "en"
               ? "Biometric e-KYC has been successfully verified. Re-verification is not required."
-              : "ಬಯೋಮೆಟ್ರಿಕ್ ಇ-ಕೆವೈಸಿ ದೃಢೀಕರಣ ಯಶಸ್ವಿಯಾಗಿದೆ. ಪುನಃ ಇ-ಕೆವೈಸಿ ಮಾಡುವ ಅಗತ್ಯವಿಲ್ಲ."}
+              : "ಬಯೋಮೆಟ್ರಿಕ್ e-KYC ದೃಢೀಕರಣ ಯಶಸ್ವಿಯಾಗಿದೆ. ಪುನಃ e-KYC ಮಾಡುವ ಅಗತ್ಯವಿಲ್ಲ."}
           </Text>
           <Primary label={language === "en" ? "Back to Members" : "ಸದಸ್ಯರ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ"} onPress={() => setViewingCompletedMember(null)} />
         </View>
