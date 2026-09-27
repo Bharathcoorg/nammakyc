@@ -175,3 +175,14 @@ body{font-family:Inter,"Noto Sans","Noto Sans Kannada",system-ui,-apple-system,B
   .guidance-head{gap:7px}
   .guide-button{max-width:92px;font-size:9px}
 }
+
+/* Final responsive QA hardening */
+.details{width:100%;box-sizing:border-box;min-width:0}
+.detail-row{width:100%;box-sizing:border-box;min-width:0;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)}
+.detail-row small,.detail-row code,.detail-row b{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.detail-row code,.detail-row b{text-align:right}
+.success .details{margin-top:4px}
+.success .actions{width:100%;margin-top:auto}
+.success .actions .primary{width:100%}
+.soudha-photo{display:block;min-width:0;object-fit:cover;object-position:50% 48%;background:#e8efe9}
+@media(max-width:380px){.detail-row{grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:7px;padding:10px 9px}.detail-row small{font-size:8.5px}.detail-row code,.detail-row b{font-size:9.5px;line-height:14px}.soudha-photo{height:178px}}
