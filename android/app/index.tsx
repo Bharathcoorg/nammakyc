@@ -195,7 +195,7 @@ function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getSt
   <Text style={styles.splashGovernment}>{s.government}</Text>
   <Text style={styles.splashBrand}>{s.appName}</Text>
   <Text style={styles.splashTag}>{language==="en"?"Secure Identity. Better Services. A Stronger Karnataka.":"ಸುರಕ್ಷಿತ ಗುರುತು. ಉತ್ತಮ ಸೇವೆಗಳು. ಸದೃಢ ಕರ್ನಾಟಕ."}</Text>
-  <Image accessibilityLabel="Vidhana Soudha" source={{uri:"https://upload.wikimedia.org/wikipedia/commons/b/ba/Vidhana_Soudha%2C_front_%2801%29.jpg"}} style={styles.splashBuilding}/>
+  <Image accessibilityLabel="Vidhana Soudha" source={{uri:"https://commons.wikimedia.org/wiki/Special:FilePath/Government_Karnataka_8352.jpg?width=1280"}} style={styles.splashBuilding}/>
   <View style={styles.splashValues}><ValueItem icon="♧" text={s.peopleFirst}/><ValueItem icon="✋" text={s.simpleAccess}/><ValueItem icon="♡" text={s.digitalKarnataka}/></View>
   <Primary label={s.getStarted} onPress={onStart}/>
   <Text style={styles.splashIndependent}>{language==="en"?"Independent open-source citizen initiative":"ಸ್ವತಂತ್ರ ಮುಕ್ತ-ಮೂಲ ನಾಗರಿಕ ಉಪಕ್ರಮ"}</Text>
