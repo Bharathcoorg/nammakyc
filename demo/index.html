@@ -12,33 +12,59 @@
 </head>
 <body>
   <main class="demo-shell">
-    <header class="demo-banner">
-      <div>
-        <strong id="demo-badge">DEMO</strong>
-        <span id="demo-mode">Citizen Simulation Experience · No Personal Data Collected</span>
-      </div>
-      <span style="font-size:11px; opacity:0.85;" id="banner-boundary">Government of Karnataka PDS & UIDAI Reference</span>
-    </header>
-
     <section class="stage">
       <div class="stage-copy">
+        <div class="stage-top-meta">
+          <div class="demo-pill">
+            <strong id="demo-badge">DEMO</strong>
+            <span id="demo-mode">Citizen Simulation Experience · No Personal Data Collected</span>
+          </div>
+          <span class="gov-reference-tag" id="banner-boundary">Government of Karnataka PDS & UIDAI Reference</span>
+        </div>
+
         <p class="eyebrow" id="stage-eyebrow">NAMMA KYC</p>
         <h1 id="stage-title">Ration-card e-KYC, from start to completion.</h1>
         <p class="lede" id="stage-lede">
-          A clean, citizen-first journey for Karnataka services, designed strictly around user privacy and official state guidelines.
+          A clean, citizen-first journey for Karnataka services, designed strictly around user privacy, accessibility, and official state guidelines.
         </p>
         <div class="stage-actions">
           <button class="primary-btn" id="start" style="width:auto; padding:12px 24px;">Start demo →</button>
           <button class="secondary-btn" id="reset" style="width:auto; padding:12px 20px;">Reset</button>
         </div>
+
+        <div class="trust-pill-list">
+          <div class="trust-pill">
+            <span class="trust-pill-icon">🏛️</span>
+            <div>
+              <b>Karnataka PDS (Ahara) Ready</b>
+              <small>Pluggable adapter for state ration database</small>
+            </div>
+          </div>
+          <div class="trust-pill">
+            <span class="trust-pill-icon">🛡️</span>
+            <div>
+              <b>DPDP Act 2023 Compliant</b>
+              <small>Zero biometric retention, ephemeral verification</small>
+            </div>
+          </div>
+          <div class="trust-pill">
+            <span class="trust-pill-icon">⚡</span>
+            <div>
+              <b>UIDAI Aadhaar FaceRD Native</b>
+              <small>Standard Intent sandbox for face authentication</small>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="phone">
-        <div class="phone-notch"></div>
-        <div class="phone-screen">
-          <div id="app-top" class="app-top"></div>
-          <div id="stepper-bar" class="stepper-bar"></div>
-          <div id="screen" class="screen"></div>
+      <div class="phone-stage-wrapper">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div id="app-top" class="app-top"></div>
+            <div id="stepper-bar" class="stepper-bar"></div>
+            <div id="screen" class="screen"></div>
+          </div>
         </div>
       </div>
     </section>

@@ -69,8 +69,7 @@ const I18N = {
     verificationModeVal: "Aadhaar FaceRD (Live Face Authentication)",
     verificationDate: "Verification Date",
     verificationDateVal: "12 August 2024, 11:20 AM",
-    pdsStatus: "Ration Entitlement Status",
-    pdsStatusVal: "Active & Eligible for Monthly Ration",
+
     kycDoneNote: "This member's e-KYC has already been successfully verified with UIDAI. No re-verification is required.",
     closeModal: "Close (Back to List)",
 
@@ -147,8 +146,6 @@ const I18N = {
     serviceVal: "Ration Card Aadhaar FaceRD e-KYC",
     status: "Status",
     statusVal: "✓ Verified & Active",
-    rationEntitlement: "Ration Entitlement",
-    rationEntitlementVal: "Approved for upcoming monthly quota",
     viewDetails: "View Family Details",
     goHome: "Return to Home",
 
@@ -223,8 +220,7 @@ const I18N = {
     verificationModeVal: "ಆಧಾರ್ ಮುಖ ದೃಢೀಕರಣ (Aadhaar FaceRD - UIDAI)",
     verificationDate: "ದೃಢೀಕರಣ ದಿನಾಂಕ",
     verificationDateVal: "12 ಆಗಸ್ಟ್ 2024, ಬೆಳಗ್ಗೆ 11:20",
-    pdsStatus: "ಪಡಿತರ ಹಂಚಿಕೆ ಸ್ಥಿತಿ",
-    pdsStatusVal: "ಸಕ್ರಿಯವಾಗಿದೆ — ಮಾಸಿಕ ಪಡಿತರ ಪಡೆಯಲು ಅರ್ಹವಾಗಿದೆ",
+
     kycDoneNote: "ಈ ಸದಸ್ಯರ e-KYC ಈಗಾಗಲೇ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ. ಯಾವುದೇ ಮರುಪರಿಶೀಲನೆ ಅಗತ್ಯವಿಲ್ಲ.",
     closeModal: "ಸರಿ (ಹಿಂತಿರುಗಿ)",
 
@@ -301,8 +297,6 @@ const I18N = {
     serviceVal: "ಪಡಿತರ ಚೀಟಿ ಆಧಾರ್ ಮುಖ e-KYC",
     status: "ಸ್ಥಿತಿ",
     statusVal: "✓ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ",
-    rationEntitlement: "ಪಡಿತರ ಸೌಲಭ್ಯ",
-    rationEntitlementVal: "ಮುಂದಿನ ತಿಂಗಳ ಪಡಿತರ ವಿತರಣೆಗೆ ಅನುಮೋದಿಸಲಾಗಿದೆ",
     viewDetails: "ಕುಟುಂಬದ ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
     goHome: "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
 
@@ -577,6 +571,7 @@ function render() {
   // Render Screen Body
   const elScreen = document.getElementById("screen");
   if (elScreen) {
+    elScreen.scrollTop = 0;
     elScreen.innerHTML = getScreenHtml(s);
     wireScreenEvents();
   }
@@ -948,9 +943,11 @@ function getScreenHtml(s) {
           ${showDos ? `
             <!-- DO 1: Good Lighting -->
             <div class="dodont-card do">
-              ${ICONS.picLight}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picLight}
                 <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.do1Title}</b>
                 <small>${s.do1Desc}</small>
               </div>
@@ -958,9 +955,11 @@ function getScreenHtml(s) {
 
             <!-- DO 2: Camera at Eye Level -->
             <div class="dodont-card do">
-              ${ICONS.picEyeLevel}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picEyeLevel}
                 <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.do2Title}</b>
                 <small>${s.do2Desc}</small>
               </div>
@@ -968,9 +967,11 @@ function getScreenHtml(s) {
 
             <!-- DO 3: Single Person Only -->
             <div class="dodont-card do">
-              ${ICONS.picSinglePerson}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picSinglePerson}
                 <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.do3Title}</b>
                 <small>${s.do3Desc}</small>
               </div>
@@ -978,9 +979,11 @@ function getScreenHtml(s) {
 
             <!-- DO 4: Blink Naturally -->
             <div class="dodont-card do">
-              ${ICONS.picBlink}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picBlink}
                 <span class="dodont-badge do">✓ ${s.badgeDo}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.do4Title}</b>
                 <small>${s.do4Desc}</small>
               </div>
@@ -990,9 +993,11 @@ function getScreenHtml(s) {
           ${showDonts ? `
             <!-- DON'T 1: No Face Coverings -->
             <div class="dodont-card dont">
-              ${ICONS.picNoCover}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picNoCover}
                 <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.dont1Title}</b>
                 <small>${s.dont1Desc}</small>
               </div>
@@ -1000,9 +1005,11 @@ function getScreenHtml(s) {
 
             <!-- DON'T 2: No Multiple People -->
             <div class="dodont-card dont">
-              ${ICONS.picNoMultiple}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picNoMultiple}
                 <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.dont2Title}</b>
                 <small>${s.dont2Desc}</small>
               </div>
@@ -1010,9 +1017,11 @@ function getScreenHtml(s) {
 
             <!-- DON'T 3: No Backlight or Dark -->
             <div class="dodont-card dont">
-              ${ICONS.picNoBacklight}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picNoBacklight}
                 <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.dont3Title}</b>
                 <small>${s.dont3Desc}</small>
               </div>
@@ -1020,9 +1029,11 @@ function getScreenHtml(s) {
 
             <!-- DON'T 4: Do Not Shake Mobile -->
             <div class="dodont-card dont">
-              ${ICONS.picNoShake}
-              <div class="dodont-card-copy">
+              <div class="dodont-card-top">
+                ${ICONS.picNoShake}
                 <span class="dodont-badge dont">✕ ${s.badgeDont}</span>
+              </div>
+              <div class="dodont-card-copy">
                 <b>${s.dont4Title}</b>
                 <small>${s.dont4Desc}</small>
               </div>
@@ -1141,10 +1152,6 @@ function getScreenHtml(s) {
             <b>${s.serviceVal}</b>
           </div>
           <div class="detail-line">
-            <small>${s.rationEntitlement}</small>
-            <b style="color:var(--success);">${s.rationEntitlementVal}</b>
-          </div>
-          <div class="detail-line">
             <small>${s.status}</small>
             <span class="badge-completed">${s.statusVal}</span>
           </div>
@@ -1207,8 +1214,8 @@ function getKycDoneModalHtml(s, memberKey) {
           <b>${vDate}</b>
         </div>
         <div class="detail-line">
-          <small>${s.pdsStatus}</small>
-          <b style="color:var(--success);">${s.pdsStatusVal}</b>
+          <small>${s.status}</small>
+          <span class="badge-completed">${s.statusVal}</span>
         </div>
       </div>
 

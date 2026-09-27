@@ -79,7 +79,7 @@ export default function HomeScreen() {
       }
       if (status.status === "success") { setReference(status.reference ?? status.requestId); setStep("success"); }
       else setStep("status");
-    } catch { setStep(submittedRequestId ? "status" : "auth"); setError(s.error); }
+    } catch { setStep(submittedRequestId ? "status" : "instructions"); setError(s.error); }
     finally { setLoading(false); }
   }
 
@@ -138,7 +138,6 @@ export default function HomeScreen() {
             <DetailRow label={s.service} value={s.serviceValue} />
             <DetailRow label={s.currentStatus} value={s.completedStatus} success />
             <DetailRow label={s.aadhaarProvider} value="Aadhaar FaceRD ✓" />
-            <DetailRow label={s.pdsProcessingTitle} value={language === "en" ? "Active Entitlement" : "ಸಕ್ರಿಯ ಪಡಿತರ ಅರ್ಹತೆ"} success />
           </View>
           <Text style={styles.centerBody}>
             {language === "en"
