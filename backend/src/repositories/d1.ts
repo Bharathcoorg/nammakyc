@@ -27,11 +27,11 @@ export class D1TransactionRepository implements TransactionRepository{
    this.db.prepare("INSERT INTO consent_artifacts (consent_reference,purpose,policy_version,language,captured_at,transaction_reference) VALUES (?,?,?,?,?,?)").bind(consent.consentReference,consent.purpose,consent.policyVersion,consent.language,consent.capturedAt,consent.transactionReference)
   ];
   try{const results=await this.db.batch(statements);return results.every(r=>(r.meta?.changes??0)>0);}
-  catch(error){const [transaction,idempotency]=await Promise.all([this.get(tx.requestId),this.getIdempotency(record.key)]);if(transaction||idempotency)return false;throw error;}
+  catch(error){const [transaction,idempotency,consentRow]=await Promise.all([this.get(tx.requestId),this.getIdempotency(record.key),this.db.prepare("SELECT * FROM consent_artifacts WHERE consent_reference = ? LIMIT 1").bind(consent.consentReference).first()]);if(transaction||idempotency||consentRow)return false;throw error;}
  }
- async claimForProcessing(requestId:string,claimId:string,nowIso:string,staleBeforeIso:string){
-  const result=await this.db.prepare("UPDATE kyc_transactions SET updated_at=?,processing_claim_id=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('aadhaar_pending','aadhaar_authenticating','aadhaar_authenticated','pds_processing') AND updated_at < ?))").bind(nowIso,claimId,requestId,staleBeforeIso).run();
-  return (result.meta?.changes??0)===1;
+  async claimForProcessing(requestId:string,claimId:string,nowIso:string,staleBeforeIso:string){
+   const result=await this.db.prepare("UPDATE kyc_transactions SET updated_at=?,processing_claim_id=? WHERE request_id=? AND (status IN ('validating','retrying') OR (status IN ('aadhaar_pending','aadhaar_authenticating','aadhaar_authenticated','pds_processing') AND (processing_claim_id IS NULL OR updated_at < ?)))").bind(nowIso,claimId,requestId,staleBeforeIso).run();
+   return (result.meta?.changes??0)===1;
  }
  async renewProcessingClaim(requestId:string,claimId:string,nowIso:string){
   const result=await this.db.prepare("UPDATE kyc_transactions SET updated_at=? WHERE request_id=? AND processing_claim_id=? AND status IN ('aadhaar_pending','aadhaar_authenticating','aadhaar_authenticated','pds_processing')").bind(nowIso,requestId,claimId).run();

@@ -3,8 +3,8 @@ import { requestId, applySecurityHeaders } from "../src/security/headers";
 import { validateRequest } from "../src/security/request";
 
 describe("request security", () => {
-  it("rejects non-json mutation bodies", () => {
-    expect(() => validateRequest(new Request("https://x", { method: "POST", headers: { "content-type": "text/plain" } }))).toThrow();
+  it("rejects non-json mutation bodies", async () => {
+    await expect(validateRequest(new Request("https://x", { method: "POST", headers: { "content-type": "text/plain" } }))).rejects.toThrow("JSON content type required");
   });
   it("accepts json mutation bodies", async () => {
     await expect(validateRequest(new Request("https://x", { method: "POST", headers: { "content-type": "application/json" } }))).resolves.toBeUndefined();

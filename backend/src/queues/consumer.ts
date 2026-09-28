@@ -31,7 +31,7 @@ export function decodeKycJob(value: unknown): KycJob {
   if (
     typeof job.jobId !== "string" || job.jobId.length < 1 || job.jobId.length > 128 ||
     typeof job.transactionId !== "string" || job.transactionId.length < 1 || job.transactionId.length > 128 ||
-    typeof job.enqueuedAt !== "string" || !/^\\d{4}-\\d{2}-\\d{2}T/.test(job.enqueuedAt) ||
+    typeof job.enqueuedAt !== "string" || !/^\d{4}-\d{2}-\d{2}T/.test(job.enqueuedAt) ||
     typeof job.attempt !== "number" || !Number.isInteger(job.attempt) || job.attempt < 0 || job.attempt > 100 ||
     typeof input.householdReference !== "string" || input.householdReference.length < 1 || input.householdReference.length > 128 ||
     typeof input.memberReference !== "string" || input.memberReference.length < 1 || input.memberReference.length > 128 ||

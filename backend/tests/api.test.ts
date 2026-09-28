@@ -50,7 +50,7 @@ describe("KYC API", () => {
     const response=await route(new Request("https://api.test/v1/kyc",{
       method:"POST",
       headers:{"Content-Type":"application/json","Idempotency-Key":"1111111111111111"},
-      body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-1"})
+      body:JSON.stringify({householdReference:"demo-RC-123",memberReference:"member-01",consentReference:"consent-queued"})
     }),{QUEUE:queue});
     expect(response?.status).toBe(202);
     const body=await response?.json() as {requestId:string;status:string};

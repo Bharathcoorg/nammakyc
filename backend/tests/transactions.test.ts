@@ -134,7 +134,7 @@ describe("provider lifecycle boundaries",()=>{
  it("does not repeat accepted Aadhaar authentication during a PDS retry",async()=>{
   let authCalls=0; let pdsCalls=0;
   const aadhaar:AadhaarProvider={startAuthentication:async()=>{authCalls++;return {accepted:true,providerReference:"aadhaar-once"}}};
-  const kyc:KycProvider={submit:async()=>{pdsCalls++;if(pdsCalls===1)throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503);return {success:true,providerReference:"pds-after-retry"}}};
+  const kyc:KycProvider={submit:async()=>{pdsCalls++;if(pdsCalls<=3)throw new AppError("UPSTREAM_UNAVAILABLE","temporary",503);return {success:true,providerReference:"pds-after-retry"}}};
   const repository=new InMemoryTransactionRepository();
   const service=new TransactionService(repository,pds,aadhaar,kyc);
   const created=await service.create({householdReference:"RC-1",memberReference:"M-1",consentReference:"consent-retry-boundary",idempotencyKey:"1111111111111111"});
@@ -143,6 +143,6 @@ describe("provider lifecycle boundaries",()=>{
   const result=await service.process({transactionId:created.requestId});
   expect(result.status).toBe("success");
   expect(authCalls).toBe(1);
-  expect(pdsCalls).toBe(2);
+  expect(pdsCalls).toBe(4);
  });
 });

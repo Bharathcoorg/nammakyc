@@ -19,7 +19,7 @@ class FakeD1 {
       async first() {
         if (query.includes("FROM kyc_transactions")) return self.transactions.get(String(values[0]));
         if (query.includes("FROM idempotency_keys")) return self.idempotency.get(String(values[0]));
-        if (query.includes("FROM consent_artifacts")) return [...self.consent.values()].find(row => String(row.transaction_reference) === String(values[0]));
+        if (query.includes("FROM consent_artifacts")) return query.includes("consent_reference") ? self.consent.get(String(values[0])) : [...self.consent.values()].find(row => String(row.transaction_reference) === String(values[0]));
         return undefined;
       },
       async run() {
@@ -30,7 +30,7 @@ class FakeD1 {
           const claimable = row && (
             row.status === "validating" ||
             row.status === "retrying" ||
-            ((row.status === "aadhaar_pending" || row.status === "aadhaar_authenticating" || row.status === "pds_processing") && String(row.updated_at) < staleBefore)
+            ((row.status === "aadhaar_pending" || row.status === "aadhaar_authenticating" || row.status === "aadhaar_authenticated" || row.status === "pds_processing") && (!row.processing_claim_id || String(row.updated_at) < staleBefore))
           );
           if (!claimable) return { meta: { changes: 0 } };
           row.updated_at = values[0];
