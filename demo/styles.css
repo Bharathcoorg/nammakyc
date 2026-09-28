@@ -520,24 +520,26 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 4px 6px;
+  width: 100%;
   min-height: 100%;
+  box-sizing: border-box;
+  padding: 6px 4px 10px;
   animation: screenEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .splash-header-row {
   width: 100%;
+  min-height: 68px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   position: relative;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin: 0 0 2px;
 }
 
 .splash-emblem {
-  width: clamp(52px, 8vh, 64px);
-  height: clamp(46px, 7vh, 58px);
+  width: clamp(58px, 9vh, 72px);
+  height: clamp(52px, 8vh, 66px);
   object-fit: contain;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.08));
 }
@@ -567,21 +569,14 @@ body {
 }
 
 .splash-gov-title {
-  font-size: 12px;
+  width: 100%;
+  font-size: 13px;
   font-weight: 850;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   color: var(--text);
   text-align: center;
-  margin: 2px 0 1px;
-}
-
-.splash-dept-title {
-  font-size: 9.5px;
-  font-weight: 750;
-  color: var(--primary-light);
-  letter-spacing: 0.02em;
-  text-align: center;
-  margin: 0 0 6px;
+  line-height: 1.25;
+  margin: 0 0 7px;
 }
 
 .splash-brand {
@@ -593,7 +588,7 @@ body {
 }
 
 .splash-brand h1 {
-  font-size: clamp(24px, 4vh, 30px);
+  font-size: clamp(25px, 4.2vh, 32px);
   font-weight: 950;
   letter-spacing: -0.04em;
   color: var(--primary);
@@ -622,6 +617,8 @@ body {
 
 .soudha-frame {
   width: 100%;
+  min-height: 150px;
+  aspect-ratio: 1.58;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(23, 52, 42, 0.1);
@@ -638,9 +635,10 @@ body {
 .soudha-photo {
   display: block;
   width: 100%;
-  height: clamp(100px, 16vh, 140px);
+  height: 100%;
+  min-height: 150px;
   object-fit: cover;
-  object-position: center 46%;
+  object-position: center center;
 }
 
 .splash-values-strip {
@@ -1904,18 +1902,21 @@ body {
 }
 
 .detail-line {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(78px, 42%) minmax(0, 58%);
   align-items: center;
-  padding: 8px 12px;
+  column-gap: 8px;
+  padding: 9px 12px;
   border-bottom: 1px solid var(--border-subtle);
   font-size: 11.5px;
+  min-width: 0;
 }
 .detail-line:last-child {
   border-bottom: none;
 }
 
 .detail-line small {
+  min-width: 0;
   font-size: 10px;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -1924,6 +1925,11 @@ body {
 }
 
 .detail-line code {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  justify-self: stretch;
   font-family: inherit;
   font-size: 11.5px;
   font-weight: 850;
@@ -1933,7 +1939,17 @@ body {
   border-radius: 5px;
 }
 
+.detail-line b {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: right;
+  line-height: 1.35;
+}
+
 .detail-line .badge-completed {
+  justify-self: end;
+  max-width: 100%;
   color: var(--success);
   font-weight: 900;
   background: #e9f8ee;
@@ -2255,5 +2271,111 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+  }
+}
+
+
+/* Responsive hardening: every citizen-facing row must be able to wrap without collision. */
+.member-info,
+.member-name-row,
+.member-status-text,
+.member-action-badge,
+.screen-card h2,
+.screen-card .screen-desc,
+.info-callout,
+.guide-row,
+.guide-row > span,
+.guidance-head > div,
+.method-card > div {
+  min-width: 0;
+}
+
+.member-status-text,
+.member-rel,
+.member-action-badge,
+.guide-row span,
+.info-callout span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (max-width: 380px) {
+  .screen {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .screen-card {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .splash-emblem {
+    width: 60px;
+    height: 56px;
+  }
+
+  .splash-brand h1 {
+    font-size: 26px;
+  }
+
+  .splash-tagline {
+    max-width: 230px;
+  }
+
+  .splash-values-strip {
+    gap: 3px;
+  }
+
+  .value-item span {
+    font-size: 8.5px;
+  }
+
+  .feature-card-list {
+    grid-template-columns: 1fr;
+  }
+
+  .member-card {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .member-action-badge {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: -2px;
+  }
+
+  .detail-line {
+    grid-template-columns: minmax(72px, 38%) minmax(0, 62%);
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+@media (max-height: 680px) {
+  .splash-container {
+    padding-top: 2px;
+    padding-bottom: 6px;
+  }
+
+  .splash-header-row {
+    min-height: 58px;
+  }
+
+  .splash-emblem {
+    width: 56px;
+    height: 52px;
+  }
+
+  .soudha-frame {
+    min-height: 120px;
+  }
+
+  .soudha-photo {
+    min-height: 120px;
+  }
+
+  .splash-values-strip {
+    margin-bottom: 6px;
   }
 }
