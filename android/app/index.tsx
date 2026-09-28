@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
-import { Dimensions, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
+import { Animated, Dimensions, Easing, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 import { FamilyIllustration, NammaKycLogo, ServiceIcon } from "../src/brand";
 import { KARNATAKA_EMBLEM_URI, VIDHANA_SOUDHA_URI } from "../src/assetsData";
 import { apiRequest, getKycStatus } from "../src/api/client";
@@ -33,16 +33,21 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const s = useMemo(() => getStrings(language), [language]);
-  useEffect(() => () => { void stopGuidance(); }, []);
+  useEffect(() => {
+    void stopGuidance();
+    setVoiceEnabled(false);
+    return () => { void stopGuidance(); };
+  }, [language]);
 
   async function speakInstructions() {
-    const ok = await speakGuidance(language === "kn" ? "kn" : "en");
+    setVoiceEnabled(true);
+    setError("");
+    const ok = await speakGuidance(language === "kn" ? "kn" : "en", () => {
+      setVoiceEnabled(false);
+    });
     if (!ok) {
       setVoiceEnabled(false);
       setError(s.voiceUnavailable);
-    } else {
-      setVoiceEnabled(true);
-      setError("");
     }
   }
 
@@ -165,7 +170,7 @@ export default function HomeScreen() {
     {step === "welcome" && <Card>
       <Text accessibilityRole="header" style={styles.welcomeHeading}>{s.welcomeTitle}</Text>
       <Text style={styles.welcomeIntro}>{s.welcomeText}</Text>
-      <View style={styles.familyArtwork}><Image accessibilityLabel="Family Beneficiaries" source={familySource} style={styles.familyImage} resizeMode="cover"/></View>
+      <View style={styles.familyArtwork}><Image accessibilityLabel="Family Beneficiaries" source={familySource} style={styles.familyImage} resizeMode="contain"/></View>
       <FeatureRow icon="card" title={s.featureRation} text={s.featureRationText} tone="orange"/><FeatureRow icon="shield" title={s.featureSecure} text={s.featureSecureText} tone="green"/><FeatureRow icon="privacy" title={s.featurePrivacy} text={s.featurePrivacyText} tone="gold"/><FeatureRow icon="bolt" title={s.featureFast} text={s.featureFastText} tone="blue"/>
       <Primary label={s.continue} onPress={() => setStep("ration")} />
     </Card>}
@@ -318,13 +323,38 @@ export default function HomeScreen() {
 
     {step === "instructions" && <Card>
       <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.heading}>{s.faceReady}</Text><Text style={styles.muted}>{s.faceReadyText}</Text>
-      <View style={styles.facePreparationCard}><View style={styles.faceGuide}><View style={styles.faceFrame}/></View><View style={styles.guidanceHeader}><View style={{flex:1}}><Text style={styles.guidanceTitle}>{s.guidanceTitle}</Text><Text style={styles.guidanceIntro}>{s.guidanceIntro}</Text></View><Pressable accessibilityRole="button" onPress={async()=>{if(voiceEnabled){await stopGuidance();setVoiceEnabled(false);}else{await speakInstructions();}}} style={styles.guidanceButton}><Text style={styles.guidanceButtonText}>{voiceEnabled?s.stopGuidance:s.playGuidance}</Text></Pressable></View><View style={styles.faceChecklist}><GuideRow number="1" text={s.voiceSteps[0]}/><GuideRow number="2" text={s.voiceSteps[1]}/><GuideRow number="3" text={s.voiceSteps[2]}/><GuideRow number="4" text={s.voiceSteps[3]}/></View></View>
+      <View style={styles.facePreparationCard}>
+        <BiometricScannerView
+          imageSource={citizenFaceSource}
+          height={230}
+          badgeText={language === "kn" ? "✓ 3D ಮುಖ ಸ್ಕ್ಯಾನಿಂಗ್ ಮತ್ತು ಜೋಡಣೆ" : "✓ 3D Face Alignment & Scan"}
+        />
+        <View style={styles.guidanceHeader}>
+          <View style={{flex:1}}>
+            <Text style={styles.guidanceTitle}>{s.guidanceTitle}</Text>
+            <Text style={styles.guidanceIntro}>{s.guidanceIntro}</Text>
+          </View>
+          <Pressable accessibilityRole="button" onPress={async()=>{if(voiceEnabled){await stopGuidance();setVoiceEnabled(false);}else{await speakInstructions();}}} style={styles.guidanceButton}>
+            <Text style={styles.guidanceButtonText}>{voiceEnabled?s.stopGuidance:s.playGuidance}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.faceChecklist}>
+          <GuideRow number="1" text={s.voiceSteps[0]}/>
+          <GuideRow number="2" text={s.voiceSteps[1]}/>
+          <GuideRow number="3" text={s.voiceSteps[2]}/>
+          <GuideRow number="4" text={s.voiceSteps[3]}/>
+        </View>
+      </View>
       <Primary label={s.ready} onPress={() => {void stopGuidance();setVoiceEnabled(false);setStep("faceCapture");}} />
     </Card>}
 
     {step === "faceCapture" && <Card>
       <StepLabel s={s} current={3}/><Text accessibilityRole="header" style={styles.headingCenter}>{s.faceTitle}</Text>
-      <View style={styles.faceCaptureCard}><View style={styles.faceFrameLarge}/><View style={styles.capturePill}><Text style={styles.capturePillText}>{s.faceCapture}</Text></View></View>
+      <BiometricScannerView
+        imageSource={citizenFaceSource}
+        height={320}
+        badgeText={language === "kn" ? "👁 ಮುಖವನ್ನು ಚೌಕಟ್ಟಿನಲ್ಲಿ ಸ್ಥಿರವಾಗಿರಿಸಿ" : "👁 Keep Face Inside Frame"}
+      />
       <Primary label={s.openAadhaar} onPress={authenticate} disabled={loading}/>
     </Card>}
 
@@ -356,59 +386,188 @@ const nammaLogoSource = { uri: "namma_logo" };
 const emblemSource = { uri: "karnataka_emblem" };
 const soudhaSource = { uri: "vidhana_soudha" };
 const familySource = { uri: "family_portrait" };
+const citizenFaceSource = { uri: "citizen_face" };
 
-const { height: windowHeight } = Dimensions.get("window");
-const extraTop15Percent = Math.round(windowHeight * 0.15);
-const splashTopPadding = (StatusBar.currentHeight || 28) + extraTop15Percent;
+function BiometricScannerView({
+  imageSource,
+  height = 230,
+  badgeText,
+}: {
+  imageSource: any;
+  height?: number;
+  badgeText?: string;
+}) {
+  const scanAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const scanLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scanAnim, {
+          toValue: 1,
+          duration: 2200,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scanAnim, {
+          toValue: 0,
+          duration: 2200,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.025,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0.985,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    scanLoop.start();
+    pulseLoop.start();
+
+    return () => {
+      scanLoop.stop();
+      pulseLoop.stop();
+    };
+  }, [scanAnim, pulseAnim]);
+
+  const translateY = scanAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [16, height - 38],
+  });
+
+  const scanOpacity = scanAnim.interpolate({
+    inputRange: [0, 0.12, 0.88, 1],
+    outputRange: [0.3, 1, 1, 0.3],
+  });
+
+  const ovalWidth = height > 280 ? 190 : 155;
+  const ovalHeight = height > 280 ? 245 : 175;
+
+  return (
+    <View style={[styles.biometricScannerBox, { height }]}>
+      {/* Background citizen face portrait */}
+      <Image source={imageSource} style={styles.biometricBgImage} resizeMode="cover" />
+
+      {/* 3D Green biometric matrix tint overlay */}
+      <View style={styles.biometricGreenLayer} />
+
+      {/* Central 3D Biometric Face Oval with Reticle Target Corners */}
+      <Animated.View
+        style={[
+          styles.biometricOvalWrapper,
+          {
+            width: ovalWidth,
+            height: ovalHeight,
+            transform: [{ scale: pulseAnim }],
+          },
+        ]}
+      >
+        <View style={[styles.biometricOval, { width: ovalWidth, height: ovalHeight }]}>
+          {/* 4 Cybernetic Corner Reticles */}
+          <View style={[styles.reticleCorner, styles.reticleTopLeft]} />
+          <View style={[styles.reticleCorner, styles.reticleTopRight]} />
+          <View style={[styles.reticleCorner, styles.reticleBottomLeft]} />
+          <View style={[styles.reticleCorner, styles.reticleBottomRight]} />
+
+          {/* Biometric alignment crosshairs */}
+          <View style={styles.biometricCrosshairH} />
+          <View style={styles.biometricCrosshairV} />
+        </View>
+      </Animated.View>
+
+      {/* 3D Animated Laser Scanning Beam */}
+      <Animated.View
+        style={[
+          styles.biometricScanBeam,
+          {
+            transform: [{ translateY }],
+            opacity: scanOpacity,
+          },
+        ]}
+      >
+        <View style={styles.biometricLaserGlow} />
+        <View style={styles.biometricLaserCore} />
+      </Animated.View>
+
+      {/* Real-time Status Badge */}
+      {badgeText ? (
+        <View style={styles.biometricBadge}>
+          <View style={styles.biometricPulseDot} />
+          <Text style={styles.biometricBadgeText}>{badgeText}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
 
 function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onStart:()=>void;onLanguageChange:()=>void}){
   return <View style={styles.splash}>
-    <View style={styles.splashTopRow}>
-      <View style={styles.splashLogoGroup}>
-        <Image accessibilityLabel={s.appName} source={nammaLogoSource} style={styles.splashNLogo}/>
-        <Image accessibilityLabel={s.government} source={emblemSource} style={styles.splashEmblem}/>
+    {/* Top bar: Centered Emblem with Right-aligned Language Pill */}
+    <View style={styles.splashTopBar}>
+      <View style={styles.splashEmblemWrap}>
+        <Image accessibilityLabel={s.government} source={emblemSource} style={styles.splashEmblem} resizeMode="contain"/>
       </View>
       <Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={({pressed})=>[styles.splashLanguage,pressed&&styles.pressed]}>
         <Text style={styles.splashLanguageText}>🌐 {language==="en"?"ಕನ್ನಡ":"English"}</Text>
       </Pressable>
     </View>
 
+    {/* Government of Karnataka Header */}
     <View style={styles.splashGovBadge}>
       <Text style={styles.splashGovernment}>{s.government}</Text>
       <Text style={styles.splashDept}>{language==="en"?"Department of Food, Civil Supplies & Consumer Affairs":"ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
     </View>
 
+    {/* Brand Header: Namma KYC with Gold Dot */}
     <View style={styles.splashBrandRow}>
       <Text style={styles.splashBrand}>{s.appName}</Text>
       <View style={styles.splashBrandDot}/>
     </View>
 
-    <Text style={styles.splashTag}>{language==="en"?"Secure Identity · Better Services · A Stronger Karnataka":"ಸುರಕ್ಷಿತ ಗುರುತು · ಉತ್ತಮ ಸೇವೆಗಳು · ಸದೃಢ ಕರ್ನಾಟಕ"}</Text>
+    {/* Tagline */}
+    <Text style={styles.splashTag}>{language==="en"?"Secure Identity · Uninterrupted Ration · A Stronger Karnataka":"ಸುರಕ್ಷಿತ ಗುರುತು · ನಿರಂತರ ಪಡಿತರ · ಸದೃಢ ಕರ್ನಾಟಕ"}</Text>
 
+    {/* Vidhana Soudha Photo */}
     <View style={styles.soudhaFrame}>
       <Image accessibilityLabel="Vidhana Soudha, Bengaluru" source={soudhaSource} style={styles.splashBuilding} resizeMode="cover"/>
-      <View style={styles.soudhaCaption}>
-        <Text style={styles.soudhaCaptionText}>🏛️ ವಿಧಾನಸೌಧ · Vidhana Soudha, Bengaluru</Text>
-      </View>
     </View>
 
+    {/* 3 Circular Value Items */}
     <View style={styles.splashValuesStrip}>
       <View style={styles.valueItem}>
-        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>🌿</Text></View>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>👥</Text></View>
         <Text style={styles.valueItemText}>{s.peopleFirst}</Text>
       </View>
       <View style={styles.valueItem}>
-        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>✋</Text></View>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>✓</Text></View>
         <Text style={styles.valueItemText}>{s.simpleAccess}</Text>
       </View>
       <View style={styles.valueItem}>
-        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>⚡</Text></View>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>ⓘ</Text></View>
         <Text style={styles.valueItemText}>{s.digitalKarnataka}</Text>
       </View>
     </View>
 
-    <Primary label={s.getStarted} onPress={onStart}/>
+    {/* Primary Action Button */}
+    <View style={styles.splashActionWrap}>
+      <Primary label={s.getStarted} onPress={onStart}/>
+    </View>
 
+    {/* Official Citizen Service Footer */}
     <View style={styles.splashFooterRow}>
       <Text style={styles.splashFooterBadge}>✓ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವೆ · Official Citizen e-KYC</Text>
       <Text style={styles.splashIndependent}>{language==="en"?"Government of Karnataka · Food & Civil Supplies Department":"ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
@@ -451,37 +610,54 @@ function Secondary({label,onPress,disabled}:{label:string;onPress:()=>void;disab
 
 const styles=StyleSheet.create({
 safe:{flex:1,backgroundColor:theme.colors.background,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):0},container:{paddingHorizontal:16,paddingTop:8,paddingBottom:32,gap:12},
-splash:{flex:1,minHeight:740,alignItems:"center",paddingHorizontal:18,paddingTop:Platform.OS==="android"?splashTopPadding:extraTop15Percent+40,paddingBottom:28,backgroundColor:"#FFFCF4",justifyContent:"space-between"},
-splashTopRow:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",marginBottom:8},
-splashLogoGroup:{flexDirection:"row",alignItems:"center",gap:12},
-splashNLogo:{width:54,height:54,borderRadius:16,borderWidth:1.5,borderColor:"#C8942E",backgroundColor:"#176B45"},
-splashEmblem:{width:52,height:48,resizeMode:"contain"},
-splashLanguage:{minHeight:36,paddingHorizontal:12,borderRadius:18,backgroundColor:"#FFFFFF",borderWidth:1.5,borderColor:"#C9DCD0",justifyContent:"center",alignItems:"center",elevation:1},
-splashLanguageText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},
-splashGovBadge:{alignItems:"center",marginVertical:3},
-splashGovernment:{fontSize:12.5,fontWeight:"800",color:"#1E3A2F",textAlign:"center",letterSpacing:0.8,textTransform:"uppercase"},
-splashDept:{fontSize:10.5,fontWeight:"600",color:"#4A6B5D",textAlign:"center",marginTop:2},
-splashBrandRow:{flexDirection:"row",alignItems:"baseline",justifyContent:"center",marginTop:5,gap:4},
-splashBrand:{fontSize:35,lineHeight:40,fontWeight:"900",letterSpacing:-1.2,color:"#124733",textAlign:"center"},
-splashBrandDot:{width:10,height:10,borderRadius:5,backgroundColor:"#C8942E",marginBottom:4},
-splashTag:{fontSize:12.5,lineHeight:18,fontWeight:"600",color:"#3D6353",textAlign:"center",marginTop:4,marginBottom:10,maxWidth:300,alignSelf:"center"},
-soudhaFrame:{width:"100%",borderRadius:20,overflow:"hidden",backgroundColor:"#EEF5F0",borderWidth:1.5,borderColor:"rgba(23,107,69,0.16)",elevation:3,marginBottom:10,position:"relative"},
-splashBuilding:{width:"100%",height:155,backgroundColor:"#EEF5F0"},
-soudhaCaption:{position:"absolute",bottom:0,left:0,right:0,paddingVertical:5,paddingHorizontal:12,backgroundColor:"rgba(13,74,54,0.78)",alignItems:"center"},
-soudhaCaptionText:{fontSize:10.5,fontWeight:"700",color:"#FFFFFF",letterSpacing:0.3},
-splashValuesStrip:{width:"100%",flexDirection:"row",justifyContent:"space-between",marginVertical:8,paddingHorizontal:4},
-valueItem:{flex:1,alignItems:"center",gap:5},
-valueIconCircle:{width:38,height:38,borderRadius:19,backgroundColor:"#E8F4EC",borderWidth:1,borderColor:"rgba(23,107,69,0.18)",alignItems:"center",justifyContent:"center"},
-valueIconText:{fontSize:18},
-valueItemText:{fontSize:10.5,fontWeight:"700",color:"#1E3A2F",textAlign:"center"},
-splashFooterRow:{alignItems:"center",marginTop:8,gap:3},
+splash:{flex:1,minHeight:740,alignItems:"center",paddingHorizontal:16,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):24,paddingBottom:24,backgroundColor:"#FFFCF4"},
+splashTopBar:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center",position:"relative",minHeight:64,marginBottom:12},
+splashEmblemWrap:{alignItems:"center",justifyContent:"center"},
+splashEmblem:{width:68,height:62,resizeMode:"contain"},
+splashLanguage:{position:"absolute",right:0,top:6,minHeight:38,paddingHorizontal:14,borderRadius:19,backgroundColor:"#FFFFFF",borderWidth:1.5,borderColor:"#C9DCD0",justifyContent:"center",alignItems:"center",elevation:2,shadowColor:"#000",shadowOpacity:0.08,shadowOffset:{width:0,height:1},shadowRadius:3},
+splashLanguageText:{fontSize:12.5,fontWeight:"800",color:theme.colors.primary},
+splashGovBadge:{alignItems:"center",marginBottom:10,gap:4},
+splashGovernment:{fontSize:14.5,fontWeight:"800",color:"#1E3A2F",textAlign:"center",letterSpacing:0.5},
+splashDept:{fontSize:11.5,fontWeight:"700",color:"#176B45",textAlign:"center",lineHeight:16},
+splashBrandRow:{flexDirection:"row",alignItems:"baseline",justifyContent:"center",marginBottom:6,gap:4},
+splashBrand:{fontSize:36,lineHeight:42,fontWeight:"900",letterSpacing:-1.2,color:"#124733",textAlign:"center"},
+splashBrandDot:{width:10,height:10,borderRadius:5,backgroundColor:"#C8942E",marginBottom:5},
+splashTag:{fontSize:13,lineHeight:19,fontWeight:"600",color:"#3D6353",textAlign:"center",marginBottom:16,maxWidth:320,alignSelf:"center"},
+soudhaFrame:{width:"100%",borderRadius:20,overflow:"hidden",backgroundColor:"#EEF5F0",borderWidth:1.5,borderColor:"rgba(23,107,69,0.16)",elevation:3,shadowColor:"#17342A",shadowOpacity:0.12,shadowRadius:8,shadowOffset:{width:0,height:4},marginBottom:16},
+splashBuilding:{width:"100%",height:175,backgroundColor:"#EEF5F0"},
+splashValuesStrip:{width:"100%",flexDirection:"row",justifyContent:"space-around",alignItems:"center",marginVertical:12,paddingHorizontal:4},
+valueItem:{flex:1,alignItems:"center",gap:7},
+valueIconCircle:{width:46,height:46,borderRadius:23,backgroundColor:"#E8F4EC",borderWidth:1.5,borderColor:"rgba(23,107,69,0.22)",alignItems:"center",justifyContent:"center",elevation:1},
+valueIconText:{fontSize:19,fontWeight:"800",color:"#176B45"},
+valueItemText:{fontSize:11,fontWeight:"700",color:"#1E3A2F",textAlign:"center",lineHeight:15},
+splashActionWrap:{width:"100%",marginTop:8,marginBottom:10},
+splashFooterRow:{alignItems:"center",marginTop:4,gap:3},
 splashFooterBadge:{fontSize:11,fontWeight:"800",color:"#176B45",textAlign:"center"},
 splashIndependent:{fontSize:10,lineHeight:14,color:theme.colors.muted,textAlign:"center"},
 header:{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:4},logo:{width:42,height:42,borderRadius:14,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center",borderWidth:1,borderColor:theme.colors.border},headerLogoImg:{width:36,height:36,borderRadius:11},logoText:{color:theme.colors.white,fontSize:24,fontWeight:"800"},headerCopy:{flex:1},title:{fontSize:19,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:10.5,color:theme.colors.muted,marginTop:2},securePill:{width:44,height:44,borderRadius:17,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:44,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
 progressWrap:{gap:6,paddingHorizontal:2},progressTop:{flexDirection:"row",justifyContent:"space-between"},progressText:{fontSize:11,fontWeight:"700",color:theme.colors.muted},progressTrack:{height:5,borderRadius:6,backgroundColor:theme.colors.border},progressFill:{height:"100%",backgroundColor:theme.colors.primary,borderRadius:6},
 card:{backgroundColor:theme.colors.surface,borderRadius:24,padding:18,borderWidth:1,borderColor:"#DCE4DE",gap:14,shadowColor:"#17342A",shadowOpacity:.05,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2},
 badge:{alignSelf:"flex-start",paddingHorizontal:11,paddingVertical:7,borderRadius:theme.radius.pill,backgroundColor:theme.colors.primarySoft},badgeText:{fontSize:11,fontWeight:"800",color:theme.colors.primary},eyebrow:{fontSize:12,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:1},heading:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text},headingCenter:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text,textAlign:"center"},muted:{fontSize:14,color:theme.colors.muted,lineHeight:21},centerBody:{fontSize:14,color:theme.colors.muted,lineHeight:21,textAlign:"center"},
-featureRow:{flexDirection:"row",alignItems:"center",gap:11,minHeight:60,padding:10,borderRadius:16,borderWidth:1,borderColor:"#E1E8E3",backgroundColor:"#FCFDFC"},welcomeHeading:{fontSize:28,lineHeight:34,fontWeight:"800",letterSpacing:-.4,color:theme.colors.text},welcomeIntro:{fontSize:15,lineHeight:22,color:theme.colors.muted},familyArtwork:{marginHorizontal:0,overflow:"hidden",borderRadius:18,backgroundColor:"#F0F7F3",borderWidth:1,borderColor:"rgba(23,107,69,0.14)",alignItems:"center",justifyContent:"center",paddingVertical:4,paddingHorizontal:6,minHeight:170},familyImage:{width:"100%",height:170,borderRadius:16,backgroundColor:"#F0F7F3"},memberCompleted:{backgroundColor:theme.colors.surfaceMuted,borderColor:"#CFE0D4"},avatarCompleted:{backgroundColor:"#DDEDE2"},completedText:{color:theme.colors.success},otpInfo:{flexDirection:"row",alignItems:"center",gap:10,padding:12,borderRadius:14,backgroundColor:theme.colors.primarySoft},otpCheck:{fontSize:18,fontWeight:"900",color:theme.colors.success},otpInfoText:{flex:1,fontSize:13,fontWeight:"700",color:theme.colors.text},facePreparationCard:{gap:12,padding:12,borderRadius:18,backgroundColor:"#F5F8F6",borderWidth:1,borderColor:theme.colors.border},faceGuide:{height:178,borderRadius:18,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden"},faceFrame:{width:122,height:158,borderRadius:61,borderWidth:3,borderColor:theme.colors.primary},faceChecklist:{gap:0},guideRow:{flexDirection:"row",alignItems:"flex-start",gap:9,paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#E9EFEB"},guideNumberBadge:{width:22,height:22,borderRadius:7,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center",flexShrink:0},guideNumberText:{fontSize:10,fontWeight:"900",color:theme.colors.primary},guideRowText:{flex:1,fontSize:11.5,lineHeight:17,color:theme.colors.text,paddingTop:1},guidanceHeader:{flexDirection:"row",alignItems:"center",gap:10,paddingBottom:9,borderBottomWidth:1,borderBottomColor:theme.colors.border},guidanceTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},guidanceIntro:{fontSize:10.5,lineHeight:15,color:theme.colors.muted,marginTop:2},guidanceButton:{minHeight:40,minWidth:96,maxWidth:118,paddingHorizontal:9,borderRadius:12,backgroundColor:theme.colors.primarySoft,justifyContent:"center",alignItems:"center",flexShrink:0},guidanceButtonText:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary},faceCaptureCard:{height:300,borderRadius:22,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"},faceFrameLarge:{width:205,height:255,borderRadius:103,borderWidth:4,borderColor:theme.colors.primary},capturePill:{position:"absolute",bottom:18,left:18,right:18,minHeight:44,paddingHorizontal:14,borderRadius:14,backgroundColor:"rgba(23,52,42,0.88)",alignItems:"center",justifyContent:"center"},capturePillText:{fontSize:13,fontWeight:"700",color:theme.colors.white,textAlign:"center"},featureIcon:{width:40,height:40,borderRadius:13,alignItems:"center",justifyContent:"center"},featureorange:{backgroundColor:"#FFF0DE"},featuregreen:{backgroundColor:"#E4F4E9"},featuregold:{backgroundColor:"#FFF4D7"},featureblue:{backgroundColor:"#E8F1FF"},featureIconText:{fontSize:19,fontWeight:"800",color:theme.colors.primary},featureCopy:{flex:1},featureTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},featureText:{fontSize:12,lineHeight:17,color:theme.colors.muted,marginTop:2},
+featureRow:{flexDirection:"row",alignItems:"center",gap:11,minHeight:60,padding:10,borderRadius:16,borderWidth:1,borderColor:"#E1E8E3",backgroundColor:"#FCFDFC"},welcomeHeading:{fontSize:28,lineHeight:34,fontWeight:"800",letterSpacing:-.4,color:theme.colors.text},welcomeIntro:{fontSize:15,lineHeight:22,color:theme.colors.muted},familyArtwork:{marginHorizontal:0,overflow:"hidden",borderRadius:18,backgroundColor:"#F0F7F3",borderWidth:1,borderColor:"rgba(23,107,69,0.14)",alignItems:"center",justifyContent:"center",paddingVertical:10,paddingHorizontal:8,minHeight:210},familyImage:{width:"100%",height:200,borderRadius:16,backgroundColor:"#F0F7F3"},memberCompleted:{backgroundColor:theme.colors.surfaceMuted,borderColor:"#CFE0D4"},avatarCompleted:{backgroundColor:"#DDEDE2"},completedText:{color:theme.colors.success},otpInfo:{flexDirection:"row",alignItems:"center",gap:10,padding:12,borderRadius:14,backgroundColor:theme.colors.primarySoft},otpCheck:{fontSize:18,fontWeight:"900",color:theme.colors.success},otpInfoText:{flex:1,fontSize:13,fontWeight:"700",color:theme.colors.text},facePreparationCard:{gap:12,padding:12,borderRadius:18,backgroundColor:"#F5F8F6",borderWidth:1,borderColor:theme.colors.border},
+biometricScannerBox:{width:"100%",borderRadius:20,backgroundColor:"#081A12",overflow:"hidden",position:"relative",alignItems:"center",justifyContent:"center",borderWidth:1.5,borderColor:"rgba(40,208,135,0.35)",elevation:4,shadowColor:"#176B45",shadowOpacity:0.25,shadowRadius:12,shadowOffset:{width:0,height:4}},
+biometricBgImage:{position:"absolute",top:0,left:0,right:0,bottom:0,width:"100%",height:"100%"},
+biometricGreenLayer:{position:"absolute",top:0,left:0,right:0,bottom:0,backgroundColor:"rgba(10,48,30,0.36)"},
+biometricOvalWrapper:{alignItems:"center",justifyContent:"center",zIndex:3},
+biometricOval:{borderRadius:48,borderWidth:3,borderColor:"#28D087",backgroundColor:"rgba(40,208,135,0.08)",position:"relative",alignItems:"center",justifyContent:"center",elevation:3,shadowColor:"#28D087",shadowOpacity:0.6,shadowRadius:10},
+reticleCorner:{position:"absolute",width:18,height:18,borderColor:"#A7F3D0"},
+reticleTopLeft:{top:-3,left:-3,borderTopWidth:4,borderLeftWidth:4,borderTopLeftRadius:12},
+reticleTopRight:{top:-3,right:-3,borderTopWidth:4,borderRightWidth:4,borderTopRightRadius:12},
+reticleBottomLeft:{bottom:-3,left:-3,borderBottomWidth:4,borderLeftWidth:4,borderBottomLeftRadius:12},
+reticleBottomRight:{bottom:-3,right:-3,borderBottomWidth:4,borderRightWidth:4,borderBottomRightRadius:12},
+biometricCrosshairH:{position:"absolute",width:24,height:1.5,backgroundColor:"rgba(167,243,208,0.5)"},
+biometricCrosshairV:{position:"absolute",height:24,width:1.5,backgroundColor:"rgba(167,243,208,0.5)"},
+biometricScanBeam:{position:"absolute",left:12,right:12,height:14,alignItems:"center",justifyContent:"center",zIndex:4},
+biometricLaserGlow:{position:"absolute",width:"100%",height:12,borderRadius:6,backgroundColor:"rgba(40,208,135,0.4)"},
+biometricLaserCore:{width:"100%",height:2.5,borderRadius:2,backgroundColor:"#E6FFFA",elevation:6,shadowColor:"#28D087",shadowOpacity:1,shadowRadius:10},
+biometricBadge:{position:"absolute",bottom:10,zIndex:5,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:5,borderRadius:20,backgroundColor:"rgba(13,74,54,0.92)",borderWidth:1,borderColor:"rgba(40,208,135,0.45)",elevation:3},
+biometricPulseDot:{width:8,height:8,borderRadius:4,backgroundColor:"#28D087"},
+biometricBadgeText:{fontSize:11,fontWeight:"800",color:"#FFFFFF",letterSpacing:0.2},
+faceChecklist:{gap:0},guideRow:{flexDirection:"row",alignItems:"flex-start",gap:9,paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#E9EFEB"},guideNumberBadge:{width:22,height:22,borderRadius:7,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center",flexShrink:0},guideNumberText:{fontSize:10,fontWeight:"900",color:theme.colors.primary},guideRowText:{flex:1,fontSize:11.5,lineHeight:17,color:theme.colors.text,paddingTop:1},guidanceHeader:{flexDirection:"row",alignItems:"center",gap:10,paddingBottom:9,borderBottomWidth:1,borderBottomColor:theme.colors.border},guidanceTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},guidanceIntro:{fontSize:10.5,lineHeight:15,color:theme.colors.muted,marginTop:2},guidanceButton:{minHeight:40,minWidth:96,maxWidth:118,paddingHorizontal:9,borderRadius:12,backgroundColor:theme.colors.primarySoft,justifyContent:"center",alignItems:"center",flexShrink:0},guidanceButtonText:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary},featureIcon:{width:40,height:40,borderRadius:13,alignItems:"center",justifyContent:"center"},featureorange:{backgroundColor:"#FFF0DE"},featuregreen:{backgroundColor:"#E4F4E9"},featuregold:{backgroundColor:"#FFF4D7"},featureblue:{backgroundColor:"#E8F1FF"},featureIconText:{fontSize:19,fontWeight:"800",color:theme.colors.primary},featureCopy:{flex:1},featureTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},featureText:{fontSize:12,lineHeight:17,color:theme.colors.muted,marginTop:2},
 primary:{minHeight:52,paddingHorizontal:16,borderRadius:16,backgroundColor:theme.colors.primary,alignItems:"center",justifyContent:"center",flexDirection:"row"},primaryPressed:{backgroundColor:theme.colors.primaryPressed},primaryText:{color:theme.colors.white,fontSize:15,fontWeight:"800",flex:1,textAlign:"center",paddingLeft:24},primaryArrow:{color:theme.colors.white,fontSize:18,fontWeight:"700"},secondary:{minHeight:50,paddingHorizontal:16,borderRadius:16,backgroundColor:theme.colors.white,borderWidth:1.5,borderColor:theme.colors.primary,alignItems:"center",justifyContent:"center"},secondaryText:{color:theme.colors.primary,fontSize:15,fontWeight:"800"},disabled:{opacity:.45},
 input:{minHeight:54,paddingHorizontal:15,borderRadius:15,borderWidth:1,borderColor:theme.colors.borderStrong,fontSize:17,color:theme.colors.text,backgroundColor:theme.colors.white},stepperWrap:{gap:7},stepper:{width:"100%",flexDirection:"row",alignItems:"center"},stepperCell:{flex:1,flexDirection:"row",alignItems:"center"},stepperDot:{width:25,height:25,borderRadius:13,borderWidth:1.5,borderColor:"#C9D4CD",backgroundColor:"#FFFFFF",alignItems:"center",justifyContent:"center"},stepperDotActive:{backgroundColor:theme.colors.primary,borderColor:theme.colors.primary},stepperDotDone:{backgroundColor:theme.colors.success,borderColor:theme.colors.success},stepperDotText:{fontSize:10,fontWeight:"800",color:theme.colors.muted},stepperDotTextActive:{color:"#FFFFFF"},stepperLine:{height:2,flex:1,backgroundColor:"#DCE4DE",marginHorizontal:4},stepperLineDone:{backgroundColor:"#9CC9AC"},stepLabel:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:.8},member:{minHeight:76,padding:12,borderRadius:16,borderWidth:1,borderColor:theme.colors.border,flexDirection:"row",alignItems:"center",gap:12},avatar:{width:44,height:44,borderRadius:14,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},avatarText:{fontSize:18,fontWeight:"800",color:theme.colors.primary},memberCopy:{flex:1,minWidth:0},memberName:{fontSize:16,fontWeight:"800",lineHeight:21,color:theme.colors.text,marginBottom:3},memberCopyText:{fontSize:12,lineHeight:17,flexShrink:1},arrow:{width:24,fontSize:28,lineHeight:32,color:theme.colors.primary,textAlign:"center",flexShrink:0},
 consentItem:{flexDirection:"row",gap:10,alignItems:"center",padding:10,borderRadius:14,borderWidth:1,borderColor:"#E3EAE5",backgroundColor:"#FBFDFC"},consentIcon:{width:30,height:30,borderRadius:15,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},consentIconText:{color:theme.colors.primary,fontWeight:"800"},consentItemText:{flex:1,fontSize:12.5,lineHeight:18,color:theme.colors.text},checkRow:{flexDirection:"row",gap:10,alignItems:"flex-start",padding:9,borderRadius:13,backgroundColor:"#F6FAF7"},checkbox:{width:25,height:25,borderRadius:7,borderWidth:2,borderColor:theme.colors.borderStrong,alignItems:"center",justifyContent:"center"},checkboxSelected:{backgroundColor:theme.colors.primary,borderColor:theme.colors.primary},check:{fontSize:16,color:theme.colors.white,fontWeight:"800"},checkLabel:{flex:1,fontSize:13,lineHeight:19,color:theme.colors.text,paddingTop:2},
