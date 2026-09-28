@@ -1,7 +1,7 @@
 /**
  * Namma KYC — Interactive Citizen Reference Demonstration
  * Native, culturally authentic bilingual citizen journey.
- * Compliant with Government of Karnataka PDS and UIDAI Aadhaar FaceRD specifications.
+ * Independent reference implementation aligned to publicly documented Karnataka PDS and UIDAI integration concepts.
  */
 
 const ASSETS = {
@@ -39,8 +39,8 @@ const I18N = {
     welcomeSub: "Complete your Karnataka ration-card e-KYC from home securely in a few simple minutes.",
     feat1Title: "Ration Card e-KYC",
     feat1Text: "Instant verification for all family members on your card",
-    feat2Title: "Official & Direct",
-    feat2Text: "Directly authenticated via UIDAI AadhaarFaceRD service",
+    feat2Title: "Authorized Provider Flow",
+    feat2Text: "Models the authorized provider boundary without real authentication",
     feat3Title: "Total Privacy Protection",
     feat3Text: "Zero biometric storage; strictly minimal data access",
     feat4Title: "Fast & Contactless",
@@ -82,7 +82,7 @@ const I18N = {
     consent2: "Your live face image is transmitted directly and securely to UIDAI servers for verification.",
     consent3: "No face photographs or biometric data are stored in this application or on your mobile device.",
     consent4: "Only the strictly minimal information necessary for PDS verification is linked to Karnataka Food Dept records.",
-    consent5: "By continuing, you agree to the Government of Karnataka digital service terms and citizen privacy policies.",
+    consent5: "This reference flow models consent for a future authorized service integration; it is not a government service.",
     consentCheck1: "I have read, understood, and accept all the terms and notices listed above.",
     consentCheck2: "I give my voluntary consent to verify my identity using AadhaarFaceRD.",
     agreeContinue: "Agree & Continue",
@@ -92,7 +92,7 @@ const I18N = {
     methodFaceTitle: "Aadhaar Face Authentication (FaceRD)",
     methodFaceBadge: "Recommended",
     methodFaceProvider: "(Instant from home on your mobile camera)",
-    methodFaceDesc: "Fast, contactless, and official face scan without visiting any office.",
+    methodFaceDesc: "Reference flow for authorized Face Authentication; this demo does not perform real authentication.",
     methodFpsTitle: "Fair Price Shop Visit (FPS / Ration Shop)",
     methodFpsBadge: "Offline Alternative",
     methodFpsProvider: "(Biometric Fingerprint or Iris Scan on e-POS)",
@@ -157,17 +157,17 @@ const I18N = {
 
     stageEyebrow: "NAMMA KYC",
     stageTitle: "Ration-card e-KYC, from start to completion.",
-    stageLede: "A clean, citizen-first journey for Karnataka services, designed strictly around user privacy, accessibility, and official state guidelines.",
+    stageLede: "A clean, citizen-first reference journey for Karnataka services, designed around privacy, accessibility, and documented integration boundaries.",
     journeyHeading: "Citizen Journey Steps",
     stepsList: ["Home", "Welcome", "Ration Card", "Consent", "Method", "Face Guide", "Capture", "Verify", "Complete"],
 
     footerTitle: "Namma KYC",
-    footerSub: "An official citizen digital service for Karnataka.",
-    badgeGov: "Government of Karnataka",
+    footerSub: "An independent open-source citizen reference project for Karnataka.",
+    badgeGov: "Karnataka Government Reference",
     badgeGovSub: "Food & Civil Supplies Dept",
-    badgeUidai: "Powered by UIDAI",
+    badgeUidai: "UIDAI Integration Boundary",
     badgeUidaiSub: "AadhaarFaceRD Service",
-    badgePrivacy: "Total Privacy",
+    badgePrivacy: "Privacy by Design",
     badgePrivacySub: "Zero Biometric Storage",
     badgeCitizen: "Citizen Centric",
     badgeCitizenSub: "For a Stronger Karnataka"
@@ -187,7 +187,7 @@ const I18N = {
     continue: "ಮುಂದುವರಿಸಿ",
     reset: "ಮರುಪ್ರಾರಂಭಿಸಿ",
     back: "ಹಿಂದೆ",
-    officialBadge: "ಕರ್ನಾಟಕ ಸರ್ಕಾರದ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವೆ",
+    officialBadge: "ಸ್ವತಂತ್ರ ಓಪನ್-ಸೋರ್ಸ್ ನಾಗರಿಕ ಉಲ್ಲೇಖ ನಿರ್ಮಾಣ",
     peopleFirst: "ನಾಗರಿಕರೇ ಮೊದಲು",
     simpleAccess: "ಸರಳ ಮತ್ತು ಸುಲಭ ಸೇವೆ",
     digitalKarnataka: "ಡಿಜಿಟಲ್ ಕರ್ನಾಟಕ",
