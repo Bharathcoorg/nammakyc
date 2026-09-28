@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
-import { Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
+import { Dimensions, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 import { FamilyIllustration, NammaKycLogo, ServiceIcon } from "../src/brand";
+import { KARNATAKA_EMBLEM_URI, VIDHANA_SOUDHA_URI } from "../src/assetsData";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse, KycStatus } from "../src/api/types";
 import { getStrings } from "../src/i18n";
@@ -164,7 +165,7 @@ export default function HomeScreen() {
     {step === "welcome" && <Card>
       <Text accessibilityRole="header" style={styles.welcomeHeading}>{s.welcomeTitle}</Text>
       <Text style={styles.welcomeIntro}>{s.welcomeText}</Text>
-      <View style={styles.familyArtwork}><FamilyIllustration width={320}/></View>
+      <View style={styles.familyArtwork}><Image accessibilityLabel="Family Beneficiaries" source={familySource} style={styles.familyImage} resizeMode="cover"/></View>
       <FeatureRow icon="card" title={s.featureRation} text={s.featureRationText} tone="orange"/><FeatureRow icon="shield" title={s.featureSecure} text={s.featureSecureText} tone="green"/><FeatureRow icon="privacy" title={s.featurePrivacy} text={s.featurePrivacyText} tone="gold"/><FeatureRow icon="bolt" title={s.featureFast} text={s.featureFastText} tone="blue"/>
       <Primary label={s.continue} onPress={() => setStep("ration")} />
     </Card>}
@@ -351,23 +352,85 @@ export default function HomeScreen() {
     
   </ScrollView></SafeAreaView>;
 }
-function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onStart:()=>void;onLanguageChange:()=>void}){return <View style={styles.splash}>
-  <View style={styles.splashTop}><Image accessibilityLabel={s.government} source={require("../assets/karnataka-emblem.png")} style={styles.splashEmblem}/><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.splashLanguage}><Text style={styles.splashLanguageText}>{language==="en"?"EN":"ಕನ್ನಡ"}</Text></Pressable></View>
-  <Text style={styles.splashGovernment}>{s.government}</Text>
-  <Text style={styles.splashBrand}>{s.appName}</Text>
-  <Text style={styles.splashTag}>{language==="en"?"Secure Identity. Better Services. A Stronger Karnataka.":"ಸುರಕ್ಷಿತ ಗುರುತು. ಉತ್ತಮ ಸೇವೆಗಳು. ಸದೃಢ ಕರ್ನಾಟಕ."}</Text>
-  <Image accessibilityLabel="Vidhana Soudha" source={require("../assets/vidhana-soudha.jpg")} style={styles.splashBuilding}/>
-  <View style={styles.splashValues}><ValueItem icon="♧" text={s.peopleFirst}/><ValueItem icon="✋" text={s.simpleAccess}/><ValueItem icon="♡" text={s.digitalKarnataka}/></View>
-  <Primary label={s.getStarted} onPress={onStart}/>
-  <Text style={styles.splashIndependent}>{language==="en"?"Government of Karnataka · Food & Civil Supplies Department":"ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
-</View>}
+const nammaLogoSource = { uri: "namma_logo" };
+const emblemSource = { uri: "karnataka_emblem" };
+const soudhaSource = { uri: "vidhana_soudha" };
+const familySource = { uri: "family_portrait" };
 
-function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){return <View style={styles.header}><View style={styles.logo}><NammaKycLogo size={38} /></View><View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}><Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text></Pressable><View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View></View>}
+const { height: windowHeight } = Dimensions.get("window");
+const extraTop15Percent = Math.round(windowHeight * 0.15);
+const splashTopPadding = (StatusBar.currentHeight || 28) + extraTop15Percent;
+
+function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onStart:()=>void;onLanguageChange:()=>void}){
+  return <View style={styles.splash}>
+    <View style={styles.splashTopRow}>
+      <View style={styles.splashLogoGroup}>
+        <Image accessibilityLabel={s.appName} source={nammaLogoSource} style={styles.splashNLogo}/>
+        <Image accessibilityLabel={s.government} source={emblemSource} style={styles.splashEmblem}/>
+      </View>
+      <Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={({pressed})=>[styles.splashLanguage,pressed&&styles.pressed]}>
+        <Text style={styles.splashLanguageText}>🌐 {language==="en"?"ಕನ್ನಡ":"English"}</Text>
+      </Pressable>
+    </View>
+
+    <View style={styles.splashGovBadge}>
+      <Text style={styles.splashGovernment}>{s.government}</Text>
+      <Text style={styles.splashDept}>{language==="en"?"Department of Food, Civil Supplies & Consumer Affairs":"ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
+    </View>
+
+    <View style={styles.splashBrandRow}>
+      <Text style={styles.splashBrand}>{s.appName}</Text>
+      <View style={styles.splashBrandDot}/>
+    </View>
+
+    <Text style={styles.splashTag}>{language==="en"?"Secure Identity · Better Services · A Stronger Karnataka":"ಸುರಕ್ಷಿತ ಗುರುತು · ಉತ್ತಮ ಸೇವೆಗಳು · ಸದೃಢ ಕರ್ನಾಟಕ"}</Text>
+
+    <View style={styles.soudhaFrame}>
+      <Image accessibilityLabel="Vidhana Soudha, Bengaluru" source={soudhaSource} style={styles.splashBuilding} resizeMode="cover"/>
+      <View style={styles.soudhaCaption}>
+        <Text style={styles.soudhaCaptionText}>🏛️ ವಿಧಾನಸೌಧ · Vidhana Soudha, Bengaluru</Text>
+      </View>
+    </View>
+
+    <View style={styles.splashValuesStrip}>
+      <View style={styles.valueItem}>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>🌿</Text></View>
+        <Text style={styles.valueItemText}>{s.peopleFirst}</Text>
+      </View>
+      <View style={styles.valueItem}>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>✋</Text></View>
+        <Text style={styles.valueItemText}>{s.simpleAccess}</Text>
+      </View>
+      <View style={styles.valueItem}>
+        <View style={styles.valueIconCircle}><Text style={styles.valueIconText}>⚡</Text></View>
+        <Text style={styles.valueItemText}>{s.digitalKarnataka}</Text>
+      </View>
+    </View>
+
+    <Primary label={s.getStarted} onPress={onStart}/>
+
+    <View style={styles.splashFooterRow}>
+      <Text style={styles.splashFooterBadge}>✓ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವೆ · Official Citizen e-KYC</Text>
+      <Text style={styles.splashIndependent}>{language==="en"?"Government of Karnataka · Food & Civil Supplies Department":"ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
+    </View>
+  </View>;
+}
+
+function Header({s,language,onLanguageChange}:{s:ReturnType<typeof getStrings>;language:Language;onLanguageChange:()=>void}){
+  return <View style={styles.header}>
+    <View style={styles.logo}><Image source={nammaLogoSource} style={styles.headerLogoImg} resizeMode="contain"/></View>
+    <View style={styles.headerCopy}><Text style={styles.title}>{s.appName}</Text><Text style={styles.subtitle}>{s.tagline}</Text></View>
+    <Pressable accessibilityRole="button" accessibilityLabel={language==="en"?"ಕನ್ನಡ":"English"} onPress={onLanguageChange} style={styles.languageSwitch}>
+      <Text style={styles.languageSwitchText}>{language==="en"?"ಕನ್ನಡ":"English"}</Text>
+    </Pressable>
+    <View style={styles.securePill}><Text style={styles.securePillText}>✓</Text></View>
+  </View>;
+}
+
 function Progress({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.progressWrap}><View style={styles.progressTop}><Text style={styles.progressText}>{s.step} {current} {s.of} 4</Text><Text style={styles.progressText}>{current===1?s.householdStep:current===2?s.verifyStep:s.doneStep}</Text></View><View style={styles.progressTrack}><View style={[styles.progressFill,{width:`${(current/4)*100}%` as `${number}%`}]}/></View></View>}
 function StepLabel({s,current}:{s:ReturnType<typeof getStrings>;current:number}){return <View style={styles.stepperWrap}><View style={styles.stepper}>{[1,2,3,4].map(n=><View key={n} style={styles.stepperCell}><View style={[styles.stepperDot,n<current&&styles.stepperDotDone,n===current&&styles.stepperDotActive]}><Text style={[styles.stepperDotText,n<=current&&styles.stepperDotTextActive]}>{n<current?"✓":n}</Text></View>{n<4&&<View style={[styles.stepperLine,n<current&&styles.stepperLineDone]}/>}</View>)}</View><Text style={styles.stepLabel}>{s.step} {current} {s.of} 4</Text></View>}
 
 function FeatureRow({icon,title,text,tone}:{icon:"card"|"shield"|"privacy"|"bolt";title:string;text:string;tone:"orange"|"green"|"gold"|"blue"}){return <View style={styles.featureRow}><View style={[styles.featureIcon,tone==="orange"?styles.featureorange:tone==="green"?styles.featuregreen:tone==="gold"?styles.featuregold:styles.featureblue]}><ServiceIcon name={icon} size={28}/></View><View style={styles.featureCopy}><Text style={styles.featureTitle}>{title}</Text><Text style={styles.featureText}>{text}</Text></View></View>}
-function ValueItem({icon,text}:{icon:string;text:string}){return <View style={styles.valueItem}><Text style={styles.valueIcon}>{icon}</Text><Text style={styles.valueText}>{text}</Text></View>}
 function ConsentItem({icon,text}:{icon:string;text:string}){return <View style={styles.consentItem}><View style={styles.consentIcon}><Text style={styles.consentIconText}>{icon}</Text></View><Text style={styles.consentItemText}>{text}</Text></View>}
 function CheckRow({label,checked,onPress}:{label:string;checked:boolean;onPress:()=>void}){return <Pressable accessibilityRole="checkbox" accessibilityState={{checked}} accessibilityLabel={label} onPress={onPress} style={({pressed})=>[styles.checkRow,pressed&&styles.pressed]}><View style={[styles.checkbox,checked&&styles.checkboxSelected]}><Text style={styles.check}>{checked?"✓":""}</Text></View><Text style={styles.checkLabel}>{label}</Text></Pressable>}
 
@@ -388,11 +451,37 @@ function Secondary({label,onPress,disabled}:{label:string;onPress:()=>void;disab
 
 const styles=StyleSheet.create({
 safe:{flex:1,backgroundColor:theme.colors.background,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):0},container:{paddingHorizontal:16,paddingTop:8,paddingBottom:32,gap:12},
-splash:{flex:1,minHeight:650,alignItems:"center",paddingHorizontal:16,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):8,paddingBottom:8,backgroundColor:"#FFFCF4"},splashTop:{width:"100%",height:70,flexDirection:"row",alignItems:"flex-start",justifyContent:"center",position:"relative"},splashEmblem:{width:74,height:66,resizeMode:"contain",alignSelf:"center"},splashGovernment:{fontSize:13,fontWeight:"800",color:theme.colors.text,textAlign:"center",marginTop:1},splashBrand:{fontSize:35,lineHeight:40,fontWeight:"900",letterSpacing:-1.6,marginTop:9,color:"#164F72",textAlign:"center"},splashTag:{fontSize:12,lineHeight:17,fontWeight:"600",color:"#315448",textAlign:"center",marginTop:4,marginBottom:12,maxWidth:280},splashBuilding:{width:"100%",height:190,marginTop:1,borderRadius:22,resizeMode:"cover",backgroundColor:"#EEF5F0"},splashValues:{width:"100%",flexDirection:"row",justifyContent:"space-around",paddingVertical:12},splashIndependent:{fontSize:9.5,lineHeight:13,color:theme.colors.muted,textAlign:"center",marginTop:7,maxWidth:260},splashLanguage:{position:"absolute",right:0,top:3,minHeight:theme.minTouchTarget,paddingHorizontal:11,borderRadius:18,backgroundColor:"#FFFFFF",borderWidth:1,borderColor:theme.colors.borderStrong,justifyContent:"center"},splashLanguageText:{fontSize:12,fontWeight:"800",color:theme.colors.text},header:{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:4},logo:{width:42,height:42,borderRadius:15,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center",borderWidth:1,borderColor:theme.colors.border},logoText:{color:theme.colors.white,fontSize:24,fontWeight:"800"},headerCopy:{flex:1},title:{fontSize:19,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:10.5,color:theme.colors.muted,marginTop:2},securePill:{width:44,height:44,borderRadius:17,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:44,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
+splash:{flex:1,minHeight:740,alignItems:"center",paddingHorizontal:18,paddingTop:Platform.OS==="android"?splashTopPadding:extraTop15Percent+40,paddingBottom:28,backgroundColor:"#FFFCF4",justifyContent:"space-between"},
+splashTopRow:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",marginBottom:8},
+splashLogoGroup:{flexDirection:"row",alignItems:"center",gap:12},
+splashNLogo:{width:54,height:54,borderRadius:16,borderWidth:1.5,borderColor:"#C8942E",backgroundColor:"#176B45"},
+splashEmblem:{width:52,height:48,resizeMode:"contain"},
+splashLanguage:{minHeight:36,paddingHorizontal:12,borderRadius:18,backgroundColor:"#FFFFFF",borderWidth:1.5,borderColor:"#C9DCD0",justifyContent:"center",alignItems:"center",elevation:1},
+splashLanguageText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},
+splashGovBadge:{alignItems:"center",marginVertical:3},
+splashGovernment:{fontSize:12.5,fontWeight:"800",color:"#1E3A2F",textAlign:"center",letterSpacing:0.8,textTransform:"uppercase"},
+splashDept:{fontSize:10.5,fontWeight:"600",color:"#4A6B5D",textAlign:"center",marginTop:2},
+splashBrandRow:{flexDirection:"row",alignItems:"baseline",justifyContent:"center",marginTop:5,gap:4},
+splashBrand:{fontSize:35,lineHeight:40,fontWeight:"900",letterSpacing:-1.2,color:"#124733",textAlign:"center"},
+splashBrandDot:{width:10,height:10,borderRadius:5,backgroundColor:"#C8942E",marginBottom:4},
+splashTag:{fontSize:12.5,lineHeight:18,fontWeight:"600",color:"#3D6353",textAlign:"center",marginTop:4,marginBottom:10,maxWidth:300,alignSelf:"center"},
+soudhaFrame:{width:"100%",borderRadius:20,overflow:"hidden",backgroundColor:"#EEF5F0",borderWidth:1.5,borderColor:"rgba(23,107,69,0.16)",elevation:3,marginBottom:10,position:"relative"},
+splashBuilding:{width:"100%",height:155,backgroundColor:"#EEF5F0"},
+soudhaCaption:{position:"absolute",bottom:0,left:0,right:0,paddingVertical:5,paddingHorizontal:12,backgroundColor:"rgba(13,74,54,0.78)",alignItems:"center"},
+soudhaCaptionText:{fontSize:10.5,fontWeight:"700",color:"#FFFFFF",letterSpacing:0.3},
+splashValuesStrip:{width:"100%",flexDirection:"row",justifyContent:"space-between",marginVertical:8,paddingHorizontal:4},
+valueItem:{flex:1,alignItems:"center",gap:5},
+valueIconCircle:{width:38,height:38,borderRadius:19,backgroundColor:"#E8F4EC",borderWidth:1,borderColor:"rgba(23,107,69,0.18)",alignItems:"center",justifyContent:"center"},
+valueIconText:{fontSize:18},
+valueItemText:{fontSize:10.5,fontWeight:"700",color:"#1E3A2F",textAlign:"center"},
+splashFooterRow:{alignItems:"center",marginTop:8,gap:3},
+splashFooterBadge:{fontSize:11,fontWeight:"800",color:"#176B45",textAlign:"center"},
+splashIndependent:{fontSize:10,lineHeight:14,color:theme.colors.muted,textAlign:"center"},
+header:{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:4},logo:{width:42,height:42,borderRadius:14,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center",borderWidth:1,borderColor:theme.colors.border},headerLogoImg:{width:36,height:36,borderRadius:11},logoText:{color:theme.colors.white,fontSize:24,fontWeight:"800"},headerCopy:{flex:1},title:{fontSize:19,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:10.5,color:theme.colors.muted,marginTop:2},securePill:{width:44,height:44,borderRadius:17,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:44,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
 progressWrap:{gap:6,paddingHorizontal:2},progressTop:{flexDirection:"row",justifyContent:"space-between"},progressText:{fontSize:11,fontWeight:"700",color:theme.colors.muted},progressTrack:{height:5,borderRadius:6,backgroundColor:theme.colors.border},progressFill:{height:"100%",backgroundColor:theme.colors.primary,borderRadius:6},
 card:{backgroundColor:theme.colors.surface,borderRadius:24,padding:18,borderWidth:1,borderColor:"#DCE4DE",gap:14,shadowColor:"#17342A",shadowOpacity:.05,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2},
 badge:{alignSelf:"flex-start",paddingHorizontal:11,paddingVertical:7,borderRadius:theme.radius.pill,backgroundColor:theme.colors.primarySoft},badgeText:{fontSize:11,fontWeight:"800",color:theme.colors.primary},eyebrow:{fontSize:12,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:1},heading:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text},headingCenter:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text,textAlign:"center"},muted:{fontSize:14,color:theme.colors.muted,lineHeight:21},centerBody:{fontSize:14,color:theme.colors.muted,lineHeight:21,textAlign:"center"},
-featureRow:{flexDirection:"row",alignItems:"center",gap:11,minHeight:60,padding:10,borderRadius:16,borderWidth:1,borderColor:"#E1E8E3",backgroundColor:"#FCFDFC"},welcomeHeading:{fontSize:28,lineHeight:34,fontWeight:"800",letterSpacing:-.4,color:theme.colors.text},welcomeIntro:{fontSize:15,lineHeight:22,color:theme.colors.muted},familyArtwork:{marginHorizontal:0,overflow:"hidden",borderRadius:18,backgroundColor:"#F0F7F3",borderWidth:1,borderColor:"rgba(23,107,69,0.14)",alignItems:"center",justifyContent:"center",paddingVertical:6,paddingHorizontal:10,minHeight:175},memberCompleted:{backgroundColor:theme.colors.surfaceMuted,borderColor:"#CFE0D4"},avatarCompleted:{backgroundColor:"#DDEDE2"},completedText:{color:theme.colors.success},otpInfo:{flexDirection:"row",alignItems:"center",gap:10,padding:12,borderRadius:14,backgroundColor:theme.colors.primarySoft},otpCheck:{fontSize:18,fontWeight:"900",color:theme.colors.success},otpInfoText:{flex:1,fontSize:13,fontWeight:"700",color:theme.colors.text},facePreparationCard:{gap:12,padding:12,borderRadius:18,backgroundColor:"#F5F8F6",borderWidth:1,borderColor:theme.colors.border},faceGuide:{height:178,borderRadius:18,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden"},faceFrame:{width:122,height:158,borderRadius:61,borderWidth:3,borderColor:theme.colors.primary},faceChecklist:{gap:0},guideRow:{flexDirection:"row",alignItems:"flex-start",gap:9,paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#E9EFEB"},guideNumberBadge:{width:22,height:22,borderRadius:7,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center",flexShrink:0},guideNumberText:{fontSize:10,fontWeight:"900",color:theme.colors.primary},guideRowText:{flex:1,fontSize:11.5,lineHeight:17,color:theme.colors.text,paddingTop:1},guidanceHeader:{flexDirection:"row",alignItems:"center",gap:10,paddingBottom:9,borderBottomWidth:1,borderBottomColor:theme.colors.border},guidanceTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},guidanceIntro:{fontSize:10.5,lineHeight:15,color:theme.colors.muted,marginTop:2},guidanceButton:{minHeight:40,minWidth:96,maxWidth:118,paddingHorizontal:9,borderRadius:12,backgroundColor:theme.colors.primarySoft,justifyContent:"center",alignItems:"center",flexShrink:0},guidanceButtonText:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary},faceCaptureCard:{height:300,borderRadius:22,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"},faceFrameLarge:{width:205,height:255,borderRadius:103,borderWidth:4,borderColor:theme.colors.primary},capturePill:{position:"absolute",bottom:18,left:18,right:18,minHeight:44,paddingHorizontal:14,borderRadius:14,backgroundColor:"rgba(23,52,42,0.88)",alignItems:"center",justifyContent:"center"},capturePillText:{fontSize:13,fontWeight:"700",color:theme.colors.white,textAlign:"center"},featureIcon:{width:40,height:40,borderRadius:13,alignItems:"center",justifyContent:"center"},featureorange:{backgroundColor:"#FFF0DE"},featuregreen:{backgroundColor:"#E4F4E9"},featuregold:{backgroundColor:"#FFF4D7"},featureblue:{backgroundColor:"#E8F1FF"},featureIconText:{fontSize:19,fontWeight:"800",color:theme.colors.primary},featureCopy:{flex:1},featureTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},featureText:{fontSize:12,lineHeight:17,color:theme.colors.muted,marginTop:2},valueItem:{flex:1,alignItems:"center",gap:4},valueIcon:{fontSize:20,color:theme.colors.primary,fontWeight:"800"},valueText:{fontSize:10,fontWeight:"700",color:theme.colors.text,textAlign:"center"},
+featureRow:{flexDirection:"row",alignItems:"center",gap:11,minHeight:60,padding:10,borderRadius:16,borderWidth:1,borderColor:"#E1E8E3",backgroundColor:"#FCFDFC"},welcomeHeading:{fontSize:28,lineHeight:34,fontWeight:"800",letterSpacing:-.4,color:theme.colors.text},welcomeIntro:{fontSize:15,lineHeight:22,color:theme.colors.muted},familyArtwork:{marginHorizontal:0,overflow:"hidden",borderRadius:18,backgroundColor:"#F0F7F3",borderWidth:1,borderColor:"rgba(23,107,69,0.14)",alignItems:"center",justifyContent:"center",paddingVertical:4,paddingHorizontal:6,minHeight:170},familyImage:{width:"100%",height:170,borderRadius:16,backgroundColor:"#F0F7F3"},memberCompleted:{backgroundColor:theme.colors.surfaceMuted,borderColor:"#CFE0D4"},avatarCompleted:{backgroundColor:"#DDEDE2"},completedText:{color:theme.colors.success},otpInfo:{flexDirection:"row",alignItems:"center",gap:10,padding:12,borderRadius:14,backgroundColor:theme.colors.primarySoft},otpCheck:{fontSize:18,fontWeight:"900",color:theme.colors.success},otpInfoText:{flex:1,fontSize:13,fontWeight:"700",color:theme.colors.text},facePreparationCard:{gap:12,padding:12,borderRadius:18,backgroundColor:"#F5F8F6",borderWidth:1,borderColor:theme.colors.border},faceGuide:{height:178,borderRadius:18,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden"},faceFrame:{width:122,height:158,borderRadius:61,borderWidth:3,borderColor:theme.colors.primary},faceChecklist:{gap:0},guideRow:{flexDirection:"row",alignItems:"flex-start",gap:9,paddingVertical:7,borderBottomWidth:1,borderBottomColor:"#E9EFEB"},guideNumberBadge:{width:22,height:22,borderRadius:7,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center",flexShrink:0},guideNumberText:{fontSize:10,fontWeight:"900",color:theme.colors.primary},guideRowText:{flex:1,fontSize:11.5,lineHeight:17,color:theme.colors.text,paddingTop:1},guidanceHeader:{flexDirection:"row",alignItems:"center",gap:10,paddingBottom:9,borderBottomWidth:1,borderBottomColor:theme.colors.border},guidanceTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},guidanceIntro:{fontSize:10.5,lineHeight:15,color:theme.colors.muted,marginTop:2},guidanceButton:{minHeight:40,minWidth:96,maxWidth:118,paddingHorizontal:9,borderRadius:12,backgroundColor:theme.colors.primarySoft,justifyContent:"center",alignItems:"center",flexShrink:0},guidanceButtonText:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary},faceCaptureCard:{height:300,borderRadius:22,backgroundColor:"#EAF2EC",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"},faceFrameLarge:{width:205,height:255,borderRadius:103,borderWidth:4,borderColor:theme.colors.primary},capturePill:{position:"absolute",bottom:18,left:18,right:18,minHeight:44,paddingHorizontal:14,borderRadius:14,backgroundColor:"rgba(23,52,42,0.88)",alignItems:"center",justifyContent:"center"},capturePillText:{fontSize:13,fontWeight:"700",color:theme.colors.white,textAlign:"center"},featureIcon:{width:40,height:40,borderRadius:13,alignItems:"center",justifyContent:"center"},featureorange:{backgroundColor:"#FFF0DE"},featuregreen:{backgroundColor:"#E4F4E9"},featuregold:{backgroundColor:"#FFF4D7"},featureblue:{backgroundColor:"#E8F1FF"},featureIconText:{fontSize:19,fontWeight:"800",color:theme.colors.primary},featureCopy:{flex:1},featureTitle:{fontSize:14,fontWeight:"800",color:theme.colors.text},featureText:{fontSize:12,lineHeight:17,color:theme.colors.muted,marginTop:2},
 primary:{minHeight:52,paddingHorizontal:16,borderRadius:16,backgroundColor:theme.colors.primary,alignItems:"center",justifyContent:"center",flexDirection:"row"},primaryPressed:{backgroundColor:theme.colors.primaryPressed},primaryText:{color:theme.colors.white,fontSize:15,fontWeight:"800",flex:1,textAlign:"center",paddingLeft:24},primaryArrow:{color:theme.colors.white,fontSize:18,fontWeight:"700"},secondary:{minHeight:50,paddingHorizontal:16,borderRadius:16,backgroundColor:theme.colors.white,borderWidth:1.5,borderColor:theme.colors.primary,alignItems:"center",justifyContent:"center"},secondaryText:{color:theme.colors.primary,fontSize:15,fontWeight:"800"},disabled:{opacity:.45},
 input:{minHeight:54,paddingHorizontal:15,borderRadius:15,borderWidth:1,borderColor:theme.colors.borderStrong,fontSize:17,color:theme.colors.text,backgroundColor:theme.colors.white},stepperWrap:{gap:7},stepper:{width:"100%",flexDirection:"row",alignItems:"center"},stepperCell:{flex:1,flexDirection:"row",alignItems:"center"},stepperDot:{width:25,height:25,borderRadius:13,borderWidth:1.5,borderColor:"#C9D4CD",backgroundColor:"#FFFFFF",alignItems:"center",justifyContent:"center"},stepperDotActive:{backgroundColor:theme.colors.primary,borderColor:theme.colors.primary},stepperDotDone:{backgroundColor:theme.colors.success,borderColor:theme.colors.success},stepperDotText:{fontSize:10,fontWeight:"800",color:theme.colors.muted},stepperDotTextActive:{color:"#FFFFFF"},stepperLine:{height:2,flex:1,backgroundColor:"#DCE4DE",marginHorizontal:4},stepperLineDone:{backgroundColor:"#9CC9AC"},stepLabel:{fontSize:10.5,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:.8},member:{minHeight:76,padding:12,borderRadius:16,borderWidth:1,borderColor:theme.colors.border,flexDirection:"row",alignItems:"center",gap:12},avatar:{width:44,height:44,borderRadius:14,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},avatarText:{fontSize:18,fontWeight:"800",color:theme.colors.primary},memberCopy:{flex:1,minWidth:0},memberName:{fontSize:16,fontWeight:"800",lineHeight:21,color:theme.colors.text,marginBottom:3},memberCopyText:{fontSize:12,lineHeight:17,flexShrink:1},arrow:{width:24,fontSize:28,lineHeight:32,color:theme.colors.primary,textAlign:"center",flexShrink:0},
 consentItem:{flexDirection:"row",gap:10,alignItems:"center",padding:10,borderRadius:14,borderWidth:1,borderColor:"#E3EAE5",backgroundColor:"#FBFDFC"},consentIcon:{width:30,height:30,borderRadius:15,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},consentIconText:{color:theme.colors.primary,fontWeight:"800"},consentItemText:{flex:1,fontSize:12.5,lineHeight:18,color:theme.colors.text},checkRow:{flexDirection:"row",gap:10,alignItems:"flex-start",padding:9,borderRadius:13,backgroundColor:"#F6FAF7"},checkbox:{width:25,height:25,borderRadius:7,borderWidth:2,borderColor:theme.colors.borderStrong,alignItems:"center",justifyContent:"center"},checkboxSelected:{backgroundColor:theme.colors.primary,borderColor:theme.colors.primary},check:{fontSize:16,color:theme.colors.white,fontWeight:"800"},checkLabel:{flex:1,fontSize:13,lineHeight:19,color:theme.colors.text,paddingTop:2},
