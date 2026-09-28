@@ -19,7 +19,7 @@ const I18N = {
     pageTitle: "Namma KYC — Karnataka Ration Card Citizen e-KYC Service",
     bannerBadge: "DEMO",
     bannerText: "Citizen Simulation Experience · No Personal Data Collected",
-    bannerSub: "Government of Karnataka PDS & UIDAI Reference",
+    bannerSub: "Karnataka PDS & UIDAI reference flow",
     app: "Namma KYC",
     gov: "Government of Karnataka",
     dept: "Department of Food, Civil Supplies & Consumer Affairs",
@@ -30,7 +30,7 @@ const I18N = {
     continue: "Continue",
     reset: "Start Again",
     back: "Back",
-    officialBadge: "Government of Karnataka Citizen Service",
+    officialBadge: "Independent open-source citizen reference build",
     peopleFirst: "Citizens First",
     simpleAccess: "Simple Digital Access",
     digitalKarnataka: "Digital Karnataka",
@@ -648,7 +648,6 @@ function getScreenHtml(s) {
           <button class="splash-lang-btn" id="splash-lang-toggle">🌐 ${s.langBtn}</button>
         </div>
         <div class="splash-gov-title">${s.gov}</div>
-        <div class="splash-dept-title">${s.dept}</div>
         <div class="splash-brand">
           <h1>${s.app}</h1>
           <div class="splash-brand-dot"></div>
@@ -676,7 +675,7 @@ function getScreenHtml(s) {
         </div>
         <div class="splash-disclosure">
           <svg class="karnataka-map-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 5 6 9 6 13c0 4 3 8 6 9 3-1 6-5 6-9 0-4-2-8-6-9z"/></svg>
-          <span>${s.officialBadge}</span>
+          <span>${currentLang === "kn" ? "ಸ್ವತಂತ್ರ ಓಪನ್-ಸೋರ್ಸ್ ನಾಗರಿಕ ಉಲ್ಲೇಖ ನಿರ್ಮಾಣ" : "Independent open-source citizen reference build"}</span>
         </div>
       </div>
     `;
