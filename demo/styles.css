@@ -856,12 +856,21 @@ body {
 /* --------------------------------------------------------------------------
    Screen 3: Ration Card & Household Members
    -------------------------------------------------------------------------- */
+.member-screen-card {
+  justify-content: flex-start;
+  gap: 8px;
+}
+.member-screen-card .actions {
+  margin-top: auto;
+  padding-top: 6px;
+}
 .ration-card-banner {
+  flex-shrink: 0;
   background: linear-gradient(135deg, #134e39 0%, #08291e 100%);
   border-radius: var(--radius-md);
-  padding: 13px 16px;
+  padding: 12px 16px 14px;
   color: #ffffff;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   box-shadow: 0 8px 24px rgba(13, 74, 54, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.15);
   position: relative;
@@ -881,7 +890,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 .ration-chip {
   font-size: 10px;
@@ -901,11 +910,15 @@ body {
 }
 .ration-number-display {
   font-family: monospace, Inter, sans-serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.35;
+  display: block;
+  margin: 0;
+  padding-bottom: 2px;
 }
 
 .member-list-heading {
@@ -1221,6 +1234,95 @@ body {
   background: var(--primary);
   color: #ffffff;
   box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.method-choice-card.unselectable {
+  cursor: pointer;
+  border: 1.5px dashed #cbd5e1;
+  background: #f8fafc;
+  opacity: 0.94;
+}
+.method-choice-card.unselectable:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  transform: none;
+}
+.method-choice-card.fps-highlight {
+  border-color: #0d4a36;
+  border-style: solid;
+  background: #f0f7f3;
+}
+.badge-offline {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+}
+.radio-indicator.info-indicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #94a3b8;
+  background: #f8fafc;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.method-choice-card.unselectable:hover .radio-indicator.info-indicator,
+.method-choice-card.fps-highlight .radio-indicator.info-indicator {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.fps-nearby-callout {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e6f7ec 100%);
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: #166534;
+  font-size: 11px;
+  line-height: 1.45;
+  box-shadow: 0 3px 10px rgba(22, 101, 52, 0.08);
+  animation: screenEnter 0.25s ease;
+}
+.fps-callout-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 850;
+  color: #14532d;
+}
+.fps-nearby-callout p {
+  margin: 0 0 5px;
+  color: #166534;
+}
+.fps-callout-note {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.fps-hint-tap {
+  text-align: center;
+  padding: 4px;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.fps-hint-tap:hover {
+  color: var(--primary);
+  text-decoration: underline;
 }
 
 .info-callout {

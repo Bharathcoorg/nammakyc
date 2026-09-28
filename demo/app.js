@@ -94,8 +94,12 @@ const I18N = {
     methodFaceProvider: "(Instant from home on your mobile camera)",
     methodFaceDesc: "Fast, contactless, and official face scan without visiting any office.",
     methodFpsTitle: "Fair Price Shop Visit (FPS / Ration Shop)",
-    methodFpsProvider: "(Biometric Fingerprint or Iris Scan)",
-    methodFpsDesc: "If you do not have a smartphone or camera, visit your local ration shop to authenticate on the e-POS machine.",
+    methodFpsBadge: "Offline Alternative",
+    methodFpsProvider: "(Biometric Fingerprint or Iris Scan on e-POS)",
+    methodFpsDesc: "Visit any nearby fair price shop if you prefer in-person biometric authentication.",
+    methodFpsNearbyTitle: "Complete at Any Nearby Ration Shop",
+    methodFpsNearbyText: "You can complete your mandatory biometric e-KYC at any nearby Fair Price Shop (Ration Shop) using the biometric e-POS machine with fingerprint or iris scan. This mobile application exclusively performs instant Aadhaar FaceRD.",
+    continueFace: "Continue with Face e-KYC",
     methodNotice: "Important Note: Under PDS guidelines, Aadhaar OTP alone is not sufficient for ration-card e-KYC. Mandatory proof-of-life biometric authentication (FaceRD or FPS biometric) is required to ensure genuine beneficiary entitlement.",
 
     readyTitle: "Face Scan Instructions (Do's & Don'ts)",
@@ -247,8 +251,12 @@ const I18N = {
     methodFaceProvider: "(ಮನೆಯಲ್ಲೇ ಕುಳಿತು ಮೊಬೈಲ್ ಕ್ಯಾಮೆರಾ ಮೂಲಕ)",
     methodFaceDesc: "ಯಾವುದೇ ಕಚೇರಿಗೆ ಹೋಗದೆ ತ್ವರಿತವಾಗಿ, ಸುರಕ್ಷಿತವಾಗಿ ಮತ್ತು ಸಂಪರ್ಕರಹಿತವಾಗಿ ಮುಖ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",
     methodFpsTitle: "ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿ ಭೇಟಿ (Fair Price Shop)",
-    methodFpsProvider: "(ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಬಯೋಮೆಟ್ರಿಕ್)",
-    methodFpsDesc: "ಸ್ಮಾರ್ಟ್‌ಫೋನ್ ಇಲ್ಲದಿದ್ದರೆ ಅಥವಾ ಕ್ಯಾಮೆರಾ ಬೆಂಬಲಿಸದಿದ್ದರೆ, ಹತ್ತಿರದ ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿಯಲ್ಲಿ e-POS ಯಂತ್ರದ ಮೂಲಕ e-KYC ಮಾಡಿಸಿ.",
+    methodFpsBadge: "ಆಫ್‌ಲೈನ್ ವಿಧಾನ",
+    methodFpsProvider: "(e-POS ಯಂತ್ರದಲ್ಲಿ ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಬಯೋಮೆಟ್ರಿಕ್)",
+    methodFpsDesc: "ನೇರವಾಗಿ ಅಂಗಡಿಗೆ ಭೇಟಿ ನೀಡಿ ಬಯೋಮೆಟ್ರಿಕ್ ನೀಡಲು ಬಯಸಿದರೆ ಈ ಆಯ್ಕೆ ಬಳಸಬಹುದು.",
+    methodFpsNearbyTitle: "ಸಮೀಪದ ಯಾವುದೇ ರೇಷನ್ ಅಂಗಡಿಯಲ್ಲಿ ಮಾಡಿಸಿ",
+    methodFpsNearbyText: "ನಿಮ್ಮ ಸಮೀಪದ ಯಾವುದೇ ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿಗೆ (Fair Price Shop) ಭೇಟಿ ನೀಡಿ e-POS ಯಂತ್ರದಲ್ಲಿ ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಸ್ಕ್ಯಾನ್ ಮೂಲಕ e-KYC ಪೂರ್ಣಗೊಳಿಸಬಹುದು. ಈ ಮೊಬೈಲ್ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಕೇವಲ Aadhaar FaceRD ಮುಖ ದೃಢೀಕರಣವನ್ನು ಮಾತ್ರ ಮಾಡಲಾಗುತ್ತದೆ.",
+    continueFace: "Aadhaar Face e-KYC ಮುಂದುವರಿಸಿ",
     methodNotice: "ಪ್ರಮುಖ ಮಾಹಿತಿ: ಸರ್ಕಾರದ ನಿಯಮಾವಳಿಯಂತೆ ಪಡಿತರ ಚೀಟಿ e-KYC ಗೆ ಕೇವಲ ಮೊಬೈಲ್ ಒಟಿಪಿ (OTP) ಸಾಕಾಗುವುದಿಲ್ಲ. ನೈಜ ವ್ಯಕ್ತಿ ಜೀವಂತಿಕೆ (Proof of Life) ದೃಢೀಕರಣಕ್ಕಾಗಿ ಮುಖ ಅಥವಾ ಬಯೋಮೆಟ್ರಿಕ್ ಕಡ್ಡಾಯವಾಗಿದೆ.",
 
     readyTitle: "ಮುಖ ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ಮುನ್ನ ಪ್ರಮುಖ ನಿಯಮಗಳು",
@@ -333,6 +341,7 @@ let activeAudio = null;
 let dodontTab = "all"; // "all", "do", "dont"
 let viewingKycDoneMember = null; // null | "suresh" | "ramesh" | "lakshmi" | "deepa"
 let activeMemberToVerify = "lakshmi"; // "lakshmi" | "deepa"
+let showFpsNotice = false;
 let completedMembers = new Set(["suresh", "ramesh"]);
 
 const t = () => I18N[currentLang];
@@ -349,6 +358,7 @@ const ICONS = {
   faceScan: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/><circle cx="12" cy="12" r="3"/><path d="M12 17a5 5 0 0 0 4-2"/></svg>`,
   shop: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
   check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>`,
+  info: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
 
   // Animated / Pictorial SVG Illustrations for Instructions
   picLight: `
@@ -899,12 +909,14 @@ function getScreenHtml(s) {
   if (currentStep === 4) {
     return `
       <div class="screen-card">
-        <h2>${s.methodTitle}</h2>
-        <p class="screen-desc">${s.methodSub}</p>
+        <div>
+          <h2>${s.methodTitle}</h2>
+          <p class="screen-desc">${s.methodSub}</p>
+        </div>
 
         <div class="choice-cards-container">
-          <!-- Method 1: FaceRD (Recommended mobile method) -->
-          <div class="method-choice-card ${selectedMethod === "face" ? "selected" : ""}" id="choose-face-card">
+          <!-- Method 1: FaceRD (The ONLY active/selectable method in this mobile app) -->
+          <div class="method-choice-card selected" id="choose-face-card">
             <div class="method-icon-box">${ICONS.faceScan}</div>
             <div class="method-copy">
               <div class="method-title-row">
@@ -915,24 +927,41 @@ function getScreenHtml(s) {
               <small>${s.methodFaceDesc}</small>
             </div>
             <div class="radio-indicator">
-              ${selectedMethod === "face" ? ICONS.check : ""}
+              ${ICONS.check}
             </div>
           </div>
 
-          <!-- Method 2: Fair Price Shop Biometric (Official PDS fallback) -->
-          <div class="method-choice-card ${selectedMethod === "fps" ? "selected" : ""}" id="choose-fps-card">
-            <div class="method-icon-box">${ICONS.shop}</div>
+          <!-- Method 2: Fair Price Shop Biometric (Informational fallback / unselectable in mobile app) -->
+          <div class="method-choice-card unselectable ${showFpsNotice ? "fps-highlight" : ""}" id="choose-fps-card" role="button" tabindex="0">
+            <div class="method-icon-box" style="background:#f1f5f9; color:#475569;">${ICONS.shop}</div>
             <div class="method-copy">
               <div class="method-title-row">
                 <b>${s.methodFpsTitle}</b>
+                <span class="badge-offline">${s.methodFpsBadge}</span>
               </div>
               <small class="method-provider">${s.methodFpsProvider}</small>
               <small>${s.methodFpsDesc}</small>
             </div>
-            <div class="radio-indicator">
-              ${selectedMethod === "fps" ? ICONS.check : ""}
+            <div class="radio-indicator info-indicator" title="${currentLang === "kn" ? "ಮಾಹಿತಿ" : "Info"}">
+              ${ICONS.info}
             </div>
           </div>
+
+          <!-- Nearby FPS Guidance Banner (revealed when FPS card is tapped or toggled) -->
+          ${showFpsNotice ? `
+            <div class="fps-nearby-callout">
+              <div class="fps-callout-header">
+                <span>🏪</span>
+                <b>${s.methodFpsNearbyTitle}</b>
+              </div>
+              <p>${s.methodFpsNearbyText}</p>
+              <small class="fps-callout-note">✓ ${currentLang === "kn" ? "ಈ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಮುಂದುವರಿಯಲು ಕೆಳಗಿನ ಮುಖ e-KYC ಬಟನ್ ಒತ್ತಿ" : "To proceed in this app with Aadhaar FaceRD, tap below"}</small>
+            </div>
+          ` : `
+            <div class="fps-hint-tap" id="fps-hint-link">
+              <span>🏪 ${currentLang === "kn" ? "ರೇಷನ್ ಅಂಗಡಿ e-KYC ಮಾಹಿತಿ ಪಡೆಯಲು ಟ್ಯಾಪ್ ಮಾಡಿ" : "Tap here to view nearby ration shop instructions"}</span>
+            </div>
+          `}
         </div>
 
         <div class="info-callout">
@@ -941,7 +970,7 @@ function getScreenHtml(s) {
         </div>
 
         <div class="actions">
-          <button class="primary-btn" id="method-continue-btn">${s.continue} →</button>
+          <button class="primary-btn" id="method-continue-btn">${s.continueFace || s.continue} →</button>
         </div>
       </div>
     `;
@@ -1380,15 +1409,24 @@ function wireScreenEvents() {
 
   // Method Selection
   const chooseFace = document.getElementById("choose-face-card");
-  if (chooseFace) chooseFace.onclick = () => { selectedMethod = "face"; render(); };
+  if (chooseFace) {
+    chooseFace.onclick = () => {
+      showFpsNotice = false;
+      render();
+    };
+  }
   const chooseFps = document.getElementById("choose-fps-card");
   if (chooseFps) {
     chooseFps.onclick = () => {
-      selectedMethod = "fps";
+      showFpsNotice = !showFpsNotice;
       render();
-      alert(currentLang === "kn"
-        ? "ನ್ಯಾಯಬೆಲೆ ಅಂಗಡಿ ಭೇಟಿ: ನಿಮ್ಮ ಸಮೀಪದ ರೇಷನ್ ಅಂಗಡಿಗೆ ಭೇಟಿ ನೀಡಿ e-POS ಯಂತ್ರದಲ್ಲಿ ಬೆರಳಚ್ಚು ಅಥವಾ ಕಣ್ಣಿನ ಸ್ಕ್ಯಾನ್ ಮೂಲಕ e-KYC ಮಾಡಿಸಿ."
-        : "Fair Price Shop: Visit your local ration shop to complete e-KYC using biometric fingerprint/iris on the e-POS machine.");
+    };
+  }
+  const fpsHintLink = document.getElementById("fps-hint-link");
+  if (fpsHintLink) {
+    fpsHintLink.onclick = () => {
+      showFpsNotice = true;
+      render();
     };
   }
   const methodCont = document.getElementById("method-continue-btn");

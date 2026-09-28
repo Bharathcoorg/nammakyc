@@ -13,7 +13,7 @@ const MARK = `
 const FAMILY_MINIMALIST = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 200" fill="none">
   <ellipse cx="190" cy="188" rx="150" ry="7" fill="#0d4a36" fill-opacity="0.08"/>
-  <g class="family-member father">
+  <g id="father">
     <path d="M86 182v-48c0-22 15-36 34-36s34 14 34 36v48H86z" fill="#0d4a36"/>
     <path d="M114 98l6 14 6-14" stroke="#c8942e" stroke-width="2.5" stroke-linecap="round"/>
     <line x1="120" y1="112" x2="120" y2="148" stroke="#c8942e" stroke-width="2" stroke-linecap="round"/>
@@ -21,7 +21,7 @@ const FAMILY_MINIMALIST = `
     <path d="M98 60c0-14 10-24 22-24s22 10 22 24c0 4-1 8-3 11-4-9-11-15-22-15-9 0-16 5-19 14z" fill="#072e21"/>
     <path d="M112 72c3 2 6 2 8 0 2 2 5 2 8 0" stroke="#072e21" stroke-width="2.5" stroke-linecap="round"/>
   </g>
-  <g class="family-member mother">
+  <g id="mother">
     <circle cx="272" cy="62" r="13" fill="#072e21"/>
     <circle cx="272" cy="62" r="16" stroke="#c8942e" stroke-width="2" stroke-dasharray="3 3"/>
     <path d="M226 182v-42c0-20 15-34 34-34s34 14 34 34v42H226z" fill="#c8942e"/>
@@ -31,13 +31,13 @@ const FAMILY_MINIMALIST = `
     <path d="M238 64c0-13 9-22 20-22s20 9 20 22c0 3-1 7-2 9-4-8-10-13-19-13-8 0-15 4-18 12z" fill="#072e21"/>
     <circle cx="256" cy="62" r="2.5" fill="#c8942e"/>
   </g>
-  <g class="family-member son">
+  <g id="son">
     <path d="M152 182v-34c0-16 12-26 26-26s26 10 26 26v34h-52z" fill="#166b4f"/>
     <line x1="178" y1="122" x2="178" y2="150" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
     <circle cx="178" cy="94" r="17" fill="#fcf9f2"/>
     <path d="M162 90c2-9 8-14 16-14s14 5 16 12c-4-4-10-6-17-4-5 1-11 5-15 6z" fill="#072e21"/>
   </g>
-  <g class="family-member daughter">
+  <g id="daughter">
     <path d="M206 134c-2 10-6 18-8 26M230 134c2 10 6 18 8 26" stroke="#072e21" stroke-width="3" stroke-linecap="round"/>
     <circle cx="198" cy="160" r="3" fill="#c8942e"/>
     <circle cx="238" cy="160" r="3" fill="#c8942e"/>
@@ -66,14 +66,10 @@ export function NammaKycLogo({ size = 56 }: { size?: number }) {
   return <SvgXml xml={MARK} width={size} height={size} />;
 }
 
-export function FamilyIllustration({ width = 300 }: { width?: number | string }) {
+export function FamilyIllustration({ width = 320 }: { width?: number | string }) {
   return (
     <View style={{ width: "100%", height: 170, alignItems: "center", justifyContent: "center", marginVertical: 4 }}>
-      <Image
-        source={require("../assets/family-transparent.png")}
-        style={{ width: typeof width === "number" ? width : 300, height: 170, resizeMode: "contain" }}
-        accessibilityLabel="Karnataka Family"
-      />
+      <SvgXml xml={FAMILY_MINIMALIST} width={typeof width === "number" ? width : 320} height={170} />
     </View>
   );
 }

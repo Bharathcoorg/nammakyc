@@ -11,3 +11,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+.gradle/
+**/build/
+android/android/

@@ -6,5 +6,10 @@
   "scripts": {
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "19.1.0"
+    }
   }
 }
