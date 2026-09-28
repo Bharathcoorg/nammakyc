@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import * as Crypto from "expo-crypto";
 import { speakGuidance, stopGuidance } from "../src/audioGuidance";
-import { Animated, Dimensions, Easing, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
+import { Animated, Dimensions, Image, Platform, Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 import { FamilyIllustration, NammaKycLogo, ServiceIcon } from "../src/brand";
-import { KARNATAKA_EMBLEM_URI, VIDHANA_SOUDHA_URI } from "../src/assetsData";
 import { apiRequest, getKycStatus } from "../src/api/client";
 import type { Household, KycResponse, KycStatus } from "../src/api/types";
 import { getStrings } from "../src/i18n";
@@ -17,8 +16,6 @@ export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>("en");
   const [step, setStep] = useState<Step>("splash");
   const [rationCard, setRationCard] = useState("");
-  const [aadhaarNumber, setAadhaarNumber] = useState("");
-  const [otp, setOtp] = useState("");
   const [household, setHousehold] = useState<Household | null>(null);
   const [selected, setSelected] = useState("");
   const [viewingCompletedMember, setViewingCompletedMember] = useState<string | null>(null);
@@ -59,23 +56,23 @@ export default function HomeScreen() {
       setHousehold(h);
       setStep("member");
     } catch {
-      // Authentic Karnataka PDS household simulation
+      // Authentic Karnataka PDS household simulation matching reference data
       const fallbackHousehold: Household = {
         householdReference: cardNum,
         members: [
           {
             memberReference: "MEM-001",
-            displayName: language === "kn" ? "ರಮೇಶ್ ಕುಮಾರ್ (ಕುಟುಂಬದ ಮುಖ್ಯಸ್ಥ)" : "Ramesh Kumar (Head of Family)",
+            displayName: language === "kn" ? "ಸುರೇಶ್ ಕುಮಾರ್ (ಕುಟುಂಬದ ಮುಖ್ಯಸ್ಥ)" : "Suresh Kumar (Head of Family)",
             kycRequired: false,
           },
           {
             memberReference: "MEM-002",
-            displayName: language === "kn" ? "ಲಕ್ಷ್ಮಿ ಕುಮಾರ್ (ಪತ್ನಿ)" : "Lakshmi Kumar (Spouse)",
+            displayName: language === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ (ಪತ್ನಿ)" : "Lakshmi Devi (Spouse)",
             kycRequired: false,
           },
           {
             memberReference: "MEM-003",
-            displayName: language === "kn" ? "ಸುರೇಶ್ ಕುಮಾರ್ (ಮಗ)" : "Suresh Kumar (Son)",
+            displayName: language === "kn" ? "ರಮೇಶ್ ಕುಮಾರ್ (ಮಗ)" : "Ramesh Kumar (Son)",
             kycRequired: false,
           },
           {
@@ -155,7 +152,7 @@ export default function HomeScreen() {
 
   function resetJourney() {
     setStep("splash"); setRationCard(""); setHousehold(null); setSelected(""); setConsentRead(false); setConsentProceed(false);
-    setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setAadhaarNumber(""); setOtp(""); setError("");
+    setConsentReference(""); setRequestId(""); setRequestStatus("received"); setReference(""); setError("");
   }
 
   const current = stepNumber[step] ?? 1;
@@ -388,6 +385,9 @@ const soudhaSource = { uri: "vidhana_soudha" };
 const familySource = { uri: "family_portrait" };
 const citizenFaceSource = { uri: "citizen_face" };
 
+const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+const easeInOutSine = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;
+
 function BiometricScannerView({
   imageSource,
   height = 230,
@@ -406,14 +406,14 @@ function BiometricScannerView({
         Animated.timing(scanAnim, {
           toValue: 1,
           duration: 2200,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
+          easing: easeInOutQuad,
+          useNativeDriver: false,
         }),
         Animated.timing(scanAnim, {
           toValue: 0,
           duration: 2200,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
+          easing: easeInOutQuad,
+          useNativeDriver: false,
         }),
       ])
     );
@@ -423,14 +423,14 @@ function BiometricScannerView({
         Animated.timing(pulseAnim, {
           toValue: 1.025,
           duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          easing: easeInOutSine,
+          useNativeDriver: false,
         }),
         Animated.timing(pulseAnim, {
           toValue: 0.985,
           duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          easing: easeInOutSine,
+          useNativeDriver: false,
         }),
       ])
     );
@@ -609,11 +609,11 @@ function Primary({label,onPress,disabled}:{label:string;onPress:()=>void;disable
 function Secondary({label,onPress,disabled}:{label:string;onPress:()=>void;disabled?:boolean}){return <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled:!!disabled}} disabled={disabled} onPress={onPress} style={({pressed})=>[styles.secondary,disabled&&styles.disabled,pressed&&!disabled&&styles.pressed]}><Text style={styles.secondaryText}>{label}</Text></Pressable>}
 
 const styles=StyleSheet.create({
-safe:{flex:1,backgroundColor:theme.colors.background,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):0},container:{paddingHorizontal:16,paddingTop:8,paddingBottom:32,gap:12},
-splash:{width:"100%",alignItems:"center",paddingHorizontal:16,paddingTop:8,paddingBottom:18,backgroundColor:"#FFFCF4"},
-splashTopBar:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center",position:"relative",minHeight:76,marginBottom:2},
-splashEmblemWrap:{width:86,height:72,alignItems:"center",justifyContent:"center"},
-splashEmblem:{width:78,height:70,resizeMode:"contain"},
+safe:{flex:1,backgroundColor:theme.colors.background,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):0},container:{paddingHorizontal:16,paddingTop:8,paddingBottom:Platform.OS==="android"?64:32,gap:12},
+splash:{flex:1,minHeight:740,alignItems:"center",paddingHorizontal:16,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):24,paddingBottom:Platform.OS==="android"?48:24,backgroundColor:"#FFFCF4"},
+splashTopBar:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center",position:"relative",minHeight:64,marginBottom:12},
+splashEmblemWrap:{alignItems:"center",justifyContent:"center"},
+splashEmblem:{width:68,height:62,resizeMode:"contain"},
 splashLanguage:{position:"absolute",right:0,top:6,minHeight:38,paddingHorizontal:14,borderRadius:19,backgroundColor:"#FFFFFF",borderWidth:1.5,borderColor:"#C9DCD0",justifyContent:"center",alignItems:"center",elevation:2,shadowColor:"#000",shadowOpacity:0.08,shadowOffset:{width:0,height:1},shadowRadius:3},
 splashLanguageText:{fontSize:12.5,fontWeight:"800",color:theme.colors.primary},
 splashGovBadge:{width:"100%",alignItems:"center",marginBottom:10,paddingTop:0},
@@ -634,7 +634,7 @@ splashFooterRow:{width:"100%",alignItems:"center",marginTop:2,paddingHorizontal:
 splashIndependent:{fontSize:9.5,lineHeight:14,color:theme.colors.muted,textAlign:"center"},
 header:{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:4},logo:{width:42,height:42,borderRadius:14,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center",borderWidth:1,borderColor:theme.colors.border},headerLogoImg:{width:36,height:36,borderRadius:11},logoText:{color:theme.colors.white,fontSize:24,fontWeight:"800"},headerCopy:{flex:1},title:{fontSize:19,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:10.5,color:theme.colors.muted,marginTop:2},securePill:{width:44,height:44,borderRadius:17,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:44,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
 progressWrap:{gap:6,paddingHorizontal:2},progressTop:{flexDirection:"row",justifyContent:"space-between"},progressText:{fontSize:11,fontWeight:"700",color:theme.colors.muted},progressTrack:{height:5,borderRadius:6,backgroundColor:theme.colors.border},progressFill:{height:"100%",backgroundColor:theme.colors.primary,borderRadius:6},
-card:{backgroundColor:theme.colors.surface,borderRadius:24,padding:18,borderWidth:1,borderColor:"#DCE4DE",gap:14,shadowColor:"#17342A",shadowOpacity:.05,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2},
+card:{backgroundColor:theme.colors.surface,borderRadius:24,padding:18,marginBottom:8,borderWidth:1,borderColor:"#DCE4DE",gap:14,shadowColor:"#17342A",shadowOpacity:.05,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2},
 badge:{alignSelf:"flex-start",paddingHorizontal:11,paddingVertical:7,borderRadius:theme.radius.pill,backgroundColor:theme.colors.primarySoft},badgeText:{fontSize:11,fontWeight:"800",color:theme.colors.primary},eyebrow:{fontSize:12,fontWeight:"800",color:theme.colors.primary,textTransform:"uppercase",letterSpacing:1},heading:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text},headingCenter:{fontSize:26,fontWeight:"800",lineHeight:32,letterSpacing:-.35,color:theme.colors.text,textAlign:"center"},muted:{fontSize:14,color:theme.colors.muted,lineHeight:21},centerBody:{fontSize:14,color:theme.colors.muted,lineHeight:21,textAlign:"center"},
 featureRow:{flexDirection:"row",alignItems:"center",gap:11,minHeight:60,padding:10,borderRadius:16,borderWidth:1,borderColor:"#E1E8E3",backgroundColor:"#FCFDFC"},welcomeHeading:{fontSize:28,lineHeight:34,fontWeight:"800",letterSpacing:-.4,color:theme.colors.text},welcomeIntro:{fontSize:15,lineHeight:22,color:theme.colors.muted},familyArtwork:{marginHorizontal:0,overflow:"hidden",borderRadius:18,backgroundColor:"#F0F7F3",borderWidth:1,borderColor:"rgba(23,107,69,0.14)",alignItems:"center",justifyContent:"center",paddingVertical:10,paddingHorizontal:8,minHeight:210},familyImage:{width:"100%",height:200,borderRadius:16,backgroundColor:"#F0F7F3"},memberCompleted:{backgroundColor:theme.colors.surfaceMuted,borderColor:"#CFE0D4"},avatarCompleted:{backgroundColor:"#DDEDE2"},completedText:{color:theme.colors.success},otpInfo:{flexDirection:"row",alignItems:"center",gap:10,padding:12,borderRadius:14,backgroundColor:theme.colors.primarySoft},otpCheck:{fontSize:18,fontWeight:"900",color:theme.colors.success},otpInfoText:{flex:1,fontSize:13,fontWeight:"700",color:theme.colors.text},facePreparationCard:{gap:12,padding:12,borderRadius:18,backgroundColor:"#F5F8F6",borderWidth:1,borderColor:theme.colors.border},
 biometricScannerBox:{width:"100%",borderRadius:20,backgroundColor:"#081A12",overflow:"hidden",position:"relative",alignItems:"center",justifyContent:"center",borderWidth:1.5,borderColor:"rgba(40,208,135,0.35)",elevation:4,shadowColor:"#176B45",shadowOpacity:0.25,shadowRadius:12,shadowOffset:{width:0,height:4}},
