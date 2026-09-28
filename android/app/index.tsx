@@ -526,10 +526,9 @@ function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getSt
       </Pressable>
     </View>
 
-    {/* Government of Karnataka Header */}
+    {/* Government identity: emblem first, title immediately below */}
     <View style={styles.splashGovBadge}>
       <Text style={styles.splashGovernment}>{s.government}</Text>
-      <Text style={styles.splashDept}>{language==="en"?"Department of Food, Civil Supplies & Consumer Affairs":"ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
     </View>
 
     {/* Brand Header: Namma KYC with Gold Dot */}
@@ -567,10 +566,11 @@ function Splash({s,language,onStart,onLanguageChange}:{s:ReturnType<typeof getSt
       <Primary label={s.getStarted} onPress={onStart}/>
     </View>
 
-    {/* Official Citizen Service Footer */}
+    {/* Independent-project disclosure */}
     <View style={styles.splashFooterRow}>
-      <Text style={styles.splashFooterBadge}>✓ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವೆ · Official Citizen e-KYC</Text>
-      <Text style={styles.splashIndependent}>{language==="en"?"Government of Karnataka · Food & Civil Supplies Department":"ಕರ್ನಾಟಕ ಸರ್ಕಾರ · ಆಹಾರ ಮತ್ತು ನಾಗರಿಕ ಸರಬರಾಜು ಇಲಾಖೆ"}</Text>
+      <Text style={styles.splashIndependent}>
+        {language==="en"?"Independent open-source citizen initiative · Concept / reference build":"ಸ್ವತಂತ್ರ ಓಪನ್-ಸೋರ್ಸ್ ನಾಗರಿಕ ಉಪಕ್ರಮ · ಪರಿಕಲ್ಪನೆ / ಉಲ್ಲೇಖ ನಿರ್ಮಾಣ"}
+      </Text>
     </View>
   </View>;
 }
@@ -610,30 +610,28 @@ function Secondary({label,onPress,disabled}:{label:string;onPress:()=>void;disab
 
 const styles=StyleSheet.create({
 safe:{flex:1,backgroundColor:theme.colors.background,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):0},container:{paddingHorizontal:16,paddingTop:8,paddingBottom:32,gap:12},
-splash:{flex:1,minHeight:740,alignItems:"center",paddingHorizontal:16,paddingTop:Platform.OS==="android"?((StatusBar.currentHeight||28)+10):24,paddingBottom:24,backgroundColor:"#FFFCF4"},
-splashTopBar:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center",position:"relative",minHeight:64,marginBottom:12},
-splashEmblemWrap:{alignItems:"center",justifyContent:"center"},
-splashEmblem:{width:68,height:62,resizeMode:"contain"},
+splash:{width:"100%",alignItems:"center",paddingHorizontal:16,paddingTop:8,paddingBottom:18,backgroundColor:"#FFFCF4"},
+splashTopBar:{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center",position:"relative",minHeight:76,marginBottom:2},
+splashEmblemWrap:{width:86,height:72,alignItems:"center",justifyContent:"center"},
+splashEmblem:{width:78,height:70,resizeMode:"contain"},
 splashLanguage:{position:"absolute",right:0,top:6,minHeight:38,paddingHorizontal:14,borderRadius:19,backgroundColor:"#FFFFFF",borderWidth:1.5,borderColor:"#C9DCD0",justifyContent:"center",alignItems:"center",elevation:2,shadowColor:"#000",shadowOpacity:0.08,shadowOffset:{width:0,height:1},shadowRadius:3},
 splashLanguageText:{fontSize:12.5,fontWeight:"800",color:theme.colors.primary},
-splashGovBadge:{alignItems:"center",marginBottom:10,gap:4},
-splashGovernment:{fontSize:14.5,fontWeight:"800",color:"#1E3A2F",textAlign:"center",letterSpacing:0.5},
-splashDept:{fontSize:11.5,fontWeight:"700",color:"#176B45",textAlign:"center",lineHeight:16},
-splashBrandRow:{flexDirection:"row",alignItems:"baseline",justifyContent:"center",marginBottom:6,gap:4},
-splashBrand:{fontSize:36,lineHeight:42,fontWeight:"900",letterSpacing:-1.2,color:"#124733",textAlign:"center"},
+splashGovBadge:{width:"100%",alignItems:"center",marginBottom:10,paddingTop:0},
+splashGovernment:{fontSize:15,fontWeight:"800",color:"#1E3A2F",textAlign:"center",letterSpacing:0.15,lineHeight:20},
+splashBrandRow:{flexDirection:"row",alignItems:"baseline",justifyContent:"center",marginBottom:5,gap:4,width:"100%"},
+splashBrand:{fontSize:35,lineHeight:41,fontWeight:"900",letterSpacing:-1.1,color:"#124733",textAlign:"center"},
 splashBrandDot:{width:10,height:10,borderRadius:5,backgroundColor:"#C8942E",marginBottom:5},
-splashTag:{fontSize:13,lineHeight:19,fontWeight:"600",color:"#3D6353",textAlign:"center",marginBottom:16,maxWidth:320,alignSelf:"center"},
-soudhaFrame:{width:"100%",borderRadius:20,overflow:"hidden",backgroundColor:"#EEF5F0",borderWidth:1.5,borderColor:"rgba(23,107,69,0.16)",elevation:3,shadowColor:"#17342A",shadowOpacity:0.12,shadowRadius:8,shadowOffset:{width:0,height:4},marginBottom:16},
-splashBuilding:{width:"100%",height:175,backgroundColor:"#EEF5F0"},
+splashTag:{fontSize:13,lineHeight:19,fontWeight:"600",color:"#3D6353",textAlign:"center",marginBottom:14,maxWidth:320,alignSelf:"center"},
+soudhaFrame:{width:"100%",minHeight:178,borderRadius:20,overflow:"hidden",backgroundColor:"#EEF5F0",borderWidth:1.5,borderColor:"rgba(23,107,69,0.16)",elevation:3,shadowColor:"#17342A",shadowOpacity:0.12,shadowRadius:8,shadowOffset:{width:0,height:4},marginBottom:14},
+splashBuilding:{width:"100%",height:178,backgroundColor:"#EEF5F0"},
 splashValuesStrip:{width:"100%",flexDirection:"row",justifyContent:"space-around",alignItems:"center",marginVertical:12,paddingHorizontal:4},
 valueItem:{flex:1,alignItems:"center",gap:7},
 valueIconCircle:{width:46,height:46,borderRadius:23,backgroundColor:"#E8F4EC",borderWidth:1.5,borderColor:"rgba(23,107,69,0.22)",alignItems:"center",justifyContent:"center",elevation:1},
 valueIconText:{fontSize:19,fontWeight:"800",color:"#176B45"},
 valueItemText:{fontSize:11,fontWeight:"700",color:"#1E3A2F",textAlign:"center",lineHeight:15},
 splashActionWrap:{width:"100%",marginTop:8,marginBottom:10},
-splashFooterRow:{alignItems:"center",marginTop:4,gap:3},
-splashFooterBadge:{fontSize:11,fontWeight:"800",color:"#176B45",textAlign:"center"},
-splashIndependent:{fontSize:10,lineHeight:14,color:theme.colors.muted,textAlign:"center"},
+splashFooterRow:{width:"100%",alignItems:"center",marginTop:2,paddingHorizontal:8},
+splashIndependent:{fontSize:9.5,lineHeight:14,color:theme.colors.muted,textAlign:"center"},
 header:{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:4},logo:{width:42,height:42,borderRadius:14,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center",borderWidth:1,borderColor:theme.colors.border},headerLogoImg:{width:36,height:36,borderRadius:11},logoText:{color:theme.colors.white,fontSize:24,fontWeight:"800"},headerCopy:{flex:1},title:{fontSize:19,fontWeight:"800",color:theme.colors.text},subtitle:{fontSize:10.5,color:theme.colors.muted,marginTop:2},securePill:{width:44,height:44,borderRadius:17,backgroundColor:theme.colors.primarySoft,alignItems:"center",justifyContent:"center"},languageSwitch:{minHeight:44,paddingHorizontal:10,borderRadius:17,backgroundColor:theme.colors.surfaceMuted,justifyContent:"center"},languageSwitchText:{fontSize:12,fontWeight:"800",color:theme.colors.primary},securePillText:{color:theme.colors.primary,fontSize:17,fontWeight:"800"},
 progressWrap:{gap:6,paddingHorizontal:2},progressTop:{flexDirection:"row",justifyContent:"space-between"},progressText:{fontSize:11,fontWeight:"700",color:theme.colors.muted},progressTrack:{height:5,borderRadius:6,backgroundColor:theme.colors.border},progressFill:{height:"100%",backgroundColor:theme.colors.primary,borderRadius:6},
 card:{backgroundColor:theme.colors.surface,borderRadius:24,padding:18,borderWidth:1,borderColor:"#DCE4DE",gap:14,shadowColor:"#17342A",shadowOpacity:.05,shadowRadius:14,shadowOffset:{width:0,height:5},elevation:2},
@@ -665,7 +663,7 @@ providerCard:{flexDirection:"row",alignItems:"center",gap:11,padding:12,borderRa
 infoCard:{flexDirection:"row",gap:10,padding:12,borderRadius:16,backgroundColor:theme.colors.surfaceBlue,borderWidth:1,borderColor:"#D7E7F8"},infoIcon:{width:28,height:28,borderRadius:14,backgroundColor:theme.colors.blue,alignItems:"center",justifyContent:"center"},infoIconText:{color:theme.colors.white,fontWeight:"800"},infoTitle:{fontSize:13,fontWeight:"800",color:theme.colors.text,marginBottom:3},infoText:{fontSize:12,color:theme.colors.muted,lineHeight:18},
 processingHero:{alignItems:"center",paddingVertical:4},processingRing:{width:102,height:102,borderRadius:51,borderWidth:8,borderColor:"#DCEFE3",borderTopColor:theme.colors.blue,alignItems:"center",justifyContent:"center"},processingFace:{width:58,height:58,borderRadius:20,backgroundColor:"#EDF4FF",alignItems:"center",justifyContent:"center"},processingFaceText:{color:theme.colors.blue,fontSize:34,fontWeight:"800"},processingCaption:{fontSize:11,fontWeight:"800",color:theme.colors.primary,marginTop:8},timeline:{gap:0},timelineRow:{minHeight:44,flexDirection:"row",gap:12},timelineRail:{width:20,alignItems:"center"},timelineDot:{width:18,height:18,borderRadius:9,borderWidth:1.5,borderColor:theme.colors.borderStrong,backgroundColor:theme.colors.white,alignItems:"center",justifyContent:"center"},timelineDone:{backgroundColor:theme.colors.success,borderColor:theme.colors.success},timelineActive:{backgroundColor:theme.colors.blue,borderColor:theme.colors.blue},timelineDotText:{fontSize:11,color:theme.colors.white,fontWeight:"900"},timelineLine:{flex:1,width:2,backgroundColor:theme.colors.border,marginVertical:2},timelineLineDone:{backgroundColor:theme.colors.success},timelineText:{flex:1,fontSize:12.5,color:theme.colors.muted,paddingTop:1},timelineTextActive:{color:theme.colors.text,fontWeight:"800"},
 referenceCard:{padding:16,borderRadius:16,backgroundColor:theme.colors.surfaceMuted,borderWidth:1,borderColor:"#DCE8E0"},referenceTop:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",gap:8},referenceLabel:{fontSize:11,fontWeight:"800",color:theme.colors.muted,textTransform:"uppercase",letterSpacing:.8,marginBottom:5},reference:{fontSize:16,fontWeight:"800",color:theme.colors.text},statusPill:{flexDirection:"row",alignItems:"center",gap:5,paddingHorizontal:8,paddingVertical:5,borderRadius:999,backgroundColor:theme.colors.primarySoft},statusDot:{width:7,height:7,borderRadius:4,backgroundColor:theme.colors.primary},statusPillText:{fontSize:10,fontWeight:"800",color:theme.colors.primary},
-successHero:{alignItems:"center",minHeight:105,justifyContent:"center"},confetti:{position:"absolute",top:0,fontSize:20,color:theme.colors.accent},successIcon:{width:76,height:76,borderRadius:38,backgroundColor:"#E2F2E7",alignItems:"center",justifyContent:"center"},successIconText:{fontSize:42,fontWeight:"900",color:theme.colors.success},detailsCard:{borderWidth:1,borderColor:theme.colors.border,borderRadius:16,overflow:"hidden",backgroundColor:theme.colors.white},detailRow:{minHeight:58,paddingHorizontal:14,paddingVertical:10,flexDirection:"column",alignItems:"stretch",justifyContent:"center",borderBottomWidth:1,borderBottomColor:theme.colors.border,gap:3},detailLabel:{minWidth:0,fontSize:10,fontWeight:"700",lineHeight:14,color:theme.colors.muted,textTransform:"uppercase",letterSpacing:.5},detailValue:{minWidth:0,fontSize:12,lineHeight:17,fontWeight:"800",color:theme.colors.text,textAlign:"left",flexShrink:1},detailSuccess:{color:theme.colors.success},successMeta:{flexDirection:"row",alignItems:"center",gap:8,padding:12,borderRadius:13,backgroundColor:theme.colors.primarySoft},successMetaMark:{color:theme.colors.primary,fontSize:17,fontWeight:"900"},successMetaText:{flex:1,fontSize:11,lineHeight:16,color:theme.colors.muted},
+successHero:{alignItems:"center",minHeight:105,justifyContent:"center"},confetti:{position:"absolute",top:0,fontSize:20,color:theme.colors.accent},successIcon:{width:76,height:76,borderRadius:38,backgroundColor:"#E2F2E7",alignItems:"center",justifyContent:"center"},successIconText:{fontSize:42,fontWeight:"900",color:theme.colors.success},detailsCard:{borderWidth:1,borderColor:theme.colors.border,borderRadius:16,overflow:"hidden",backgroundColor:theme.colors.white},detailRow:{minHeight:58,paddingHorizontal:14,paddingVertical:10,flexDirection:"column",alignItems:"stretch",justifyContent:"center",borderBottomWidth:1,borderBottomColor:theme.colors.border,gap:3},detailLabel:{minWidth:0,fontSize:10,fontWeight:"700",lineHeight:14,color:theme.colors.muted,textTransform:"uppercase",letterSpacing:.5},detailValue:{minWidth:0,fontSize:12,lineHeight:17,fontWeight:"800",color:theme.colors.text,textAlign:"left",flexShrink:1,includeFontPadding:false},detailSuccess:{color:theme.colors.success},successMeta:{flexDirection:"row",alignItems:"center",gap:8,padding:12,borderRadius:13,backgroundColor:theme.colors.primarySoft},successMetaMark:{color:theme.colors.primary,fontSize:17,fontWeight:"900"},successMetaText:{flex:1,fontSize:11,lineHeight:16,color:theme.colors.muted},
 errorCard:{padding:14,borderRadius:14,backgroundColor:"#FFF0EF",borderWidth:1,borderColor:"#F1C8C4"},error:{color:theme.colors.error,fontSize:14,lineHeight:20,fontWeight:"600"},back:{textAlign:"center",fontSize:15,fontWeight:"700",color:theme.colors.primary,paddingVertical:14,minHeight:theme.minTouchTarget},footer:{textAlign:"center",fontSize:11,color:theme.colors.muted,paddingTop:2},pressed:{opacity:.72},
 kycDoneCard:{alignItems:"center",gap:14,paddingVertical:8},kycDoneIconWrap:{width:72,height:72,borderRadius:36,backgroundColor:"#E2F2E7",alignItems:"center",justifyContent:"center"},kycDoneIcon:{fontSize:38,fontWeight:"900",color:theme.colors.success},
 methodCard:{flexDirection:"row",alignItems:"flex-start",gap:12,padding:14,borderRadius:16,borderWidth:1.5,borderColor:theme.colors.border,backgroundColor:theme.colors.white},
