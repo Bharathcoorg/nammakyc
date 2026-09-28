@@ -64,6 +64,8 @@ const I18N = {
     memberHead: "Head of Household",
     memberWife: "Wife",
     memberSon: "Son",
+    memberDaughter: "Daughter",
+    resetMembersBtn: "Reset Demo",
     aadhaarNumberMasked: "Aadhaar Number",
     verificationMode: "Verification Method",
     verificationModeVal: "Aadhaar FaceRD (Live Face Authentication)",
@@ -215,6 +217,8 @@ const I18N = {
     memberHead: "ಕುಟುಂಬದ ಮುಖ್ಯಸ್ಥ",
     memberWife: "ಪತ್ನಿ",
     memberSon: "ಪುತ್ರ",
+    memberDaughter: "ಪುತ್ರಿ",
+    resetMembersBtn: "ಮರುಹೊಂದಿಸಿ",
     aadhaarNumberMasked: "ಆಧಾರ್ ಸಂಖ್ಯೆ",
     verificationMode: "ದೃಢೀಕರಣ ವಿಧಾನ",
     verificationModeVal: "ಆಧಾರ್ ಮುಖ ದೃಢೀಕರಣ (Aadhaar FaceRD - UIDAI)",
@@ -327,7 +331,8 @@ let selectedMethod = "face"; // "face" or "fps"
 let isAudioPlaying = false;
 let activeAudio = null;
 let dodontTab = "all"; // "all", "do", "dont"
-let viewingKycDoneMember = null; // null | "suresh" | "ramesh" | "lakshmi"
+let viewingKycDoneMember = null; // null | "suresh" | "ramesh" | "lakshmi" | "deepa"
+let activeMemberToVerify = "lakshmi"; // "lakshmi" | "deepa"
 let completedMembers = new Set(["suresh", "ramesh"]);
 
 const t = () => I18N[currentLang];
@@ -670,12 +675,21 @@ function getScreenHtml(s) {
   // Screen 1: Welcome Screen
   if (currentStep === 1) {
     return `
-      <div class="screen-card">
-        <div class="welcome-progress-dots">
-          <i class="active"></i><i></i><i></i>
+      <div class="screen-card welcome-card">
+        <div class="welcome-header">
+          <div class="welcome-progress-dots">
+            <i class="active"></i><i></i><i></i>
+          </div>
+          <h2>${s.welcome}</h2>
+          <p class="screen-desc">${s.welcomeSub}</p>
         </div>
-        <h2>${s.welcome}</h2>
-        <p class="screen-desc">${s.welcomeSub}</p>
+
+        <div class="family-art-wrapper">
+          <img class="family-art-img" src="${ASSETS.family}" alt="Karnataka Family illustration" />
+          <div class="family-art-badge">
+            <span>👨‍👩‍👧‍👦 ${currentLang === "kn" ? "ಪಡಿತರ ಕುಟುಂಬ e-KYC" : "Family Ration e-KYC"}</span>
+          </div>
+        </div>
 
         <div class="feature-card-list">
           <div class="feature-box">
@@ -708,10 +722,6 @@ function getScreenHtml(s) {
           </div>
         </div>
 
-        <div class="family-art-wrapper">
-          <img class="family-art-img" src="${ASSETS.family}" alt="Family illustration" />
-        </div>
-
         <div class="actions">
           <button class="primary-btn" id="welcome-continue-btn">${s.continue} →</button>
         </div>
@@ -726,11 +736,21 @@ function getScreenHtml(s) {
     }
 
     const isLakshmiCompleted = completedMembers.has("lakshmi");
+    const isDeepaCompleted = completedMembers.has("deepa");
+
+    let continueBtnText = s.continue + " →";
+    if (!isLakshmiCompleted) {
+      continueBtnText = currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ ಅವರ e-KYC ಮುಂದುವರಿಸಿ →" : "Verify Lakshmi Devi →";
+    } else if (!isDeepaCompleted) {
+      continueBtnText = currentLang === "kn" ? "ದೀಪಾ ಕುಮಾರ್ ಅವರ e-KYC ಮುಂದುವರಿಸಿ →" : "Verify Deepa Kumar →";
+    }
 
     return `
-      <div class="screen-card">
-        <h2>${s.rationTitle}</h2>
-        <p class="screen-desc">${s.rationSub}</p>
+      <div class="screen-card member-screen-card">
+        <div class="member-screen-header">
+          <h2>${s.rationTitle}</h2>
+          <p class="screen-desc">${s.rationSub}</p>
+        </div>
 
         <div class="ration-card-banner">
           <div class="ration-card-header-row">
@@ -742,6 +762,9 @@ function getScreenHtml(s) {
 
         <div class="member-list-heading">
           <span>${s.familyMembersList}</span>
+          <button class="reset-status-btn" id="reset-members-btn" title="Reset members to test all options">
+            ↺ ${s.resetMembersBtn || (currentLang === "kn" ? "ಮರುಹೊಂದಿಸಿ" : "Reset Demo")}
+          </button>
         </div>
 
         <div class="member-list">
@@ -787,6 +810,23 @@ function getScreenHtml(s) {
             </div>
             <span class="member-action-badge done">✓ ${currentLang === "kn" ? "ವಿವರ" : "View"}</span>
           </div>
+
+          <!-- Member 4: Deepa Kumar (KYC Pending - Always stays pending to test all options!) -->
+          <div class="member-card ${isDeepaCompleted ? "completed" : "pending-action"}" id="member-deepa-card" role="button" tabindex="0">
+            <div class="member-avatar ${isDeepaCompleted ? "done" : "pending"}">${isDeepaCompleted ? "✓" : "D"}</div>
+            <div class="member-info">
+              <div class="member-name-row">
+                <b>${currentLang === "kn" ? "ದೀಪಾ ಕುಮಾರ್" : "Deepa Kumar"}</b>
+                <span class="member-rel">(${s.memberDaughter})</span>
+              </div>
+              <small class="member-status-text ${isDeepaCompleted ? "done" : "pending"}">
+                ${isDeepaCompleted ? `${s.kycCompletedBadge} · ${s.tapToViewStatus}` : `⚠️ ${s.kycRequiredBadge}`}
+              </small>
+            </div>
+            <span class="member-action-badge ${isDeepaCompleted ? "done" : "action"}">
+              ${isDeepaCompleted ? (currentLang === "kn" ? "ವಿವರ" : "View") : (currentLang === "kn" ? "ಪ್ರಾರಂಭಿಸಿ →" : "Verify →")}
+            </span>
+          </div>
         </div>
 
         <div class="ration-helper-note">
@@ -796,7 +836,7 @@ function getScreenHtml(s) {
 
         <div class="actions">
           <button class="primary-btn" id="ration-continue-btn">
-            ${isLakshmiCompleted ? s.continue : (currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ ಅವರ e-KYC ಮುಂದುವರಿಸಿ →" : "Verify Lakshmi Devi →")}
+            ${continueBtnText}
           </button>
         </div>
       </div>
@@ -1123,6 +1163,13 @@ function getScreenHtml(s) {
   }
 
   // Screen 8: e-KYC Completed Successfully!
+  const memberNameSuccess = activeMemberToVerify === "deepa" 
+    ? (currentLang === "kn" ? "ದೀಪಾ ಕುಮಾರ್" : "Deepa Kumar") 
+    : (currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ" : "Lakshmi Devi");
+  const subtitleSuccess = currentLang === "kn"
+    ? `${memberNameSuccess} ಅವರ ಗುರುತನ್ನು UIDAI ಯೊಂದಿಗೆ ಯಶಸ್ವಿಯಾಗಿ ದೃಢೀಕರಿಸಲಾಗಿದೆ. ಪಡಿತರ ಚೀಟಿ ವಿವರಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ.`
+    : `${memberNameSuccess}'s identity has been successfully authenticated with UIDAI. Ration card records updated.`;
+
   return `
     <div class="screen-card">
       <div class="completion-container">
@@ -1136,7 +1183,7 @@ function getScreenHtml(s) {
           <div class="success-check-circle">✓</div>
         </div>
         <h2>${s.successTitle}</h2>
-        <p class="screen-desc">${s.successSub}</p>
+        <p class="screen-desc">${subtitleSuccess}</p>
 
         <div class="details-card-box">
           <div class="detail-line">
@@ -1183,6 +1230,11 @@ function getKycDoneModalHtml(s, memberKey) {
     memberRel = s.memberSon;
     aadhaarMask = "XXXX-XXXX-9104";
     vDate = currentLang === "kn" ? "20 ಜನವರಿ 2025, ಮಧ್ಯಾಹ್ನ 02:45" : "20 Jan 2025, 02:45 PM";
+  } else if (memberKey === "deepa") {
+    memberName = currentLang === "kn" ? "ದೀಪಾ ಕುಮಾರ್" : "Deepa Kumar";
+    memberRel = s.memberDaughter;
+    aadhaarMask = "XXXX-XXXX-6238";
+    vDate = currentLang === "kn" ? "28 ಸೆಪ್ಟೆಂಬರ್ 2026, ಮಧ್ಯಾಹ್ನ 12:15" : "28 Sep 2026, 12:15 PM";
   } else {
     memberName = currentLang === "kn" ? "ಲಕ್ಷ್ಮಿ ದೇವಿ" : "Lakshmi Devi";
     memberRel = s.memberWife;
@@ -1245,6 +1297,16 @@ function wireScreenEvents() {
   if (welcomeCont) welcomeCont.onclick = () => { currentStep = 2; render(); };
 
   // Ration Card Member Clicks & Modal
+  const resetBtn = document.getElementById("reset-members-btn");
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      completedMembers = new Set(["suresh", "ramesh"]);
+      activeMemberToVerify = "lakshmi";
+      viewingKycDoneMember = null;
+      render();
+    };
+  }
+
   const sureshCard = document.getElementById("member-suresh-card");
   if (sureshCard) sureshCard.onclick = () => { viewingKycDoneMember = "suresh"; render(); };
 
@@ -1258,6 +1320,21 @@ function wireScreenEvents() {
         viewingKycDoneMember = "lakshmi";
         render();
       } else {
+        activeMemberToVerify = "lakshmi";
+        currentStep = 3; // Proceed to consent
+        render();
+      }
+    };
+  }
+
+  const deepaCard = document.getElementById("member-deepa-card");
+  if (deepaCard) {
+    deepaCard.onclick = () => {
+      if (completedMembers.has("deepa")) {
+        viewingKycDoneMember = "deepa";
+        render();
+      } else {
+        activeMemberToVerify = "deepa";
         currentStep = 3; // Proceed to consent
         render();
       }
@@ -1275,10 +1352,14 @@ function wireScreenEvents() {
   const rationCont = document.getElementById("ration-continue-btn");
   if (rationCont) {
     rationCont.onclick = () => {
-      if (completedMembers.has("lakshmi")) {
-        currentStep = 8; // already done, go to success
+      if (!completedMembers.has("lakshmi")) {
+        activeMemberToVerify = "lakshmi";
+        currentStep = 3;
+      } else if (!completedMembers.has("deepa")) {
+        activeMemberToVerify = "deepa";
+        currentStep = 3;
       } else {
-        currentStep = 3; // Proceed to consent for Lakshmi
+        currentStep = 8;
       }
       render();
     };
@@ -1341,7 +1422,7 @@ function wireScreenEvents() {
         // Simulate UIDAI verification & update
         setTimeout(() => {
           if (currentStep === 7) {
-            completedMembers.add("lakshmi");
+            completedMembers.add(activeMemberToVerify);
             currentStep = 8;
             render();
           }
@@ -1358,7 +1439,7 @@ function wireScreenEvents() {
       render();
       setTimeout(() => {
         if (currentStep === 7) {
-          completedMembers.add("lakshmi");
+          completedMembers.add(activeMemberToVerify);
           currentStep = 8;
           render();
         }
@@ -1370,7 +1451,7 @@ function wireScreenEvents() {
   const verifyCont = document.getElementById("verify-continue-btn");
   if (verifyCont) {
     verifyCont.onclick = () => {
-      completedMembers.add("lakshmi");
+      completedMembers.add(activeMemberToVerify);
       currentStep = 8;
       render();
     };
@@ -1380,17 +1461,15 @@ function wireScreenEvents() {
   const successView = document.getElementById("success-view-btn");
   if (successView) {
     successView.onclick = () => {
-      currentStep = 2; // return to ration card members where Lakshmi is now KYC Done!
+      viewingKycDoneMember = activeMemberToVerify;
+      currentStep = 2; // view verification certificate details modal
       render();
     };
   }
   const successHome = document.getElementById("success-home-btn");
   if (successHome) {
     successHome.onclick = () => {
-      currentStep = 0;
-      consentRead = false;
-      consentProceed = false;
-      stopAudioPlayback();
+      currentStep = 2; // return to ration card members so user sees Lakshmi is completed and Deepa is still pending!
       render();
     };
   }

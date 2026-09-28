@@ -66,12 +66,12 @@ export function NammaKycLogo({ size = 56 }: { size?: number }) {
   return <SvgXml xml={MARK} width={size} height={size} />;
 }
 
-export function FamilyIllustration({ width = 280 }: { width?: number | string }) {
+export function FamilyIllustration({ width = 300 }: { width?: number | string }) {
   return (
-    <View style={{ width: "100%", height: 165, alignItems: "center", justifyContent: "center", marginVertical: 6, backgroundColor: "transparent" }}>
+    <View style={{ width: "100%", height: 170, alignItems: "center", justifyContent: "center", marginVertical: 4 }}>
       <Image
         source={require("../assets/family-transparent.png")}
-        style={{ width: typeof width === "number" ? width : 280, height: 165, resizeMode: "contain" }}
+        style={{ width: typeof width === "number" ? width : 300, height: 170, resizeMode: "contain" }}
         accessibilityLabel="Karnataka Family"
       />
     </View>

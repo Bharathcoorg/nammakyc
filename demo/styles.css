@@ -239,27 +239,27 @@ body {
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 110px;
-  height: 20px;
-  border-radius: 0 0 16px 16px;
+  width: 86px;
+  height: 15px;
+  border-radius: 0 0 12px 12px;
   background: #0d1713;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   pointer-events: none;
 }
 .phone-notch::before {
   content: "";
-  width: 40px;
-  height: 3.5px;
+  width: 32px;
+  height: 2.5px;
   border-radius: 99px;
   background: #25332c;
 }
 .phone-notch::after {
   content: "";
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #19251f;
   border: 1px solid #2d3d34;
@@ -282,6 +282,38 @@ body {
   display: none;
 }
 
+/* Authentic Smartphone Status Bar (Isolates Notch from Screen Content) */
+.phone-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 18px 0;
+  height: 24px;
+  min-height: 24px;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 750;
+  color: var(--text-muted);
+  user-select: none;
+  position: relative;
+  z-index: 6;
+}
+.status-time {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  font-weight: 750;
+}
+
 /* Internal scroll container for active screen (Scrollbar hidden like native mobile) */
 .screen {
   flex: 1;
@@ -292,6 +324,7 @@ body {
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding: 2px 12px 12px;
 }
 .screen::-webkit-scrollbar {
   display: none;
@@ -304,9 +337,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px 4px;
+  padding: 4px 12px 2px;
   gap: 8px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 5;
 }
 
 .app-top-back {
@@ -435,26 +470,27 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Animated Screen Canvas Card
+   Animated Screen Canvas Card (Seamless Native Mobile App Layout)
    -------------------------------------------------------------------------- */
 .screen-card {
   flex: 1;
-  min-height: min-content;
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  margin: 0 8px 10px;
-  padding: 14px 13px;
-  box-shadow: var(--shadow-3d);
-  border: 1px solid var(--border-subtle);
+  min-height: 100%;
+  background: transparent;
+  border-radius: 0;
+  margin: 0;
+  padding: 2px 4px 6px;
+  box-shadow: none;
+  border: none;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   animation: screenEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes screenEnter {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.985);
+    transform: translateY(10px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -464,7 +500,7 @@ body {
 
 .screen-card h2 {
   font-size: 19px;
-  line-height: 1.2;
+  line-height: 1.22;
   letter-spacing: -0.03em;
   color: var(--text);
   margin: 0 0 4px;
@@ -484,7 +520,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(10px, 1.8vh, 16px) 14px 10px;
+  padding: 4px 4px 6px;
   min-height: 100%;
   animation: screenEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -495,6 +531,7 @@ body {
   align-items: flex-start;
   justify-content: center;
   position: relative;
+  margin-top: 2px;
   margin-bottom: 2px;
 }
 
@@ -669,12 +706,24 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   Screen 2: Welcome Screen
+   Screen 2: Welcome Screen (Hero Family Photo + Dynamic Spacing)
    -------------------------------------------------------------------------- */
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  gap: clamp(6px, 1.2vh, 10px);
+}
+
+.welcome-header {
+  flex-shrink: 0;
+}
+
 .welcome-progress-dots {
   display: flex;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .welcome-progress-dots i {
@@ -689,22 +738,68 @@ body {
   background: var(--primary);
 }
 
+.family-art-wrapper {
+  width: 100%;
+  flex: 1;
+  min-height: 150px;
+  max-height: 205px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0;
+  background: linear-gradient(180deg, #f0f8f3 0%, #e3f2eb 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(19, 88, 62, 0.14);
+  overflow: hidden;
+  padding: 6px 12px 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 3px 12px rgba(13, 74, 54, 0.05);
+  position: relative;
+}
+
+.family-art-badge {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--primary);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 2.5px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(19, 88, 62, 0.14);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.family-art-img {
+  width: 100%;
+  max-width: 295px;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+  filter: drop-shadow(0 6px 14px rgba(13, 74, 54, 0.14));
+  transition: transform 0.3s ease;
+}
+.family-art-wrapper:hover .family-art-img {
+  transform: translateY(-2px) scale(1.02);
+}
+
 .feature-card-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .feature-box {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  padding: 7px 8px;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
-  background: linear-gradient(135deg, #ffffff 0%, var(--surface-card) 100%);
+  background: #ffffff;
   box-shadow: 0 2px 6px rgba(23, 52, 42, 0.02);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -714,17 +809,17 @@ body {
 }
 
 .feature-box-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 .feature-box-icon svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 .feature-box-icon.orange {
   background: var(--accent-orange-soft);
@@ -756,31 +851,6 @@ body {
   color: var(--text-muted);
   line-height: 1.25;
   margin-top: 1px;
-}
-
-.family-art-wrapper {
-  width: 100%;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 2px 0 6px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.family-art-img {
-  width: auto;
-  max-width: 220px;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  filter: drop-shadow(0 6px 16px rgba(13, 74, 54, 0.12));
-  transition: transform 0.3s ease;
-}
-.family-art-wrapper:hover .family-art-img {
-  transform: translateY(-2px) scale(1.02);
 }
 
 /* --------------------------------------------------------------------------
@@ -839,10 +909,30 @@ body {
 }
 
 .member-list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 11px;
   font-weight: 800;
   color: var(--text);
   margin-bottom: 6px;
+}
+.reset-status-btn {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+.reset-status-btn:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  transform: scale(1.03);
 }
 
 .member-list {
